@@ -1,0 +1,114 @@
+package org.example.bodycheck.domain.member.service.MemberService;
+
+import lombok.RequiredArgsConstructor;
+import org.example.bodycheck.common.jwt.JwtTokenDTO;
+import org.example.bodycheck.common.jwt.JwtTokenProvider;
+import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
+import org.example.bodycheck.common.exception.handler.GeneralHandler;
+import org.example.bodycheck.domain.member.converter.MemberConverter;
+import org.example.bodycheck.domain.member.converter.RefreshTokenConverter;
+import org.example.bodycheck.domain.member.entity.Member;
+import org.example.bodycheck.domain.member.entity.RefreshToken;
+import org.example.bodycheck.domain.member.repository.MemberRepository;
+import org.example.bodycheck.domain.member.dto.MemberDTO.MemberRequestDTO;
+import org.example.bodycheck.domain.member.repository.RefreshRepository;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class MemberCommandServiceImpl implements MemberCommandService {
+
+    private final MemberRepository memberRepository;
+    private final RefreshRepository refreshRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
+
+    @Override
+    @Transactional
+    public Member signUp(MemberRequestDTO.SignUpDTO request) {
+        if (memberRepository.existsByEmail(request.getEmail())) {
+            throw new GeneralHandler(ErrorStatus.EMAIL_ALREADY_EXISTS);
+        }
+
+        Member member = MemberConverter.toMember(request, passwordEncoder.encode(request.getPw()));
+        return memberRepository.save(member);
+    }
+
+    @Override
+    @Transactional
+    public JwtTokenDTO signIn(MemberRequestDTO.SignInDTO request) {
+        String clientEmail = request.getEmail();
+        String clientPw = request.getPw();
+
+        Member member = memberRepository.findByEmail(clientEmail).orElseThrow(() -> new GeneralHandler(ErrorStatus.LOGIN_UNAUTHORIZED));
+
+        if (!passwordEncoder.matches(clientPw, member.getPw())) {
+            throw new GeneralHandler(ErrorStatus.LOGIN_UNAUTHORIZED);
+        }
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(clientEmail, null);
+
+        JwtTokenDTO jwtTokenDTO = jwtTokenProvider.generateTokenDTO(authentication);
+
+        RefreshToken refreshToken = RefreshTokenConverter.toRefreshToken(jwtTokenDTO.getRefreshToken(), member);
+        refreshRepository.save(refreshToken);
+
+        return jwtTokenDTO;
+    }
+
+    @Override
+    @Transactional
+    public void logout(Long memberId) {
+        RefreshToken deleteRefreshToken = refreshRepository.findByMember_Id(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.TOKEN_NOT_EXIST));
+        refreshRepository.delete(deleteRefreshToken);
+        refreshRepository.flush();
+    }
+
+    @Override
+    @Transactional
+    public JwtTokenDTO refreshToken(MemberRequestDTO.refreshTokenDTO request) {
+        String token = request.getRefreshToken();
+
+        if (!refreshRepository.existsByRefreshToken(token) || !jwtTokenProvider.validateToken(token)) {
+            throw new GeneralHandler(ErrorStatus.TOKEN_NOT_EXIST);
+        }
+
+        Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(token);
+        RefreshToken deleteRefreshToken = refreshRepository.findByRefreshToken(token).orElseThrow(() -> new GeneralHandler(ErrorStatus.TOKEN_NOT_EXIST));
+        refreshRepository.delete(deleteRefreshToken);
+
+        JwtTokenDTO jwtTokenDTO = jwtTokenProvider.generateTokenDTO(authentication);
+
+        String email = authentication.getName();
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        RefreshToken refreshToken = RefreshTokenConverter.toRefreshToken(jwtTokenDTO.getRefreshToken(), member);
+        refreshRepository.save(refreshToken);
+
+        return jwtTokenDTO;
+    }
+
+    @Override
+    @Transactional
+    public boolean verifyPassword(Long memberId, MemberRequestDTO.PasswordDTO request) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        String clientPw = request.getPw();
+        return passwordEncoder.matches(clientPw, member.getPw());
+    }
+
+    @Override
+    @Transactional
+    public String changePassword(Long memberId, MemberRequestDTO.PasswordDTO request) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        member.setPw(passwordEncoder.encode(request.getPw()));
+        memberRepository.save(member);
+
+        return "비밀번호가 성공적으로 변경되었습니다.";
+    }
+}
