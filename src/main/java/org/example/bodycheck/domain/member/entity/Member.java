@@ -2,11 +2,11 @@ package org.example.bodycheck.domain.member.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.example.bodycheck.common.entity.BaseEntity;
 import org.example.bodycheck.domain.enums.Gender;
-import org.example.bodycheck.domain.memberagree.MemberAgree;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -33,14 +33,10 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String email;
 
-    @Size(min = 8)
     @Column(nullable = false)
     private String pw;
 
     private LocalDate inactiveDate;
-
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<MemberAgree> memberAgreeList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<RefreshToken> refreshToken = new ArrayList<>();

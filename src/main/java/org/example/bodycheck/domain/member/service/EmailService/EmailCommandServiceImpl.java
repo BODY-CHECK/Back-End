@@ -15,7 +15,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -60,6 +63,8 @@ public class EmailCommandServiceImpl implements EmailCommandService {
     @Override
     @Transactional
     public void sendNewPwEmail(EmailRequestDTO.EmailDTO request) {
+        Member member = memberRepository.findByEmail(request.getEmail()).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
         String newPw = generateNewPw();
 
         SimpleMailMessage message = new SimpleMailMessage();
@@ -69,14 +74,46 @@ public class EmailCommandServiceImpl implements EmailCommandService {
 
         mailSender.send(message);
 
-        Member member = memberRepository.findByEmail(request.getEmail()).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
         member.setPw(passwordEncoder.encode(newPw));
         memberRepository.save(member);
     }
 
+    /*
     private String generateNewPw() {
         Random random = new Random();
         int code = random.nextInt(99999999); // 8자리 숫자 생성
         return String.format("%08d", code);
+    }
+     */
+
+
+    private String generateNewPw() {
+        int len = 8;
+        String alphabetChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String numberChars = "0123456789";
+        String specialChars = "!@$%^&*";
+
+        String allChars = alphabetChars + numberChars + specialChars;
+
+        StringBuilder tempPw = new StringBuilder();
+        Random random = new Random();
+
+        tempPw.append(alphabetChars.charAt(random.nextInt(alphabetChars.length())));
+        tempPw.append(numberChars.charAt(random.nextInt(numberChars.length())));
+        tempPw.append(specialChars.charAt(random.nextInt(specialChars.length())));
+
+        for (int i = 3; i < len; i++) {
+            tempPw.append(allChars.charAt(random.nextInt(allChars.length())));
+        }
+
+        List<Character> tempPwChars = tempPw.chars().mapToObj(c -> (char) c).collect(Collectors.toList());
+        Collections.shuffle(tempPwChars);
+
+        StringBuilder newPw = new StringBuilder();
+        for (char c : tempPwChars) {
+            newPw.append(c);
+        }
+
+        return newPw.toString();
     }
 }
