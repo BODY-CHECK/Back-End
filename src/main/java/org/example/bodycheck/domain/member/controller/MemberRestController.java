@@ -1,5 +1,6 @@
 package org.example.bodycheck.domain.member.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.jwt.JwtTokenDTO;
 import org.example.bodycheck.common.apiPayload.ApiResponse;
@@ -22,7 +23,7 @@ public class MemberRestController {
     private final MemberQueryService memberQueryService;
 
     @PostMapping("/email/sign-up")
-    public ApiResponse<MemberResponseDTO.SignUpResponseDTO> signUp(@RequestBody MemberRequestDTO.SignUpDTO request) {
+    public ApiResponse<MemberResponseDTO.SignUpResponseDTO> signUp(@Valid @RequestBody MemberRequestDTO.SignUpDTO request) {
         Member member = memberCommandService.signUp(request);
         return ApiResponse.onSuccess(MemberConverter.toSignUpResponseDTO(member));
     }
