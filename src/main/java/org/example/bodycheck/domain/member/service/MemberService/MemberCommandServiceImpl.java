@@ -36,7 +36,16 @@ public class MemberCommandServiceImpl implements MemberCommandService {
             throw new GeneralHandler(ErrorStatus.EMAIL_ALREADY_EXISTS);
         }
 
-        Member member = MemberConverter.toMember(request, passwordEncoder.encode(request.getPw()));
+        String pw;
+        if (request.getPw() == null) {
+            pw = null;
+        }
+        else {
+            pw = passwordEncoder.encode(request.getPw());
+        }
+
+        Member member = MemberConverter.toMember(request, pw);
+
         return memberRepository.save(member);
     }
 
@@ -60,6 +69,31 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         refreshRepository.save(refreshToken);
 
         return jwtTokenDTO;
+    }
+
+    @Override
+    @Transactional
+    public JwtTokenDTO socialLogin(String clientEmail) {
+
+        Member member = memberRepository.findByEmail(clientEmail).orElseThrow(() -> new GeneralHandler(ErrorStatus.LOGIN_UNAUTHORIZED));
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(clientEmail, null);
+
+        JwtTokenDTO jwtTokenDTO = jwtTokenProvider.generateTokenDTO(authentication);
+
+        RefreshToken refreshToken = RefreshTokenConverter.toRefreshToken(jwtTokenDTO.getRefreshToken(), member);
+        refreshRepository.save(refreshToken);
+
+        return jwtTokenDTO;
+    }
+
+    @Override
+    @Transactional
+    public boolean isUser(String clientEmail) {
+
+        boolean isUser = memberRepository.existsByEmail(clientEmail);
+
+        return isUser;
     }
 
     @Override
