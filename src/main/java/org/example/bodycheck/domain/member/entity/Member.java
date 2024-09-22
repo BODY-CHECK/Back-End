@@ -26,6 +26,10 @@ public class Member extends BaseEntity {
     @Column(nullable = false, length = 20)
     private String nickname;
 
+    private Float height;
+
+    private Float weight;
+
     @Enumerated(EnumType.STRING)
     private Gender gender;
 

@@ -31,7 +31,13 @@ public class MemberRestController {
     @PostMapping("/email/sign-in")  // JWT 토큰을 생성하여 반환
     public ApiResponse<MemberResponseDTO.AccessTokenResponseDTO> signIn(@RequestBody MemberRequestDTO.SignInDTO request) {
         JwtTokenDTO jwtTokenDTO = memberCommandService.signIn(request);
-        return ApiResponse.onSuccess(MemberConverter.accessTokenResponseDTO(jwtTokenDTO));
+        return ApiResponse.onSuccess(MemberConverter.toAccessTokenResponseDTO(jwtTokenDTO));
+    }
+
+    @PostMapping("/social-login")  // JWT 토큰을 생성하여 반환
+    public ApiResponse<MemberResponseDTO.AccessTokenResponseDTO> socialLogin(@RequestBody MemberRequestDTO.SocialLoginDTO request) {
+        JwtTokenDTO jwtTokenDTO = memberCommandService.socialLogin(request.getEmail());
+        return ApiResponse.onSuccess(MemberConverter.toAccessTokenResponseDTO(jwtTokenDTO));
     }
 
     @PostMapping("/logout")
@@ -46,7 +52,7 @@ public class MemberRestController {
     @PostMapping("/refresh-token")
     public ApiResponse<MemberResponseDTO.AccessTokenResponseDTO> refreshToken(@RequestBody MemberRequestDTO.refreshTokenDTO request) {
         JwtTokenDTO jwtTokenDTO = memberCommandService.refreshToken(request);
-        return ApiResponse.onSuccess(MemberConverter.accessTokenResponseDTO(jwtTokenDTO));
+        return ApiResponse.onSuccess(MemberConverter.toAccessTokenResponseDTO(jwtTokenDTO));
     }
 
     @PostMapping("/verify-password")
