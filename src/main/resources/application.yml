@@ -1,4 +1,19 @@
 spring:
+  profiles:
+    active: local
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha # API 문서 태그 알파벳순 정렬
+    operations-sorter: alpha # API 엔드포인트 알파벳순 정렬
+  cache:
+    disabled: true # 캐싱 비활성화
+  use-fqn: true # 클래스나 메서드의 전체 경로 이름 표시
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
   datasource:
     url: ${aws.db.url}
     username: ${aws.db.username}
@@ -15,7 +30,63 @@ spring:
         format_sql: true
         use_sql_comments: true
         hbm2ddl:
-          auto: create # update / create
+          auto: update # update / create
+        default_batch_fetch_size: 1000
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 200MB
+      max-request-size: 300MB
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${mail.email}
+    password: ${mail.password}
+    properties:
+      mail:
+        smtp:
+          debug: true
+          connectiontimeout: 1000
+          auth: true
+        starttls:
+          enable: true
+
+  kakao:
+    client_id: ${kakao.client.id}
+    redirect_uri: ${kakao.redirect.url}
+
+  google:
+    client_id: ${google.client.id}
+    client_secret: ${google.client.secret}
+    redirect_uri: ${google.redirect.url}
+
+jwt:
+  secret: ${jwt.secret}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: ${aws.db.url}
+    username: ${aws.db.username}
+    password: ${aws.db.password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      mode: never
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+        hbm2ddl:
+          auto: update # update / create
         default_batch_fetch_size: 1000
 
   servlet:
