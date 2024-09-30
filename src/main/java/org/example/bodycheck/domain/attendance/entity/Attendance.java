@@ -1,23 +1,26 @@
-package org.example.bodycheck.domain.member.entity;
+package org.example.bodycheck.domain.attendance.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.bodycheck.common.entity.BaseEntity;
+import org.example.bodycheck.domain.member.entity.Member;
+
+import java.util.Date;
 
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class RefreshToken extends BaseEntity {
+public class Attendance extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String refreshToken;
+    private Date date;
 
-    @ManyToOne(fetch = FetchType.LAZY) // 원래는 OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 }
