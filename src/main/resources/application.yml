@@ -65,6 +65,20 @@ spring:
 jwt:
   secret: ${jwt.secret}
 
+cloud:
+  aws:
+    s3:
+      bucket: body-check-bucket
+      path:
+        solution: solution
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+    credentials:
+      accessKey: ${aws.s3.access.key.id}
+      secretKey: ${aws.s3.secret.access.key.id}
+
 ---
 spring:
   config:
@@ -120,3 +134,17 @@ spring:
 
 jwt:
   secret: ${jwt.secret}
+
+cloud:
+  aws:
+    s3:
+      bucket: body-check-bucket
+      path:
+        solution: solution
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+    credentials:
+      accessKey: ${aws.s3.access.key.id}
+      secretKey: ${aws.s3.secret.access.key.id}
