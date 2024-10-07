@@ -20,4 +20,6 @@ public class RefreshToken extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY) // 원래는 OneToOne
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public void setRefreshToken(String refreshToken) { this.refreshToken = refreshToken; }
 }

@@ -1,8 +1,8 @@
-package org.example.bodycheck.domain.member.validation.annotation;
+package org.example.bodycheck.common.validation.annotation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-import org.example.bodycheck.domain.member.validation.validator.MemberExistsValidator;
+import org.example.bodycheck.common.validation.validator.MemberExistsValidator;
 
 import java.lang.annotation.*;
 

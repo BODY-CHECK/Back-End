@@ -1,11 +1,11 @@
-package org.example.bodycheck.domain.member.validation.validator;
+package org.example.bodycheck.common.validation.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.domain.member.entity.Member;
-import org.example.bodycheck.domain.member.validation.annotation.ExistMember;
+import org.example.bodycheck.common.validation.annotation.ExistMember;
 import org.example.bodycheck.domain.member.service.MemberService.MemberQueryService;
 import org.springframework.stereotype.Component;
 
