@@ -12,6 +12,7 @@ public class MemberConverter {
                 .nickname(request.getNickname())
                 .height(request.getHeight())
                 .weight(request.getWeight())
+                .gender(request.getGender())
                 .email(request.getEmail())
                 .pw(encodedPw)
                 .build();

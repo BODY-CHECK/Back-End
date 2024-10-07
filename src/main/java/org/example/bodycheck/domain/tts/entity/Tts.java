@@ -19,6 +19,7 @@ public class Tts extends BaseEntity {
 
     private Integer ttsIdx; // 1 ~ 32 (평가 지표 6개)
 
+    @Enumerated(EnumType.STRING)
     private NoiseType noiseType;
 
     private String content;

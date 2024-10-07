@@ -7,7 +7,7 @@ import org.example.bodycheck.common.entity.BaseEntity;
 import org.example.bodycheck.domain.attendance.entity.Attendance;
 import org.example.bodycheck.domain.enums.Gender;
 import org.example.bodycheck.domain.mapping.Routine;
-import org.example.bodycheck.domain.mapping.Solution;
+import org.example.bodycheck.domain.solution.entity.Solution;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import org.example.bodycheck.domain.enums.Gender;
 
 public class MemberRequestDTO {
 
@@ -12,6 +13,7 @@ public class MemberRequestDTO {
         private String nickname;
         private Float height;
         private Float weight;
+        private Gender gender;
         @Email(message = "유효한 이메일 주소를 입력해주세요.")
         private String email;
         //@Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@$%^&*])[a-zA-Z0-9!@$%^&*]{8,}",

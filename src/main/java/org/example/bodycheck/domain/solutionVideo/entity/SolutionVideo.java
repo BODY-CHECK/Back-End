@@ -3,7 +3,7 @@ package org.example.bodycheck.domain.solutionVideo.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.bodycheck.common.entity.BaseEntity;
-import org.example.bodycheck.domain.mapping.Solution;
+import org.example.bodycheck.domain.solution.entity.Solution;
 
 @Entity
 @Getter
