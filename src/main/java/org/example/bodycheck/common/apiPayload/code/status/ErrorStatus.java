@@ -34,7 +34,11 @@ public enum ErrorStatus implements BaseErrorCode {
     TOKEN_UNSUPPORTED(HttpStatus.BAD_REQUEST, "TOKEN4005", "지원되지 않는 JWT 토큰입니다."),
 
     // Exercise Error
-    EXERCISE_NOT_FOUND(HttpStatus.BAD_REQUEST, "EXERCISE4001", "운동이 없습니다.");
+    EXERCISE_NOT_FOUND(HttpStatus.BAD_REQUEST, "EXERCISE4001", "운동이 없습니다."),
+
+    // Solution Error
+    SOLUTION_NOT_FOUND(HttpStatus.BAD_REQUEST, "SOLUTION4001", "솔루션이 없습니다."),
+    SOLUTION_PAGE_NOT_FOUND(HttpStatus.BAD_REQUEST, "SOLUTION4002", "솔루션 목록을 조회할 수 없습니다. 유효하지 않은 페이지입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
