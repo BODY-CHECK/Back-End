@@ -38,7 +38,8 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // Solution Error
     SOLUTION_NOT_FOUND(HttpStatus.BAD_REQUEST, "SOLUTION4001", "솔루션이 없습니다."),
-    SOLUTION_PAGE_NOT_FOUND(HttpStatus.BAD_REQUEST, "SOLUTION4002", "솔루션 목록을 조회할 수 없습니다. 유효하지 않은 페이지입니다.");
+    SOLUTION_VIDEO_NOT_FOUND(HttpStatus.BAD_REQUEST, "SOLUTION4002", "솔루션 비디오가 없습니다."),
+    SOLUTION_PAGE_NOT_FOUND(HttpStatus.BAD_REQUEST, "SOLUTION4003", "솔루션 목록을 조회할 수 없습니다. 유효하지 않은 페이지입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.bodycheck.domain.criteria.dto.CriteriaRequestDTO;
+import org.example.bodycheck.domain.criteria.dto.CriteriaResponseDTO;
 
 import java.util.Date;
 import java.util.List;
@@ -23,6 +25,7 @@ public class SolutionResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SolutionInfoDTO {
+        Long id;
         Long exerciseId;
         String exerciseName;
         String exerciseDate;
@@ -38,5 +41,15 @@ public class SolutionResponseDTO {
         Boolean isFirst;
         Boolean isLast;
         Boolean hasNext;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SolutionDetailDTO {
+        String solutionVideoUrl;
+        List<CriteriaResponseDTO.CriteriaDetailDTO> criteriaDetailList;
+        String content;
     }
 }

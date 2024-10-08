@@ -9,7 +9,7 @@ public class SolutionRequestDTO {
 
     @Getter
     public static class SaveDTO {
-        List<CriteriaRequestDTO.SaveDTO> criteria;
+        List<CriteriaRequestDTO.CriteriaDTO> criteria;
         String content;
     }
 }
