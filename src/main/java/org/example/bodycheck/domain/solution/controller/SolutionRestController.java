@@ -2,6 +2,7 @@ package org.example.bodycheck.domain.solution.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.annotations.Api;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.ApiResponse;
@@ -12,7 +13,9 @@ import org.example.bodycheck.domain.solution.dto.SolutionRequestDTO;
 import org.example.bodycheck.domain.solution.dto.SolutionResponseDTO;
 import org.example.bodycheck.domain.solution.entity.Solution;
 import org.example.bodycheck.domain.solution.service.SolutionCommandService;
+import org.example.bodycheck.domain.solution.service.SolutionQueryService;
 import org.example.bodycheck.domain.solutionVideo.service.SolutionVideoCommandService;
+import org.springframework.data.domain.Slice;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +28,7 @@ public class SolutionRestController {
 
     private final MemberQueryService memberQueryService;
     private final SolutionCommandService solutionCommandService;
+    private final SolutionQueryService solutionQueryService;
     private final SolutionVideoCommandService solutionVideoCommandService;
 
 
@@ -41,5 +45,15 @@ public class SolutionRestController {
         solutionVideoCommandService.uploadFile(solution, file);
 
         return ApiResponse.onSuccess(SolutionConverter.toSolutionResultDTO(solution));
+    }
+
+    @GetMapping("")
+    public ApiResponse<SolutionResponseDTO.SolutionListDTO> getSolutionList(@RequestHeader("Authorization") String authorizationHeader,
+                                                                            @RequestParam(name = "page", defaultValue = "0") Integer page) {
+
+        Long memberId = memberQueryService.getMember().getId();
+
+        Slice<Solution> solutionList = solutionQueryService.getSolutionList(memberId, page);
+        return ApiResponse.onSuccess(SolutionConverter.solutionListDTO(solutionList));
     }
 }
