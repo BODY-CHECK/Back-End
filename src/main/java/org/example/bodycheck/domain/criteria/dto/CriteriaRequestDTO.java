@@ -5,7 +5,7 @@ import lombok.Getter;
 public class CriteriaRequestDTO {
 
     @Getter
-    public static class SaveDTO {
+    public static class CriteriaDTO {
         Integer criteriaIdx;
         String criteriaName;
         Integer score;
