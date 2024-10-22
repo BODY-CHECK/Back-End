@@ -18,6 +18,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 로그인 관련
     EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "email already exists", "이미 존재하는 이메일입니다."),
+    EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "email not found", "이메일이 존재하지 않습니다."),
     LOGIN_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "LOGIN FAIL", "아이디 또는 비밀번호를 확인하세요"),
     PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST, "Password mismatch", "비밀번호가 일치하지 않습니다."),
     VERIFICATION_CODE_NOT_EXIST(HttpStatus.BAD_REQUEST, "code not exist", "인증코드가 존재하지 않습니다."),

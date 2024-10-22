@@ -41,7 +41,13 @@ public class EmailCommandServiceImpl implements EmailCommandService {
 
         mailSender.send(message);
 
-        Email mail = EmailConverter.toMail(request.getEmail(), code);
+        Email mail;
+        if (emailRepository.existsByEmail(request.getEmail())) {
+            mail = emailRepository.findByEmail(request.getEmail()).orElseThrow(() -> new GeneralHandler(ErrorStatus.EMAIL_NOT_FOUND));
+        }
+        else {
+            mail = EmailConverter.toMail(request.getEmail(), code);
+        }
 
         emailRepository.save(mail);
     }
