@@ -36,11 +36,13 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // Exercise Error
     EXERCISE_NOT_FOUND(HttpStatus.BAD_REQUEST, "EXERCISE4001", "운동이 없습니다."),
+    EXERCISE_TYPE_NOT_FOUND(HttpStatus.BAD_REQUEST, "EXERCISE4002", "유효하지 않은 운동 부위입니다."),
 
     // Solution Error
     SOLUTION_NOT_FOUND(HttpStatus.BAD_REQUEST, "SOLUTION4001", "솔루션이 없습니다."),
     SOLUTION_VIDEO_NOT_FOUND(HttpStatus.BAD_REQUEST, "SOLUTION4002", "솔루션 비디오가 없습니다."),
-    SOLUTION_PAGE_NOT_FOUND(HttpStatus.BAD_REQUEST, "SOLUTION4003", "솔루션 목록을 조회할 수 없습니다. 유효하지 않은 페이지입니다.");
+    SOLUTION_PAGE_NOT_FOUND(HttpStatus.BAD_REQUEST, "SOLUTION4003", "솔루션 목록을 조회할 수 없습니다. 유효하지 않은 페이지입니다."),
+    SOLUTION_CATEGORY_NOT_FOUND(HttpStatus.BAD_REQUEST, "SOLUTION4004", "지원하지 않는 달입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
