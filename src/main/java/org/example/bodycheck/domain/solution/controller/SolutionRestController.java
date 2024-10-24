@@ -2,6 +2,9 @@ package org.example.bodycheck.domain.solution.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.ApiResponse;
@@ -40,6 +43,11 @@ public class SolutionRestController {
 
 
     @PostMapping(value = "/exercise/{exerciseId}", consumes = "multipart/form-data")
+    @Operation(summary = "솔루션 저장 API", description = "사용자가 솔루션을 저장하는 API 입니다. application/json이 아닌 multipart/form-data 형태입니다.")
+    @Parameters({
+            @Parameter(name = "Authorization", description = "JWT 토큰으로, 사용자의 아이디, request header 입니다!"),
+            @Parameter(name = "exerciseId", description = "솔루션이 어떤 운동인지 판단하는 운동 아이디, path variable 입니다!")
+    })
     public ApiResponse<SolutionResponseDTO.SolutionResultDTO> createSolution(@RequestHeader("Authorization") String authorizationHeader,
                                                                              @ExistExercise @PathVariable("exerciseId") Long exerciseId,
                                                                              @RequestPart(value = "solutionVideo", required = false) MultipartFile file,
@@ -55,9 +63,16 @@ public class SolutionRestController {
     }
 
     @GetMapping("")
+    @Operation(summary = "솔루션 목록 조회 API", description = "사용자의 솔루션 목록을 조회하는 API이며, 페이징을 포함합니다. query String으로 page 번호를 주세요.")
+    @Parameters({
+            @Parameter(name = "Authorization", description = "JWT 토큰으로, 사용자의 아이디, request header 입니다!"),
+            @Parameter(name = "targetBody", description = "카테고리로, 운동 부위, query parameter 입니다! NULL, UPPER_BODY, LOWER_BODY 이렇게 셋 중 하나의 값만 입력해주세요."),
+            @Parameter(name = "period", description = "카테고리로, 지정 기간, query parameter 입니다! 0, 1, 2, 3, 4 중 하나의 값만 입력해주세요."),
+            @Parameter(name = "page", description = "현재 페이지, query parameter 입니다!")
+    })
     public ApiResponse<SolutionResponseDTO.SolutionListDTO> getSolutionList(@RequestHeader("Authorization") String authorizationHeader,
-                                                                            @RequestParam(name = "bound", defaultValue = "NULL") String exerciseType,
-                                                                            @RequestParam(name = "month", defaultValue = "0") Integer period,
+                                                                            @RequestParam(name = "targetBody", defaultValue = "NULL") String exerciseType,
+                                                                            @RequestParam(name = "period", defaultValue = "0") Integer period,
                                                                             @RequestParam(name = "page", defaultValue = "0") Integer page) {
 
         Long memberId = memberQueryService.getMember().getId();
@@ -67,6 +82,11 @@ public class SolutionRestController {
     }
 
     @GetMapping("/{solutionId}")
+    @Operation(summary = "솔루션 단건 조회 API", description = "사용자가 솔루션을 저장하는 API입니다.")
+    @Parameters({
+            @Parameter(name = "Authorization", description = "JWT 토큰으로, 사용자의 아이디, request header 입니다!"),
+            @Parameter(name = "solutionId", description = "어떤 솔루션인지 판단하는 솔루션 아이디, path variable 입니다!")
+    })
     public ApiResponse<SolutionResponseDTO.SolutionDetailDTO> getSolutionDetail(@RequestHeader("Authorization") String authorizationHeader,
                                                                                 @ExistSolution @PathVariable("solutionId") Long solutionId) {
 

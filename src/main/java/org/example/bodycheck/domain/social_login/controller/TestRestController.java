@@ -1,4 +1,4 @@
-package org.example.bodycheck.domain.social_login;
+package org.example.bodycheck.domain.social_login.controller;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
