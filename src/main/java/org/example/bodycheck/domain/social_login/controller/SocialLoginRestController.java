@@ -1,5 +1,8 @@
-package org.example.bodycheck.domain.social_login;
+package org.example.bodycheck.domain.social_login.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.bodycheck.common.apiPayload.ApiResponse;
@@ -43,6 +46,7 @@ public class SocialLoginRestController {
 
     // 소셜 로그인 버튼 클릭 시 API 호출
     @GetMapping("")
+    @Operation(summary = "redirect url 초기 설정 API", description = "redirect url 반환 API입니다. 각 버튼에 url을 넣어주세요.")
     public ApiResponse<MemberResponseDTO.SocialLoginLocationResponseDTO> login() {
         String locationKakao = "https://kakao.com/oauth2/authorize?response_type=code&client_id=" + client_id_kakao + "&redirect_uri=" + redirect_uri_kakao;
         String locationGoogle = "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=" + client_id_google + "&redirect_uri=" + redirect_uri_google + "&scope=email profile";
@@ -52,6 +56,10 @@ public class SocialLoginRestController {
     }
 
     @GetMapping("/code/kakao")
+    @Operation(summary = "카카오 로그인 API", description = "카카오 로그인 API입니다.")
+    @Parameters({
+            @Parameter(name = "code", description = "카카오 API에 대한 response code, query parameter 입니다!")
+    })
     public ApiResponse<MemberResponseDTO.SocialLoginResponseDTO> kakaoLogin(@RequestParam("code") String code) {
         String accessToken = kakaoService.getAccessTokenFromKakao(code);
 
@@ -75,6 +83,10 @@ public class SocialLoginRestController {
     }
 
     @GetMapping("/code/google")
+    @Operation(summary = "구글 로그인 API", description = "구글 로그인 API입니다.")
+    @Parameters({
+            @Parameter(name = "code", description = "구글 API에 대한 response code, query parameter 입니다!")
+    })
     public ApiResponse<MemberResponseDTO.SocialLoginResponseDTO> googleLogin(@RequestParam("code") String code) {
         String accessToken = googleService.getAccessTokenFromGoogle(code);
 
