@@ -2,7 +2,6 @@ package org.example.bodycheck.domain.solution.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.annotations.Api;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.ApiResponse;
@@ -23,7 +22,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.util.List;
 
@@ -58,11 +56,13 @@ public class SolutionRestController {
 
     @GetMapping("")
     public ApiResponse<SolutionResponseDTO.SolutionListDTO> getSolutionList(@RequestHeader("Authorization") String authorizationHeader,
+                                                                            @RequestParam(name = "bound", defaultValue = "NULL") String exerciseType,
+                                                                            @RequestParam(name = "month", defaultValue = "0") Integer period,
                                                                             @RequestParam(name = "page", defaultValue = "0") Integer page) {
 
         Long memberId = memberQueryService.getMember().getId();
 
-        Slice<Solution> solutionList = solutionQueryService.getSolutionList(memberId, page);
+        Slice<Solution> solutionList = solutionQueryService.getSolutionList(memberId, exerciseType, period, page);
         return ApiResponse.onSuccess(SolutionConverter.solutionListDTO(solutionList));
     }
 
