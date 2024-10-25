@@ -79,6 +79,9 @@ cloud:
       accessKey: ${aws.s3.access.key.id}
       secretKey: ${aws.s3.secret.access.key.id}
 
+openai:
+  key: ${openai.api.key}
+
 ---
 spring:
   config:
@@ -148,3 +151,6 @@ cloud:
     credentials:
       accessKey: ${aws.s3.access.key.id}
       secretKey: ${aws.s3.secret.access.key.id}
+
+openai:
+  key: ${openai.api.key}

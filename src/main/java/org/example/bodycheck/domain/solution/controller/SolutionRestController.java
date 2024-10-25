@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.ApiResponse;
+import org.example.bodycheck.common.openai.OpenAIService;
 import org.example.bodycheck.common.validation.annotation.ExistExercise;
 import org.example.bodycheck.common.validation.annotation.ExistSolution;
 import org.example.bodycheck.domain.criteria.entity.Criteria;
@@ -40,7 +41,27 @@ public class SolutionRestController {
     private final SolutionVideoCommandService solutionVideoCommandService;
     private final SolutionVideoQueryService solutionVideoQueryService;
     private final CriteriaQueryService criteriaQueryService;
+    private final OpenAIService openAIService;
 
+
+    @PostMapping("/generation/exercise/{exerciseId}")
+    @Operation(summary = "솔루션 생성 API", description = "운동에 대한 텍스트 솔루션을 생성하는 API 입니다.")
+    @Parameters({
+            @Parameter(name = "Authorization", description = "JWT 토큰으로, 사용자의 아이디, request header 입니다!"),
+            @Parameter(name = "exerciseId", description = "어떤 운동인지 판단하는 운동 아이디, path variable 입니다!")
+    })
+    public ApiResponse<String> generateSolution(@RequestHeader("Authorization") String authorizationHeader,
+                                                @ExistExercise @PathVariable("exerciseId") Long exerciseId,
+                                                @RequestBody SolutionRequestDTO.PromptDTO request) {
+
+        Long memberId = memberQueryService.getMember().getId();
+
+        String prompt = solutionCommandService.generateSolution(memberId, exerciseId, request);
+
+        String response = openAIService.chat(prompt);
+
+        return ApiResponse.onSuccess(response);
+    }
 
     @PostMapping(value = "/exercise/{exerciseId}", consumes = "multipart/form-data")
     @Operation(summary = "솔루션 저장 API", description = "사용자가 솔루션을 저장하는 API 입니다. application/json이 아닌 multipart/form-data 형태입니다.")
@@ -48,14 +69,20 @@ public class SolutionRestController {
             @Parameter(name = "Authorization", description = "JWT 토큰으로, 사용자의 아이디, request header 입니다!"),
             @Parameter(name = "exerciseId", description = "솔루션이 어떤 운동인지 판단하는 운동 아이디, path variable 입니다!")
     })
-    public ApiResponse<SolutionResponseDTO.SolutionResultDTO> createSolution(@RequestHeader("Authorization") String authorizationHeader,
+    public ApiResponse<?> createSolution(@RequestHeader("Authorization") String authorizationHeader,
                                                                              @ExistExercise @PathVariable("exerciseId") Long exerciseId,
                                                                              @RequestPart(value = "solutionVideo", required = false) MultipartFile file,
                                                                              @RequestPart(value = "data") @Valid String requestJson) throws JsonProcessingException {
 
-        SolutionRequestDTO.SaveDTO request = new ObjectMapper().readValue(requestJson, SolutionRequestDTO.SaveDTO.class);
+        SolutionRequestDTO.SaveDTO request;
+        try {
+            request = new ObjectMapper().readValue(requestJson, SolutionRequestDTO.SaveDTO.class);
+        } catch (JsonProcessingException e) {
+            return ApiResponse.onFailure("400", "잘못된 JSON 형식입니다.", "잘못된 JSON 형식입니다.");
+        }
 
         Long memberId = memberQueryService.getMember().getId();
+
         Solution solution = solutionCommandService.saveSolution(memberId, exerciseId, request);
         solutionVideoCommandService.uploadFile(solution, file);
 

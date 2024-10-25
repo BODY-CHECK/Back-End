@@ -75,7 +75,7 @@ public class SolutionQueryServiceImpl implements SolutionQueryService {
     }
 
     @Override
-    public String getSolutionContent( Long solutionId, Long memberId) {
+    public String getSolutionContent(Long solutionId, Long memberId) {
         Solution solution = solutionRepository.findByIdAndMember_Id(solutionId, memberId).orElseThrow(() -> new GeneralException(ErrorStatus.SOLUTION_NOT_FOUND));
 
         return solution.getContent();
