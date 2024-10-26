@@ -17,7 +17,7 @@ public enum VoiceCode {
     KO_KR_WAVENET_A("ko-KR-Wavenet-A"),
     KO_KR_WAVENET_B("ko-KR-Wavenet-B"),
     KO_KR_WAVENET_C("ko-KR-Wavenet-C"),
-    KO_KR_WAVENET_D("ko-KR-Wavenet-D")
+    KO_KR_WAVENET_D("ko-KR-Wavenet-D");
 
     private final String value;
 

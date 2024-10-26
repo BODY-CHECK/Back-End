@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
 import org.example.bodycheck.common.jwt.JwtTokenProvider;
-import org.example.bodycheck.common.jwt.JwtUtil;
 import org.example.bodycheck.domain.member.entity.Member;
 import org.example.bodycheck.domain.member.repository.MemberRepository;
 import org.springframework.core.MethodParameter;
