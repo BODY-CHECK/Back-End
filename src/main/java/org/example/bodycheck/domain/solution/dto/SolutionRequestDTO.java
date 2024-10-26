@@ -8,6 +8,11 @@ import java.util.List;
 public class SolutionRequestDTO {
 
     @Getter
+    public static class PromptDTO {
+        List<CriteriaRequestDTO.CriteriaDTO> criteria;
+    }
+
+    @Getter
     public static class SaveDTO {
         List<CriteriaRequestDTO.CriteriaDTO> criteria;
         String content;
