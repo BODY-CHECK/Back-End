@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.example.bodycheck.common.entity.BaseEntity;
 import org.example.bodycheck.domain.enums.ExerciseType;
-import org.example.bodycheck.domain.mapping.Routine;
+import org.example.bodycheck.domain.mapping.entity.Routine;
 import org.example.bodycheck.domain.solution.entity.Solution;
 import org.example.bodycheck.domain.tts.entity.Tts;
 

@@ -1,4 +1,4 @@
-package org.example.bodycheck.domain.mapping;
+package org.example.bodycheck.domain.mapping.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,8 +9,9 @@ import org.example.bodycheck.domain.member.entity.Member;
 @Entity
 @Getter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "routine")
 public class Routine extends BaseEntity {
 
     @Id
@@ -21,7 +22,8 @@ public class Routine extends BaseEntity {
 
     private Integer routineIdx; // 1 ~ 3
 
-    private boolean check = false;
+    @Column(name = "routine_check")
+    private boolean routineCheck = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
