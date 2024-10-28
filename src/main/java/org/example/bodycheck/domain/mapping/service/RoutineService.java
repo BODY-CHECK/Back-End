@@ -126,4 +126,24 @@ public class RoutineService {
                 .build();
 
     }
+
+    public RoutineResetCheckDTO resetCheck(RoutineResetCheckDTO routineResetCheckDTO) {
+
+        DayOfWeek currentDayOfWeek = LocalDate.now().getDayOfWeek();
+        int currentWeekId = currentDayOfWeek.getValue();
+
+        List<Routine> routines = routineRepository.findByMemberId(routineResetCheckDTO.getMemberId());
+
+        for (Routine routine : routines) {
+            if (routine.getWeekId() != currentWeekId) {
+                routine.setRoutineCheck(false);
+            }
+        }
+        routineRepository.saveAll(routines);
+
+        return RoutineResetCheckDTO.builder()
+                .memberId(routineResetCheckDTO.getMemberId())
+                .build();
+
+    }
 }

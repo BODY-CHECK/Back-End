@@ -44,4 +44,10 @@ public class RoutineController {
         return ApiResponse.onSuccess(routineService.checkRoutine(request));
     }
 
+    @Operation(summary = "루틴 운동 체크 해제 API")
+    @PostMapping("/resetCheck")
+    public ApiResponse<RoutineResetCheckDTO> resetCheck(RoutineResetCheckDTO request){
+        return ApiResponse.onSuccess(routineService.resetCheck(request));
+    }
+
 }
