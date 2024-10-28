@@ -6,5 +6,5 @@ import org.example.bodycheck.domain.member.entity.Member;
 public interface RoutineService {
     RoutineDTO deleteRoutine(Long routineId);
 
-    RoutineDTO createRoutine(RoutineDTO routineDTO);
+    RoutineDTO createRoutine(Long memberId, RoutineDTO routineDTO);
 }

@@ -11,6 +11,7 @@ import org.example.bodycheck.domain.mapping.service.RoutineService;
 import org.example.bodycheck.domain.mapping.service.RoutineServiceImpl;
 import org.example.bodycheck.domain.member.annotation.AuthUser;
 import org.example.bodycheck.domain.member.entity.Member;
+import org.example.bodycheck.domain.member.service.MemberService.MemberQueryService;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "루틴 관련 API")
@@ -19,12 +20,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/routine")
 public class RoutineController {
     private final RoutineService routineService;
+    private final MemberQueryService memberQueryService;
 
 
     @Operation(summary = "루틴 저장 API")
     @PostMapping("/save")
     public ApiResponse<RoutineDTO> saveRoutine(@Valid @RequestBody RoutineDTO routineDTO) {
-        return ApiResponse.onSuccess(routineService.createRoutine(routineDTO));
+
+        Long memberId = memberQueryService.getMember().getId();
+        return ApiResponse.onSuccess(routineService.createRoutine(memberId, routineDTO));
     }
 
     @Operation(summary = "루틴 삭제 API")

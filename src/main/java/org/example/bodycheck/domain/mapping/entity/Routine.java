@@ -32,4 +32,11 @@ public class Routine extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "exercise_id")
     private Exercise exercise;
+
+    public void setMember(Member member) {
+        if(this.member != null)
+            member.getRoutineList().remove(this);
+        this.member = member;
+        member.getRoutineList().add(this);
+    }
 }

@@ -14,7 +14,6 @@ import org.example.bodycheck.domain.mapping.entity.Routine;
 @ToString
 public class RoutineDTO {
 
-    private Long memberId;
     @Min(1)
     @Max(7)
     private Integer weekId;
@@ -24,7 +23,6 @@ public class RoutineDTO {
     private String exercise;
 
     public RoutineDTO(Routine routine) {
-        memberId = routine.getId();
         weekId = routine.getWeekId();
         routineIdx = routine.getRoutineIdx();
         exercise = routine.getExercise().getName();
