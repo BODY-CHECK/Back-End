@@ -5,14 +5,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.ApiResponse;
-import org.example.bodycheck.common.apiPayload.code.status.SuccessStatus;
-import org.example.bodycheck.domain.mapping.dto.RoutineDTO;
+import org.example.bodycheck.domain.mapping.dto.*;
 import org.example.bodycheck.domain.mapping.service.RoutineService;
-import org.example.bodycheck.domain.mapping.service.RoutineServiceImpl;
 import org.example.bodycheck.domain.member.annotation.AuthUser;
 import org.example.bodycheck.domain.member.entity.Member;
 import org.example.bodycheck.domain.member.service.MemberService.MemberQueryService;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "루틴 관련 API")
 @RequiredArgsConstructor
@@ -20,20 +21,24 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/routine")
 public class RoutineController {
     private final RoutineService routineService;
-    private final MemberQueryService memberQueryService;
 
-
-    @Operation(summary = "루틴 저장 API")
-    @PostMapping("/save")
-    public ApiResponse<RoutineDTO> saveRoutine(@Valid @RequestBody RoutineDTO routineDTO) {
-
-        Long memberId = memberQueryService.getMember().getId();
-        return ApiResponse.onSuccess(routineService.createRoutine(memberId, routineDTO));
+    @Operation(summary = "루틴 생성 API")
+    @PostMapping("/setting")
+    public ApiResponse<List<RoutineRequestDTO.RoutineDTO>> setting(@RequestBody RoutineSettingDTO request) {
+        return ApiResponse.onSuccess(routineService.setRoutine(request));
     }
 
-    @Operation(summary = "루틴 삭제 API")
-    @DeleteMapping("/{routineId}")
-    public ApiResponse<RoutineDTO> deleteRoutine(@PathVariable("routineId") Long routineId) {
-        return ApiResponse.of(SuccessStatus.OK, routineService.deleteRoutine(routineId));
+    @Operation(summary = "루틴 조회 API")
+    @PostMapping("/list/{weekId}")
+    public ApiResponse<List<WeekRoutineDTO>> getRoutineList(@PathVariable("weekId") Integer weekId, @RequestBody @Valid WeekRequestDTO request) {
+        request.setWeekId(weekId);
+        return ApiResponse.onSuccess(routineService.getWeekRoutine(request));
     }
+
+    @Operation(summary = "루틴 수정 API")
+    @PostMapping("/update")
+    public ApiResponse<List<RoutineUpdateRequestDTO.RoutineUpdateDTO>> updateRoutine(@Valid @RequestBody RoutineUpdateRequestDTO request) {
+        return ApiResponse.onSuccess(routineService.updateRoutine(request));
+    }
+
 }

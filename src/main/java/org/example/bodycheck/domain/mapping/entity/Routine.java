@@ -39,4 +39,8 @@ public class Routine extends BaseEntity {
         this.member = member;
         member.getRoutineList().add(this);
     }
+
+    public void setExercise(Exercise exercise) {
+        this.exercise = exercise;
+    }
 }

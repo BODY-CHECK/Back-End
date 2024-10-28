@@ -5,7 +5,6 @@ import org.example.bodycheck.common.jwt.JwtTokenDTO;
 import org.example.bodycheck.common.jwt.JwtTokenProvider;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
-import org.example.bodycheck.domain.mapping.dto.RoutineDTO;
 import org.example.bodycheck.domain.member.converter.MemberConverter;
 import org.example.bodycheck.domain.member.converter.RefreshTokenConverter;
 import org.example.bodycheck.domain.member.entity.Member;
@@ -15,12 +14,9 @@ import org.example.bodycheck.domain.member.dto.MemberDTO.MemberRequestDTO;
 import org.example.bodycheck.domain.member.repository.RefreshRepository;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
