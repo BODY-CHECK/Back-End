@@ -13,6 +13,8 @@ import org.example.bodycheck.domain.member.repository.MemberRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -80,24 +82,20 @@ public class RoutineService {
         List<RoutineUpdateRequestDTO.RoutineUpdateDTO> updatedRoutines = new ArrayList<>();
 
         for (RoutineUpdateRequestDTO.RoutineUpdateDTO updateDTO : routineUpdateRequestDTO.getRoutines()) {
-            // 기존 루틴에서 weekId와 routineIdx가 일치하는 루틴을 찾습니다.
             Optional<Routine> existingRoutineOpt = existingRoutines.stream()
                     .filter(routine -> routine.getWeekId().equals(updateDTO.getWeekId()) &&
                             routine.getRoutineIdx().equals(updateDTO.getRoutineIdx()))
                     .findFirst();
 
-            // 변경된 사항이 있는 경우 업데이트합니다.
             if (existingRoutineOpt.isPresent()) {
                 Routine existingRoutine = existingRoutineOpt.get();
 
                 if (updateDTO.getIsUpdated() != null && updateDTO.getIsUpdated()) {
                     if (updateDTO.getExerciseId() != null) {
-                        // exerciseId가 null이 아닐 경우 새로운 Exercise로 업데이트합니다.
                         Exercise updatedExercise = exerciseRepository.findById(Long.valueOf(updateDTO.getExerciseId()))
                                 .orElseThrow(() -> new GeneralHandler(ErrorStatus.EXERCISE_NOT_FOUND));
                         existingRoutine.setExercise(updatedExercise); // Exercise 객체 업데이트
                     } else {
-                        // exerciseId가 null일 경우 기존 Exercise를 null로 설정합니다.
                         existingRoutine.setExercise(null);
                     }
                     routineRepository.save(existingRoutine);
@@ -105,8 +103,27 @@ public class RoutineService {
                 }
             }
         }
-        // 수정된 루틴 목록을 반환합니다.
         return updatedRoutines;
+    }
+
+    public RoutineCheckDTO checkRoutine(RoutineCheckDTO routineCheckDTO) {
+        Routine routine = routineRepository.findById(routineCheckDTO.getRoutineId())
+                .orElseThrow(() -> new GeneralHandler(ErrorStatus.ROUTINE_NOT_FOUND));
+
+        DayOfWeek currentDayOfWeek = LocalDate.now().getDayOfWeek();
+        int currentWeekId = currentDayOfWeek.getValue();
+
+        if (routine.getWeekId() != currentWeekId) {
+            throw new GeneralHandler(ErrorStatus.INVALID_ROUTINE_CHECK); // 요일이 맞지 않으면 예외 처리
+        }
+
+        routine.setRoutineCheck(true);
+        routineRepository.save(routine);
+
+        return RoutineCheckDTO.builder()
+                .routineId(routine.getId())
+                .memberId(routineCheckDTO.getMemberId())
+                .build();
 
     }
 }

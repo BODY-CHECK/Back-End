@@ -7,10 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.ApiResponse;
 import org.example.bodycheck.domain.mapping.dto.*;
 import org.example.bodycheck.domain.mapping.service.RoutineService;
-import org.example.bodycheck.domain.member.annotation.AuthUser;
-import org.example.bodycheck.domain.member.entity.Member;
-import org.example.bodycheck.domain.member.service.MemberService.MemberQueryService;
-import org.springframework.data.repository.query.Param;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,6 +36,12 @@ public class RoutineController {
     @PostMapping("/update")
     public ApiResponse<List<RoutineUpdateRequestDTO.RoutineUpdateDTO>> updateRoutine(@Valid @RequestBody RoutineUpdateRequestDTO request) {
         return ApiResponse.onSuccess(routineService.updateRoutine(request));
+    }
+
+    @Operation(summary = "루틴 운동 체크 API")
+    @PostMapping("/check")
+    public ApiResponse<RoutineCheckDTO> updateRoutineCheck(RoutineCheckDTO request){
+        return ApiResponse.onSuccess(routineService.checkRoutine(request));
     }
 
 }

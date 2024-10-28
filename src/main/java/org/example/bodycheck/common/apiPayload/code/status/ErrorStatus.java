@@ -46,7 +46,8 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // Routine Error
     ROUTINE_NOT_FOUND(HttpStatus.BAD_REQUEST, "ROUTINE4001", "해당 루틴은 존재하지 않습니다."),
-    ROUTINE_WEEK_NOT_FOUND(HttpStatus.BAD_REQUEST, "ROUTINE4002", "해당 요일의 루틴은 존재하지 않습니다.");
+    ROUTINE_WEEK_NOT_FOUND(HttpStatus.BAD_REQUEST, "ROUTINE4002", "해당 요일의 루틴은 존재하지 않습니다."),
+    INVALID_ROUTINE_CHECK(HttpStatus.BAD_REQUEST, "ROUTINE4003", "해당 운동의 요일이 맞지 않습니다.");
 
 
     private final HttpStatus httpStatus;

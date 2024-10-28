@@ -43,4 +43,8 @@ public class Routine extends BaseEntity {
     public void setExercise(Exercise exercise) {
         this.exercise = exercise;
     }
+
+    public void setRoutineCheck(Boolean routineCheck) { // setter 메서드 추가
+        this.routineCheck = routineCheck;
+    }
 }
