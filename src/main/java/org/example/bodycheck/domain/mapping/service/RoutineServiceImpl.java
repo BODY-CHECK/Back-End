@@ -31,7 +31,7 @@ public class RoutineServiceImpl implements RoutineService {
         Exercise exercise = exerciseRepository.findByName(routineDTO.getExercise())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid exercise ID: " + routineDTO.getExercise()));
 
-        boolean exists = routineRepository.existsByMemberAndWeekIdAndRoutineIdx(member, routineDTO.getWeekId(), routineDTO.getRoutineIdx());
+        boolean exists = routineRepository.existsByMember_IdAndWeekIdAndRoutineIdx(memberId, routineDTO.getWeekId(), routineDTO.getRoutineIdx());
         if (exists) {
             throw new IllegalArgumentException("A routine with the same weekId and routineIdx already exists for this member.");
         }
