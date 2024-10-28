@@ -33,6 +33,7 @@ public class EmailCommandServiceImpl implements EmailCommandService {
     @Override
     @Transactional
     public void sendVerificationEmail(EmailRequestDTO.EmailDTO request) {
+
         String code = generateVerificationCode();
 
         SimpleMailMessage message = new SimpleMailMessage();

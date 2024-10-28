@@ -3,6 +3,7 @@ package org.example.bodycheck.domain.member.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.ApiResponse;
 import org.example.bodycheck.domain.member.service.EmailService.EmailCommandService;
@@ -22,7 +23,7 @@ public class EmailRestController {
 
     @PostMapping("/send-verification-code")
     @Operation(summary = "인증코드 API", description = "사용자가 입력한 이메일로 인증코드를 보내는 API 입니다.")
-    public ApiResponse<String> sendVerificationEmail(@RequestBody EmailRequestDTO.EmailDTO request) {
+    public ApiResponse<String> sendVerificationEmail(@Valid @RequestBody EmailRequestDTO.EmailDTO request) {
 
         emailCommandService.sendVerificationEmail(request);
         return ApiResponse.onSuccess("인증 코드가 성공적으로 발급되었습니다.");
