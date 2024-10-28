@@ -100,4 +100,13 @@ public class MemberRestController {
         String comment = memberCommandService.changePassword(memberId, request);
         return ApiResponse.onSuccess(comment);
     }
+
+    @GetMapping("/my-page")  // JWT 토큰을 생성하여 반환
+    @Operation(summary = "마이페이지 조회 API", description = "마이페이지 정보를 조회하는 API 입니다.")
+    public ApiResponse<MemberResponseDTO.MyPageResponseDTO> myPage(@RequestHeader("Authorization") String authorizationHeader) {
+
+        Member member = memberQueryService.getMember();
+
+        return ApiResponse.onSuccess(MemberConverter.toMyPageResponseDTO(member));
+    }
 }
