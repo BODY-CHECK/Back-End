@@ -57,4 +57,15 @@ public class MemberConverter {
                 .refreshToken(refreshToken)
                 .build();
     }
+
+    public static MemberResponseDTO.MyPageResponseDTO toMyPageResponseDTO(Member member) {
+        return MemberResponseDTO.MyPageResponseDTO.builder()
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .gender(member.getGender())
+                .height(member.getHeight())
+                .weight(member.getWeight())
+                .premium(member.isPremium())
+                .build();
+    }
 }
