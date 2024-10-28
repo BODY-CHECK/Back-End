@@ -105,6 +105,20 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
     @Override
     @Transactional
+    public boolean isNormalUser(String clientEmail) {
+
+        Member member = memberRepository.findByEmail(clientEmail).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        if (member.getPw() == null || member.getPw().isEmpty()) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    @Override
+    @Transactional
     public void logout(Long memberId) {
         RefreshToken deleteRefreshToken = refreshRepository.findByMember_Id(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.TOKEN_NOT_EXIST));
         refreshRepository.delete(deleteRefreshToken);

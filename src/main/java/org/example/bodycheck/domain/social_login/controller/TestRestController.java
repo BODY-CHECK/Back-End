@@ -24,7 +24,7 @@ public class TestRestController {
 
     @GetMapping("/page")
     public String loginPage(Model model) {
-        String location = "https://kakao.com/oauth2/authorize?response_type=code&client_id=" + client_id_kakao + "&redirect_uri=" + redirect_uri_kakao;
+        String location = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=" + client_id_kakao + "&redirect_uri=" + redirect_uri_kakao;
         model.addAttribute("location", location);
 
         String location2 = "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=" + client_id_google + "&redirect_uri=" + redirect_uri_google + "&scope=email profile";
