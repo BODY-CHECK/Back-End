@@ -10,6 +10,7 @@ public interface MemberCommandService {
     JwtTokenDTO signIn(MemberRequestDTO.SignInDTO request);
     JwtTokenDTO socialLogin(String clientEmail);
     boolean isUser(String clientEmail);
+    boolean isNormalUser(String clientEmail);
     void logout(Long memberId);
     JwtTokenDTO refreshToken(MemberRequestDTO.refreshTokenDTO request);
     boolean verifyPassword(Long memberId, MemberRequestDTO.PasswordDTO request);

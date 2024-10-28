@@ -48,7 +48,7 @@ public class SocialLoginRestController {
     @GetMapping("")
     @Operation(summary = "redirect url 초기 설정 API", description = "redirect url 반환 API입니다. 각 버튼에 url을 넣어주세요.")
     public ApiResponse<MemberResponseDTO.SocialLoginLocationResponseDTO> login() {
-        String locationKakao = "https://kakao.com/oauth2/authorize?response_type=code&client_id=" + client_id_kakao + "&redirect_uri=" + redirect_uri_kakao;
+        String locationKakao = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=" + client_id_kakao + "&redirect_uri=" + redirect_uri_kakao;
         String locationGoogle = "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=" + client_id_google + "&redirect_uri=" + redirect_uri_google + "&scope=email profile";
 
         // 버튼에 해당 location 위치
@@ -60,7 +60,7 @@ public class SocialLoginRestController {
     @Parameters({
             @Parameter(name = "code", description = "카카오 API에 대한 response code, query parameter 입니다!")
     })
-    public ApiResponse<MemberResponseDTO.SocialLoginResponseDTO> kakaoLogin(@RequestParam("code") String code) {
+    public ApiResponse<?> kakaoLogin(@RequestParam("code") String code) {
         String accessToken = kakaoService.getAccessTokenFromKakao(code);
 
         KakaoDTO.KakaoUserInfoResponseDTO userInfo = kakaoService.getUserInfo(accessToken);
@@ -73,7 +73,10 @@ public class SocialLoginRestController {
         JwtTokenDTO jwtTokenDTO;
 
         if (isUser) {
-            jwtTokenDTO = memberCommandService.socialLogin(email);
+            if (memberCommandService.isNormalUser(email)) {
+                return ApiResponse.onFailure("400", "이미 회원가입이 완료된 이메일입니다.", "이미 회원가입이 완료된 이메일입니다.");
+            }
+            else jwtTokenDTO = memberCommandService.socialLogin(email);
         }
         else {
             jwtTokenDTO = null;
@@ -87,7 +90,7 @@ public class SocialLoginRestController {
     @Parameters({
             @Parameter(name = "code", description = "구글 API에 대한 response code, query parameter 입니다!")
     })
-    public ApiResponse<MemberResponseDTO.SocialLoginResponseDTO> googleLogin(@RequestParam("code") String code) {
+    public ApiResponse<?> googleLogin(@RequestParam("code") String code) {
         String accessToken = googleService.getAccessTokenFromGoogle(code);
 
         GoogleDTO.GoogleUserInfoResponseDTO userInfo = googleService.getUserInfo(accessToken);
@@ -100,7 +103,10 @@ public class SocialLoginRestController {
         JwtTokenDTO jwtTokenDTO;
 
         if (isUser) {
-            jwtTokenDTO = memberCommandService.socialLogin(email);
+            if (memberCommandService.isNormalUser(email)) {
+                return ApiResponse.onFailure("400", "이미 회원가입이 완료된 이메일입니다.", "이미 회원가입이 완료된 이메일입니다.");
+            }
+            else jwtTokenDTO = memberCommandService.socialLogin(email);
         }
         else {
             jwtTokenDTO = null;
