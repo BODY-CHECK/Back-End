@@ -12,6 +12,7 @@ import org.example.bodycheck.domain.member.entity.RefreshToken;
 import org.example.bodycheck.domain.member.repository.MemberRepository;
 import org.example.bodycheck.domain.member.dto.MemberDTO.MemberRequestDTO;
 import org.example.bodycheck.domain.member.repository.RefreshRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,17 +38,21 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         }
 
         String pw;
-        if (request.getPw() == null) {
+        if (request.getPw() == null || request.getPw().isEmpty()) {
             pw = null;
-        }
-        else {
+        } else {
             pw = passwordEncoder.encode(request.getPw());
         }
 
         Member member = MemberConverter.toMember(request, pw);
 
-        return memberRepository.save(member);
+        try {
+            return memberRepository.save(member);
+        } catch (DataIntegrityViolationException e) {
+            throw new GeneralHandler(ErrorStatus.NICKNAME_ALREADY_EXISTS);
+        }
     }
+
 
     @Override
     @Transactional
