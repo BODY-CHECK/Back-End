@@ -15,4 +15,5 @@ public interface MemberCommandService {
     JwtTokenDTO refreshToken(MemberRequestDTO.refreshTokenDTO request);
     boolean verifyPassword(Long memberId, MemberRequestDTO.PasswordDTO request);
     String changePassword(Long memberId, MemberRequestDTO.PasswordDTO request);
+    Member findById(Long memberId);
 }

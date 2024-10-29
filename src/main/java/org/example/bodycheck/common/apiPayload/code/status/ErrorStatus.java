@@ -43,7 +43,13 @@ public enum ErrorStatus implements BaseErrorCode {
     SOLUTION_NOT_FOUND(HttpStatus.BAD_REQUEST, "SOLUTION4001", "솔루션이 없습니다."),
     SOLUTION_VIDEO_NOT_FOUND(HttpStatus.BAD_REQUEST, "SOLUTION4002", "솔루션 비디오가 없습니다."),
     SOLUTION_PAGE_NOT_FOUND(HttpStatus.BAD_REQUEST, "SOLUTION4003", "솔루션 목록을 조회할 수 없습니다. 유효하지 않은 페이지입니다."),
-    SOLUTION_CATEGORY_NOT_FOUND(HttpStatus.BAD_REQUEST, "SOLUTION4004", "지원하지 않는 달입니다.");
+    SOLUTION_CATEGORY_NOT_FOUND(HttpStatus.BAD_REQUEST, "SOLUTION4004", "지원하지 않는 달입니다."),
+
+    // Routine Error
+    ROUTINE_NOT_FOUND(HttpStatus.BAD_REQUEST, "ROUTINE4001", "해당 루틴은 존재하지 않습니다."),
+    ROUTINE_WEEK_NOT_FOUND(HttpStatus.BAD_REQUEST, "ROUTINE4002", "해당 요일의 루틴은 존재하지 않습니다."),
+    INVALID_ROUTINE_CHECK(HttpStatus.BAD_REQUEST, "ROUTINE4003", "해당 운동의 요일이 맞지 않습니다.");
+
 
     private final HttpStatus httpStatus;
     private final String code;
