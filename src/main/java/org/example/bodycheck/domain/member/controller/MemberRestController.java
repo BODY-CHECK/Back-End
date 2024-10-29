@@ -7,12 +7,16 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.jwt.JwtTokenDTO;
 import org.example.bodycheck.common.apiPayload.ApiResponse;
+import org.example.bodycheck.domain.member.annotation.AuthUser;
 import org.example.bodycheck.domain.member.converter.MemberConverter;
+import org.example.bodycheck.domain.member.dto.MemberDTO.MemberProfileSettingDTO;
+import org.example.bodycheck.domain.member.dto.MemberDTO.MemberSettingDTO;
 import org.example.bodycheck.domain.member.entity.Member;
 import org.example.bodycheck.domain.member.service.MemberService.MemberCommandService;
 import org.example.bodycheck.domain.member.service.MemberService.MemberQueryService;
 import org.example.bodycheck.domain.member.dto.MemberDTO.MemberRequestDTO;
 import org.example.bodycheck.domain.member.dto.MemberDTO.MemberResponseDTO;
+import org.example.bodycheck.domain.member.service.MemberService.SettingService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +28,7 @@ public class MemberRestController {
 
     private final MemberCommandService memberCommandService;
     private final MemberQueryService memberQueryService;
+    private final SettingService settingService;
 
     @PostMapping("/email/sign-up")
     @Operation(summary = "회원가입 API", description = "이메일로 회원가입을 하는 API 입니다.")
@@ -108,5 +113,12 @@ public class MemberRestController {
         Member member = memberQueryService.getMember();
 
         return ApiResponse.onSuccess(MemberConverter.toMyPageResponseDTO(member));
+    }
+
+    @CrossOrigin
+    @GetMapping("/setting/profile")
+    @Operation(summary = "프로필 변경 API")
+    public ApiResponse<MemberSettingDTO> profileSetting(@AuthUser Member member, MemberProfileSettingDTO request) {
+        return ApiResponse.onSuccess(settingService.profileSetting(member, request));
     }
 }

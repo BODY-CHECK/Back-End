@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 public class RoutineService {
     private final RoutineRepository routineRepository;
     private final ExerciseRepository exerciseRepository;
-    private final MemberRepository memberRepository;
 
     public List<RoutineRequestDTO.RoutineDTO> setRoutine(Member member) {
         List<Routine> routines = new ArrayList<>();
