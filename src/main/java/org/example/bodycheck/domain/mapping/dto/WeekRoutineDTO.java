@@ -7,7 +7,6 @@ import lombok.Getter;
 @Getter
 public class WeekRoutineDTO {
 
-    Long memberId;
     String exercise;
     Integer routineIdx;
     Integer weekId;

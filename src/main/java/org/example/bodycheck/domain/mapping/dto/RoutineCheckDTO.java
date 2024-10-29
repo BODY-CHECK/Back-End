@@ -8,6 +8,5 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 public class RoutineCheckDTO {
-    Long memberId;
     Long routineId;
 }

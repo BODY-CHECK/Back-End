@@ -9,7 +9,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoutineUpdateRequestDTO {
-    Long memberId;
     List<RoutineUpdateDTO> routines;
 
     @Getter

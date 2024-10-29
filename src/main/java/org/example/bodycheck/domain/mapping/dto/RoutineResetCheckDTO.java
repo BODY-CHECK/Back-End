@@ -6,5 +6,5 @@ import lombok.Getter;
 @Getter
 @Builder
 public class RoutineResetCheckDTO {
-    Long memberId;
+    Boolean routineCheck;
 }
