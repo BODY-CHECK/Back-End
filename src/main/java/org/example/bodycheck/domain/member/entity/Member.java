@@ -58,4 +58,6 @@ public class Member extends BaseEntity {
     private List<Solution> solutionList = new ArrayList<>();
 
     public void setPw(String pw) { this.pw = pw; }
+
+    public void setNickname(String nickname) { this.nickname = nickname; }
 }
