@@ -14,12 +14,10 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
-
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
 
