@@ -16,6 +16,7 @@ import org.example.bodycheck.domain.solution.repository.SolutionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,6 +49,9 @@ public class SolutionCommandServiceImpl implements SolutionCommandService {
         solution.setMember(memberRepository.findById(memberId).get());
         solution.setExercise(exerciseRepository.findById(exerciseId).get());
         Solution solutionEntity = solutionRepository.save(solution);
+        if (solutionEntity.getCriteriaList() == null) {
+            solutionEntity.setCriteriaList(new ArrayList<>()); // `criteriaList`가 `null`이면 초기화
+        }
         request.getCriteria().stream()
                 .forEach(criteriaItem -> {
                     Criteria criteria = CriteriaConverter.toCriteria(criteriaItem);
