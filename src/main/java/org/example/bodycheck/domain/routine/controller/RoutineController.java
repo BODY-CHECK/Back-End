@@ -21,11 +21,11 @@ import java.util.List;
 public class RoutineController {
     private final RoutineService routineService;
 
-    @Operation(summary = "루틴 생성 API")
-    @PostMapping("/setting")
-    public ApiResponse<List<RoutineRequestDTO.RoutineDTO>> setting(@AuthUser Member member) {
-        return ApiResponse.onSuccess(routineService.setRoutine(member));
-    }
+//    @Operation(summary = "루틴 생성 API")
+//    @PostMapping("/setting")
+//    public ApiResponse<List<RoutineRequestDTO.RoutineDTO>> setting(@AuthUser Member member) {
+//        return ApiResponse.onSuccess(routineService.setRoutine(member));
+//    }
 
     @Operation(summary = "루틴 조회 API")
     @GetMapping("/list/{weekId}")

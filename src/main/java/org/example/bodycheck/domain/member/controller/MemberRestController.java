@@ -17,6 +17,7 @@ import org.example.bodycheck.domain.member.service.MemberService.MemberQueryServ
 import org.example.bodycheck.domain.member.dto.MemberDTO.MemberRequestDTO;
 import org.example.bodycheck.domain.member.dto.MemberDTO.MemberResponseDTO;
 import org.example.bodycheck.domain.member.service.MemberService.SettingService;
+import org.example.bodycheck.domain.routine.service.RoutineService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,11 +30,13 @@ public class MemberRestController {
     private final MemberCommandService memberCommandService;
     private final MemberQueryService memberQueryService;
     private final SettingService settingService;
+    private final RoutineService routineService;
 
     @PostMapping("/email/sign-up")
     @Operation(summary = "회원가입 API", description = "이메일로 회원가입을 하는 API 입니다.")
     public ApiResponse<MemberResponseDTO.SignUpResponseDTO> signUp(@Valid @RequestBody MemberRequestDTO.SignUpDTO request) {
         Member member = memberCommandService.signUp(request);
+        routineService.setRoutine(member);
         return ApiResponse.onSuccess(MemberConverter.toSignUpResponseDTO(member));
     }
 

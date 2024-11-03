@@ -26,7 +26,11 @@ public class RoutineService {
     private final RoutineRepository routineRepository;
     private final ExerciseRepository exerciseRepository;
 
-    public List<RoutineRequestDTO.RoutineDTO> setRoutine(Member member) {
+    public void setRoutine(Member member) {
+        if (member.getRoutineList() == null) {
+            member.setRoutineList(new ArrayList<>()); // `routineList`가 `null`이면 초기화
+        }
+
         List<Routine> routines = new ArrayList<>();
         for (Integer weekId = 1; weekId <= 7; weekId++) {
             for (Integer routineInx = 1; routineInx <= 3; routineInx++) {
@@ -41,16 +45,33 @@ public class RoutineService {
             }
         }
         routineRepository.saveAll(routines);
-
-        return routines.stream()
-                .map(routine -> RoutineRequestDTO.RoutineDTO.builder()
-                        .weekId(routine.getWeekId())
-                        .routineIdx(routine.getRoutineIdx())
-                        .exercise(null)
-                        .build()
-                )
-                .collect(Collectors.toList());
     }
+
+//    public List<RoutineRequestDTO.RoutineDTO> setRoutine(Member member) {
+//        List<Routine> routines = new ArrayList<>();
+//        for (Integer weekId = 1; weekId <= 7; weekId++) {
+//            for (Integer routineInx = 1; routineInx <= 3; routineInx++) {
+//                Routine routine = Routine.builder()
+//                        .weekId(weekId)
+//                        .routineIdx(routineInx)
+//                        .exercise(null)
+//                        .build();
+//
+//                routine.setMember(member);
+//                routines.add(routine);
+//            }
+//        }
+//        routineRepository.saveAll(routines);
+//
+//        return routines.stream()
+//                .map(routine -> RoutineRequestDTO.RoutineDTO.builder()
+//                        .weekId(routine.getWeekId())
+//                        .routineIdx(routine.getRoutineIdx())
+//                        .exercise(null)
+//                        .build()
+//                )
+//                .collect(Collectors.toList());
+//    }
 
     public List<WeekRoutineDTO> getWeekRoutine(Integer weekId, Member member) {
 

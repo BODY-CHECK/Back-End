@@ -59,4 +59,6 @@ public class Member extends BaseEntity {
     public void setPw(String pw) { this.pw = pw; }
 
     public void setNickname(String nickname) { this.nickname = nickname; }
+
+    public void setRoutineList(List<Routine> routineList) { this.routineList = routineList; }
 }

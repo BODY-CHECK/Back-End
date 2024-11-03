@@ -55,4 +55,6 @@ public class Solution extends BaseEntity {
         this.exercise = exercise;
         exercise.getSolutionList().add(this);
     }
+
+    public void setCriteriaList(List<Criteria> criteriaList) {this.criteriaList = criteriaList;}
 }
