@@ -20,7 +20,7 @@ import java.util.*;
 public class TTSService {
 
     private RestTemplate restTemplate = new RestTemplate();
-    private final FileService fileService;
+    //private final FileService fileService;
 
     private final TtsRepository ttsRepository;
 
@@ -96,6 +96,7 @@ public class TTSService {
                 .build();
     }
 
+    /*
     private String makeAudioFile (byte[] audioBytes) {
         if (audioBytes == null || audioBytes.length == 0) {
             throw new IllegalArgumentException("Audio bytes cannot be null or empty.");
@@ -107,6 +108,8 @@ public class TTSService {
                 audioBytes);
         return fileService.uploadFile(multipartFile);
     }
+
+     */
 
 
     public GetDTO getCount(Long ttsId, Member member) {
