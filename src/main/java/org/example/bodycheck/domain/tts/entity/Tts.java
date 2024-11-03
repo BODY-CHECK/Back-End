@@ -17,11 +17,10 @@ public class Tts extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
     private Integer ttsIdx; // 1 ~ 32 (평가 지표 6개)
 
-    @Enumerated(EnumType.STRING)
-    private NoiseType noiseType;
-
+    @Column
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
