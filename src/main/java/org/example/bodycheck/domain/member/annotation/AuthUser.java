@@ -11,4 +11,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @AuthenticationPrincipal(expression = "#this == 'anonymousUser' ? null : #this")
 public @interface AuthUser {
+
 }

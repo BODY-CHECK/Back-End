@@ -6,6 +6,8 @@ import org.example.bodycheck.common.entity.BaseEntity;
 import org.example.bodycheck.domain.enums.NoiseType;
 import org.example.bodycheck.domain.exercise.entity.Exercise;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Builder
@@ -17,11 +19,16 @@ public class Tts extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
     private Integer ttsIdx; // 1 ~ 32 (평가 지표 6개)
 
-    @Enumerated(EnumType.STRING)
-    private NoiseType noiseType;
+    @Column(name = "file_path")
+    private String filePath;
 
+    @Column(name = "hits")
+    private Long hits;
+
+    @Column
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
