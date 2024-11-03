@@ -55,6 +55,11 @@ public class SocialLoginRestController {
         return ApiResponse.onSuccess(MemberConverter.toSocialLoginLocationResponseDTO(locationKakao, locationGoogle));
     }
 
+    @GetMapping("/code")
+    public ApiResponse<String> redirect(@RequestParam("code") String code) {
+        return ApiResponse.onSuccess("check");
+    }
+
     @GetMapping("/code/kakao")
     @Operation(summary = "카카오 로그인 API", description = "카카오 로그인 API입니다.")
     @Parameters({
