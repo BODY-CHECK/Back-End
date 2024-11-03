@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -32,16 +33,25 @@ public class EmailCommandServiceImpl implements EmailCommandService {
     @Override
     @Transactional
     public void sendVerificationEmail(EmailRequestDTO.EmailDTO request) {
+
         String code = generateVerificationCode();
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(request.getEmail());
         message.setSubject("[Body-Check] 인증 코드");
-        message.setText("당신의 인증 코드는: " + code + "입니다.");
+        message.setText("당신의 인증 코드는: " + code + " 입니다.\n" +
+                "해당 코드는 3분 동안만 유효하니, 3분 이내에 인증을 완료해 주세요.");
 
         mailSender.send(message);
 
-        Email mail = EmailConverter.toMail(request.getEmail(), code);
+        Email mail;
+        if (emailRepository.existsByEmail(request.getEmail())) {
+            mail = emailRepository.findByEmail(request.getEmail()).orElseThrow(() -> new GeneralHandler(ErrorStatus.EMAIL_NOT_FOUND));
+            mail.setCode(code);
+        }
+        else {
+            mail = EmailConverter.toMail(request.getEmail(), code);
+        }
 
         emailRepository.save(mail);
     }
@@ -51,7 +61,14 @@ public class EmailCommandServiceImpl implements EmailCommandService {
     public boolean verifyCode(EmailRequestDTO.VerificationDTO request) {
         Email mail = emailRepository.findByEmail(request.getEmail()).orElseThrow(() -> new GeneralHandler(ErrorStatus.VERIFICATION_CODE_NOT_EXIST));
         String storedCode = mail.getCode();
-        return storedCode.equals(request.getCode());
+        boolean verified = false;
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime updatedAt = mail.getUpdatedAt();
+        LocalDateTime expiration = updatedAt.plusMinutes(3);
+        if (storedCode.equals(request.getCode()) && now.isBefore(expiration)) {
+            verified = true;
+        }
+        return verified;
     }
 
     private String generateVerificationCode() {
@@ -70,7 +87,7 @@ public class EmailCommandServiceImpl implements EmailCommandService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(request.getEmail());
         message.setSubject("[Body-Check] 임시 비밀번호");
-        message.setText("당신의 임시 비밀번호는: " + newPw + "입니다.");
+        message.setText("당신의 임시 비밀번호는: " + newPw + " 입니다.");
 
         mailSender.send(message);
 

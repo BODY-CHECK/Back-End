@@ -57,6 +57,10 @@ spring:
     client_id: ${kakao.client.id}
     redirect_uri: ${kakao.redirect.url}
 
+  kakaopay:
+    secret_key: ${kakao.secret.key}
+    cid: ${kakao.cid}
+
   google:
     client_id: ${google.client.id}
     client_secret: ${google.client.secret}
@@ -78,6 +82,9 @@ cloud:
     credentials:
       accessKey: ${aws.s3.access.key.id}
       secretKey: ${aws.s3.secret.access.key.id}
+
+openai:
+  key: ${openai.api.key}
 
 ---
 spring:
@@ -127,6 +134,10 @@ spring:
     client_id: ${kakao.client.id}
     redirect_uri: ${kakao.redirect.url}
 
+  kakaopay:
+    secret_key: ${kakao.secret.key}
+    cid: ${kakao.cid}
+
   google:
     client_id: ${google.client.id}
     client_secret: ${google.client.secret}
@@ -148,3 +159,6 @@ cloud:
     credentials:
       accessKey: ${aws.s3.access.key.id}
       secretKey: ${aws.s3.secret.access.key.id}
+
+openai:
+  key: ${openai.api.key}

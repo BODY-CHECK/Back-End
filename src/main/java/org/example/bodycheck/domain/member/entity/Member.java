@@ -6,8 +6,8 @@ import lombok.*;
 import org.example.bodycheck.common.entity.BaseEntity;
 import org.example.bodycheck.domain.attendance.entity.Attendance;
 import org.example.bodycheck.domain.enums.Gender;
-import org.example.bodycheck.domain.mapping.Routine;
-import org.example.bodycheck.domain.mapping.Solution;
+import org.example.bodycheck.domain.mapping.entity.Routine;
+import org.example.bodycheck.domain.solution.entity.Solution;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String pw;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20, unique = true)
     private String nickname;
 
     @Enumerated(EnumType.STRING)
@@ -58,4 +58,6 @@ public class Member extends BaseEntity {
     private List<Solution> solutionList = new ArrayList<>();
 
     public void setPw(String pw) { this.pw = pw; }
+
+    public void setNickname(String nickname) { this.nickname = nickname; }
 }

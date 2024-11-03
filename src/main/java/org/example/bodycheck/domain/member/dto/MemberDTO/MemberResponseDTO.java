@@ -2,6 +2,7 @@ package org.example.bodycheck.domain.member.dto.MemberDTO;
 
 import jakarta.validation.constraints.Email;
 import lombok.*;
+import org.example.bodycheck.domain.enums.Gender;
 
 public class MemberResponseDTO {
 
@@ -43,5 +44,23 @@ public class MemberResponseDTO {
         private String nickname;
         private String accessToken;
         private String refreshToken;
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MyPageResponseDTO {
+        private String email;
+
+        private String nickname;
+
+        private Gender gender;
+
+        private Float height;
+
+        private Float weight;
+
+        private boolean premium;
     }
 }

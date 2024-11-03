@@ -14,7 +14,6 @@ import org.example.bodycheck.domain.member.dto.MemberDTO.MemberRequestDTO;
 import org.example.bodycheck.domain.member.repository.RefreshRepository;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,12 +34,14 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         if (memberRepository.existsByEmail(request.getEmail())) {
             throw new GeneralHandler(ErrorStatus.EMAIL_ALREADY_EXISTS);
         }
+        if (memberRepository.existsByNickname(request.getNickname())) {
+            throw new GeneralHandler(ErrorStatus.NICKNAME_ALREADY_EXISTS);
+        }
 
         String pw;
-        if (request.getPw() == null) {
+        if (request.getPw() == null || request.getPw().isEmpty()) {
             pw = null;
-        }
-        else {
+        } else {
             pw = passwordEncoder.encode(request.getPw());
         }
 
@@ -48,6 +49,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         return memberRepository.save(member);
     }
+
 
     @Override
     @Transactional
@@ -65,7 +67,14 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         JwtTokenDTO jwtTokenDTO = jwtTokenProvider.generateTokenDTO(authentication);
 
-        RefreshToken refreshToken = RefreshTokenConverter.toRefreshToken(jwtTokenDTO.getRefreshToken(), member);
+        RefreshToken refreshToken;
+        if (refreshRepository.existsByMember_Id(member.getId())) {
+            refreshToken = refreshRepository.findByMember_Id(member.getId()).orElseThrow(() -> new GeneralHandler(ErrorStatus.TOKEN_UNSUPPORTED));
+            refreshToken.setRefreshToken(jwtTokenDTO.getRefreshToken());
+        }
+        else {
+            refreshToken = RefreshTokenConverter.toRefreshToken(jwtTokenDTO.getRefreshToken(), member);
+        }
         refreshRepository.save(refreshToken);
 
         return jwtTokenDTO;
@@ -94,6 +103,20 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         boolean isUser = memberRepository.existsByEmail(clientEmail);
 
         return isUser;
+    }
+
+    @Override
+    @Transactional
+    public boolean isNormalUser(String clientEmail) {
+
+        Member member = memberRepository.findByEmail(clientEmail).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        if (member.getPw() == null || member.getPw().isEmpty()) {
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 
     @Override
@@ -144,5 +167,11 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         memberRepository.save(member);
 
         return "비밀번호가 성공적으로 변경되었습니다.";
+    }
+
+    @Override
+    public Member findById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
     }
 }

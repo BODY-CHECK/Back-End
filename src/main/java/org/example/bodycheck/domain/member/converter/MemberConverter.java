@@ -12,6 +12,7 @@ public class MemberConverter {
                 .nickname(request.getNickname())
                 .height(request.getHeight())
                 .weight(request.getWeight())
+                .gender(request.getGender())
                 .email(request.getEmail())
                 .pw(encodedPw)
                 .build();
@@ -54,6 +55,17 @@ public class MemberConverter {
                 .nickname(nickname)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .build();
+    }
+
+    public static MemberResponseDTO.MyPageResponseDTO toMyPageResponseDTO(Member member) {
+        return MemberResponseDTO.MyPageResponseDTO.builder()
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .gender(member.getGender())
+                .height(member.getHeight())
+                .weight(member.getWeight())
+                .premium(member.isPremium())
                 .build();
     }
 }

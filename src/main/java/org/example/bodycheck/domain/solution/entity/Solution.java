@@ -1,4 +1,4 @@
-package org.example.bodycheck.domain.mapping;
+package org.example.bodycheck.domain.solution.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -37,4 +37,18 @@ public class Solution extends BaseEntity {
 
     @OneToMany(mappedBy = "solution", cascade = CascadeType.ALL) // 원래는 OneToOne
     private List<SolutionVideo> solutionVideoList = new ArrayList<>();
+
+    public void setMember(Member member) {
+        if(this.member != null)
+            member.getSolutionList().remove(this);
+        this.member = member;
+        member.getSolutionList().add(this);
+    }
+
+    public void setExercise(Exercise exercise) {
+        if(this.exercise != null)
+            exercise.getSolutionList().remove(this);
+        this.exercise = exercise;
+        exercise.getSolutionList().add(this);
+    }
 }

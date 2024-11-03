@@ -1,6 +1,5 @@
 package org.example.bodycheck.domain.member.annotation;
 
-import com.nimbusds.oauth2.sdk.util.JWTClaimsSetUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
@@ -15,7 +14,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-/*
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -38,10 +37,7 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
         String bearer = webRequest.getHeader("Authorization");
         assert bearer != null;
         String token = bearer.substring(7);
-        Long memberId = jwtTokenProvider.getName(token);
-
-        return memberRepository.findById(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        String memberIdentifier = jwtTokenProvider.getAuthenticationFromAccessToken(token).getName();
+        return memberRepository.findByEmail(memberIdentifier).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
     }
 }
-
- */
