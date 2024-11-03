@@ -22,8 +22,7 @@ public class VoiceListController {
 
     @GetMapping("/api/voice/{voiceCode}/example")
     @Operation(summary = "특정 목소리 오디오 경로 반환하는 API")
-    public ApiResponse<VoiceListDTO> fetchVoiceExample(@PathVariable("voiceCode") String voiceCode,
-                                                          @AuthUser Member member){
-        return ApiResponse.of(SuccessStatus.OK, voiceListService.fetchVoiceList(voiceCode, member));
+    public ApiResponse<VoiceListDTO> fetchVoiceExample(@PathVariable("voiceCode") String voiceCode){
+        return ApiResponse.of(SuccessStatus.OK, voiceListService.fetchVoiceList(voiceCode));
     }
 }

@@ -22,13 +22,14 @@ public class Tts extends BaseEntity {
     @Column
     private Integer ttsIdx; // 1 ~ 32 (평가 지표 6개)
 
-    @Column
-    private String voice;
+    @Column(name = "file_path")
+    private String filePath;
 
-    @ElementCollection
-    @CollectionTable(name = "script", joinColumns = @JoinColumn(name = "script_id"))
+    @Column(name = "hits")
+    private Long hits;
+
     @Column
-    private List<String> script;
+    private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "exercise_id")

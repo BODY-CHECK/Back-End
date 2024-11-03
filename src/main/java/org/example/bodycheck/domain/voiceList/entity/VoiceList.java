@@ -24,13 +24,4 @@ public class VoiceList {
     @Enumerated(value = EnumType.STRING)
     private VoiceCode voiceCode;
 
-    @Column(name = "file_path")
-    private String filePath;
-
-    public boolean update(String filePath) {
-        if(StringUtil.isNullOrBlank(filePath)) return false;
-        this.filePath = filePath;
-        return true;
-    }
-
 }

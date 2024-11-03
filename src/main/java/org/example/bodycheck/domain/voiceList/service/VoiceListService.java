@@ -16,7 +16,7 @@ public class VoiceListService {
 
     private final VoiceListRepository voiceListRepository;
 
-    public VoiceListDTO fetchVoiceList(String voiceCode, Member member) {
+    public VoiceListDTO fetchVoiceList(String voiceCode) {
         VoiceCode voice = VoiceCode.fromValue(voiceCode);
         VoiceList voiceList = voiceListRepository.findByVoiceCode(voice)
                 .orElseThrow(()->new NoSuchElementException(voiceCode + " not found"));

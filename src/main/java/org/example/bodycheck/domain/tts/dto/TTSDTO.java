@@ -11,6 +11,5 @@ public class TTSDTO {
     @NotEmpty(message = "voice type is null")
     private String voice;
 
-    @NotEmpty(message = "script is null")
-    private String script;
+    private String content;
 }
