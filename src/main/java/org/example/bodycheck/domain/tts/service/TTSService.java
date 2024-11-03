@@ -19,7 +19,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class TTSService {
 
-    private final RestTemplate restTemplate;
+    private RestTemplate restTemplate = new RestTemplate();
     private final FileService fileService;
 
     private final TtsRepository ttsRepository;
@@ -107,39 +107,31 @@ public class TTSService {
                 audioBytes);
         return fileService.uploadFile(multipartFile);
     }
-/*
-    public CountDTO countNumber(CountRequestDTO countRequestDTO) {
-        String context;
-        byte[] audioBytes = null;
 
-        // 입력된 count 값이 유효한지 확인
-        if (countRequestDTO.getIsUpdated() && countRequestDTO.getCount() > 0) {
-            // count에 해당하는 TTS 문장 가져오기
-            Tts tts = ttsRepository.findById(countRequestDTO.getCount().longValue())
-                    .orElseThrow(() -> new EntityNotFoundException("TTS not found for the given count"));
 
-            context = tts.getContext(); // TTS 문장 추출
+    public GetDTO getCount(Long ttsId, Member member) {
+        Tts tts = ttsRepository.findById(ttsId)
+                .orElseThrow(() -> new NoSuchElementException("No TTS ID: " + ttsId));
 
-            if (context != null && !context.isEmpty()) {
-                // TTS 음성을 생성
-                audioBytes = createSpeech(countRequestDTO.getVoice(), context).getAudioBytes(); // exerciseId와 voice를 포함
-            } else {
-                throw new IllegalArgumentException("TTS context is empty or null");
-            }
-        } else {
-            context = ""; // count가 0이거나 isUpdated가 false인 경우 빈 문자열 반환
+        String scriptContent = tts.getContent();
+        if (scriptContent == null || scriptContent.trim().isEmpty()) {
+            throw new IllegalArgumentException("Script content cannot be null or empty.");
+
         }
+        System.out.println("TTS Content: " + tts.getContent());
 
 
-        return CountDTO.builder()
-                .context(context) // 요청된 숫자에 해당하는 문장 반환
-                .audioBytes(audioBytes) // 생성된 TTS 오디오 바이트 추가
-                .isUpdated(countRequestDTO.getIsUpdated())
-                .exerciseId(countRequestDTO.getExerciseId())
+        // TTS 생성 메서드를 사용하여 음성을 생성
+        VoiceCode voiceCode = VoiceCode.fromValue("ko-KR-Wavenet-B");
+        TTSResultDTO ttsResult = createSpeech(voiceCode.getValue(), scriptContent); // TTSResultDTO로 받기
+        byte[] audioBytes = ttsResult.getAudioBytes();
+
+        return GetDTO.builder()
+                .context(scriptContent)
+                .audioBytes(audioBytes) // 직접 TTS 결과에서 오디오 파일 경로 사용
+                .memberId(member.getId())
                 .build();
     }
-
- */
 
     public GetDTO getContent(Long exerciseId, Integer ttsIdx, Member member) {
         Tts tts = ttsRepository.findByExercise_IdAndTtsIdx(exerciseId, ttsIdx)
@@ -164,6 +156,5 @@ public class TTSService {
                 .memberId(member.getId())
                 .build();
     }
-
 }
 

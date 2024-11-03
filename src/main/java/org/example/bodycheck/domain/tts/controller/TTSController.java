@@ -26,10 +26,10 @@ public class TTSController {
 
     private final TTSService ttsService;
 
-    @PostMapping("/count/{exerciseId}/{ttsIdx}")
+    @PostMapping("/count/{ttsId}")
     @Operation(summary = "횟수 출력")
-    public ApiResponse<GetDTO> getCount(@PathVariable("exerciseId") Long exerciseId, @PathVariable("ttsIdx") Integer ttsIdx, @AuthUser Member member) {
-        return ApiResponse.of(SuccessStatus.OK, ttsService.getContent(exerciseId, ttsIdx, member));
+    public ApiResponse<GetDTO> getCount(@PathVariable("ttsId") Long ttsId, @AuthUser Member member) {
+        return ApiResponse.of(SuccessStatus.OK, ttsService.getCount(ttsId, member));
     }
 
     @PostMapping("/{exerciseId}/{ttsIdx}")
