@@ -90,7 +90,14 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         JwtTokenDTO jwtTokenDTO = jwtTokenProvider.generateTokenDTO(authentication);
 
-        RefreshToken refreshToken = RefreshTokenConverter.toRefreshToken(jwtTokenDTO.getRefreshToken(), member);
+        RefreshToken refreshToken;
+        if (refreshRepository.existsByMember_Id(member.getId())) {
+            refreshToken = refreshRepository.findByMember_Id(member.getId()).orElseThrow(() -> new GeneralHandler(ErrorStatus.TOKEN_UNSUPPORTED));
+            refreshToken.setRefreshToken(jwtTokenDTO.getRefreshToken());
+        }
+        else {
+            refreshToken = RefreshTokenConverter.toRefreshToken(jwtTokenDTO.getRefreshToken(), member);
+        }
         refreshRepository.save(refreshToken);
 
         return jwtTokenDTO;
