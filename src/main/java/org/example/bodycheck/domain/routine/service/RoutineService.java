@@ -1,16 +1,14 @@
-package org.example.bodycheck.domain.mapping.service;
+package org.example.bodycheck.domain.routine.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
 import org.example.bodycheck.domain.exercise.entity.Exercise;
 import org.example.bodycheck.domain.exercise.repository.ExerciseRepository;
-import org.example.bodycheck.domain.mapping.dto.*;
-import org.example.bodycheck.domain.mapping.entity.Routine;
-import org.example.bodycheck.domain.mapping.repository.RoutineRepository;
+import org.example.bodycheck.domain.routine.dto.*;
+import org.example.bodycheck.domain.routine.entity.Routine;
+import org.example.bodycheck.domain.routine.repository.RoutineRepository;
 import org.example.bodycheck.domain.member.entity.Member;
-import org.example.bodycheck.domain.member.repository.MemberRepository;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;

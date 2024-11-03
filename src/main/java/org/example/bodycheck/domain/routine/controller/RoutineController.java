@@ -1,12 +1,12 @@
-package org.example.bodycheck.domain.mapping.controller;
+package org.example.bodycheck.domain.routine.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.ApiResponse;
-import org.example.bodycheck.domain.mapping.dto.*;
-import org.example.bodycheck.domain.mapping.service.RoutineService;
+import org.example.bodycheck.domain.routine.dto.*;
+import org.example.bodycheck.domain.routine.service.RoutineService;
 
 import org.example.bodycheck.domain.member.annotation.AuthUser;
 import org.example.bodycheck.domain.member.entity.Member;

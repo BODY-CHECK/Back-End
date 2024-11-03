@@ -1,8 +1,7 @@
-package org.example.bodycheck.domain.mapping.dto;
+package org.example.bodycheck.domain.routine.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.example.bodycheck.domain.criteria.dto.CriteriaRequestDTO;
 
 import java.util.List;
 

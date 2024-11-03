@@ -1,4 +1,4 @@
-package org.example.bodycheck.domain.mapping.dto;
+package org.example.bodycheck.domain.routine.dto;
 
 import lombok.*;
 
