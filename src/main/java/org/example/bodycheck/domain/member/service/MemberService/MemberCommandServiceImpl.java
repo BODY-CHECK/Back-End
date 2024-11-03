@@ -12,7 +12,6 @@ import org.example.bodycheck.domain.member.entity.RefreshToken;
 import org.example.bodycheck.domain.member.repository.MemberRepository;
 import org.example.bodycheck.domain.member.dto.MemberDTO.MemberRequestDTO;
 import org.example.bodycheck.domain.member.repository.RefreshRepository;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,6 +34,9 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         if (memberRepository.existsByEmail(request.getEmail())) {
             throw new GeneralHandler(ErrorStatus.EMAIL_ALREADY_EXISTS);
         }
+        if (memberRepository.existsByNickname(request.getNickname())) {
+            throw new GeneralHandler(ErrorStatus.NICKNAME_ALREADY_EXISTS);
+        }
 
         String pw;
         if (request.getPw() == null || request.getPw().isEmpty()) {
@@ -45,11 +47,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         Member member = MemberConverter.toMember(request, pw);
 
-        try {
-            return memberRepository.save(member);
-        } catch (DataIntegrityViolationException e) {
-            throw new GeneralHandler(ErrorStatus.NICKNAME_ALREADY_EXISTS);
-        }
+        return memberRepository.save(member);
     }
 
 

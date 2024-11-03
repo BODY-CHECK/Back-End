@@ -57,6 +57,10 @@ spring:
     client_id: ${kakao.client.id}
     redirect_uri: ${kakao.redirect.url}
 
+  kakaopay:
+    secret_key: ${kakao.secret.key}
+    cid: ${kakao.cid}
+
   google:
     client_id: ${google.client.id}
     client_secret: ${google.client.secret}
@@ -129,6 +133,10 @@ spring:
   kakao:
     client_id: ${kakao.client.id}
     redirect_uri: ${kakao.redirect.url}
+
+  kakaopay:
+    secret_key: ${kakao.secret.key}
+    cid: ${kakao.cid}
 
   google:
     client_id: ${google.client.id}
