@@ -6,7 +6,7 @@ import lombok.*;
 import org.example.bodycheck.common.entity.BaseEntity;
 import org.example.bodycheck.domain.attendance.entity.Attendance;
 import org.example.bodycheck.domain.enums.Gender;
-import org.example.bodycheck.domain.mapping.entity.Routine;
+import org.example.bodycheck.domain.routine.entity.Routine;
 import org.example.bodycheck.domain.solution.entity.Solution;
 
 import java.time.LocalDate;
@@ -28,7 +28,6 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false)
     private String pw;
 
     @Column(nullable = false, length = 20, unique = true)

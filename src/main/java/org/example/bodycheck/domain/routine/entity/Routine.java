@@ -1,4 +1,4 @@
-package org.example.bodycheck.domain.mapping.entity;
+package org.example.bodycheck.domain.routine.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

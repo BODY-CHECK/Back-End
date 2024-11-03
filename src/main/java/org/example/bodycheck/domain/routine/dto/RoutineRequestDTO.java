@@ -1,11 +1,8 @@
-package org.example.bodycheck.domain.mapping.dto;
+package org.example.bodycheck.domain.routine.dto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.*;
-import org.example.bodycheck.domain.mapping.entity.Routine;
-
-import java.util.List;
 
 public class RoutineRequestDTO {
     @Getter

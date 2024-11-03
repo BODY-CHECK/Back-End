@@ -3,7 +3,11 @@ package org.example.bodycheck.domain.criteria.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.bodycheck.common.entity.BaseEntity;
+import org.example.bodycheck.domain.mapping.entity.SolutionCriteria;
 import org.example.bodycheck.domain.solution.entity.Solution;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -26,6 +30,9 @@ public class Criteria extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "solution_id")
     private Solution solution;
+
+//    @OneToMany(mappedBy = "criteria", cascade = CascadeType.ALL)
+//    private List<SolutionCriteria> solutionCriteriaList = new ArrayList<>();
 
     public void setSolution(Solution solution) {
         if(this.solution != null)

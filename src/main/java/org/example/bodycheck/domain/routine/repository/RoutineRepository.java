@@ -1,6 +1,6 @@
-package org.example.bodycheck.domain.mapping.repository;
+package org.example.bodycheck.domain.routine.repository;
 
-import org.example.bodycheck.domain.mapping.entity.Routine;
+import org.example.bodycheck.domain.routine.entity.Routine;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
