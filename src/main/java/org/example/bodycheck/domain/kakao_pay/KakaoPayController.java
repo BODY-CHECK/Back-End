@@ -2,6 +2,8 @@ package org.example.bodycheck.domain.kakao_pay;
 
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.domain.kakao_pay.dto.KakaoPayDTO;
+import org.example.bodycheck.domain.member.annotation.AuthUser;
+import org.example.bodycheck.domain.member.entity.Member;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +16,7 @@ public class KakaoPayController {
     private final KakaoPayService kakaoPayService;
 
     @GetMapping("/success")
-    public ResponseEntity<KakaoPayDTO.KakaoApproveResponse> afterPayRequest(@RequestParam("pg_token") String pgToken) {
+    public ResponseEntity<KakaoPayDTO.KakaoApproveResponse> afterPayRequest(@AuthUser Member member, @RequestParam("pg_token") String pgToken) {
         KakaoPayDTO.KakaoApproveResponse kakaoApproveResponse = kakaoPayService.approveResponse(pgToken);
 
         return new ResponseEntity<>(kakaoApproveResponse, HttpStatus.OK);
@@ -26,7 +28,7 @@ public class KakaoPayController {
     }
 
     @GetMapping("cancel")
-    public ResponseEntity<KakaoPayDTO.KakaoCancelResponse> refund(@RequestParam("tid") String tid) {
+    public ResponseEntity<KakaoPayDTO.KakaoCancelResponse> refund(@AuthUser Member member, @RequestParam("tid") String tid) {
         KakaoPayDTO.KakaoCancelResponse kakaoCancelResponse = kakaoPayService.kakaoCancel(tid);
 
         return new ResponseEntity<>(kakaoCancelResponse, HttpStatus.OK);
