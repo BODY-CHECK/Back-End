@@ -56,11 +56,7 @@ public class MemberRestController {
 
     @PostMapping("/logout")
     @Operation(summary = "로그아웃 API", description = "로그아웃을 하는 API 입니다.")
-    @Parameters({
-            @Parameter(name = "Authorization", description = "JWT 토큰으로, 사용자의 아이디, request header 입니다!")
-    })
-    public ApiResponse<String> logout(@RequestHeader("Authorization") String authorizationHeader) {
-        Member member = memberQueryService.getMember();
+    public ApiResponse<String> logout(@AuthUser Member member) {
         Long memberId = member.getId();
 
         memberCommandService.logout(memberId);
@@ -76,15 +72,8 @@ public class MemberRestController {
 
     @PostMapping("/verify-password")
     @Operation(summary = "비밀번호 검증 API", description = "비밀번호를 이용하여 사용자 본인이 맞는지 확인하는 API 입니다.")
-    @Parameters({
-            @Parameter(name = "Authorization", description = "JWT 토큰으로, 사용자의 아이디, request header 입니다!")
-    })
-    public ApiResponse<String> verifyPassword(@RequestHeader("Authorization") String authorizationHeader,
+    public ApiResponse<String> verifyPassword(@AuthUser Member member,
                                               @RequestBody MemberRequestDTO.PasswordDTO request) {
-        //System.out.println(authorizationHeader + " authorizationHeader");
-
-        Member member = memberQueryService.getMember();
-        //System.out.println(member + " member");
         Long memberId = member.getId();
         boolean isChecked = memberCommandService.verifyPassword(memberId, request);
         if (isChecked) {
@@ -97,12 +86,8 @@ public class MemberRestController {
 
     @PutMapping("/change-password")
     @Operation(summary = "비밀번호 변경 API", description = "비밀번호를 변경하는 API 입니다.")
-    @Parameters({
-            @Parameter(name = "Authorization", description = "JWT 토큰으로, 사용자의 아이디, request header 입니다!")
-    })
-    public ApiResponse<String> changePassword(@RequestHeader("Authorization") String authorizationHeader,
+    public ApiResponse<String> changePassword(@AuthUser Member member,
                                               @RequestBody MemberRequestDTO.PasswordDTO request) {
-        Member member = memberQueryService.getMember();
         Long memberId = member.getId();
 
         String comment = memberCommandService.changePassword(memberId, request);
@@ -111,9 +96,7 @@ public class MemberRestController {
 
     @GetMapping("/my-page")  // JWT 토큰을 생성하여 반환
     @Operation(summary = "마이페이지 조회 API", description = "마이페이지 정보를 조회하는 API 입니다.")
-    public ApiResponse<MemberResponseDTO.MyPageResponseDTO> myPage(@RequestHeader("Authorization") String authorizationHeader) {
-
-        Member member = memberQueryService.getMember();
+    public ApiResponse<MemberResponseDTO.MyPageResponseDTO> myPage(@AuthUser Member member) {
 
         return ApiResponse.onSuccess(MemberConverter.toMyPageResponseDTO(member));
     }
