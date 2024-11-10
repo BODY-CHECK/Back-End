@@ -211,6 +211,25 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
     @Override
     @Transactional
+    public void saveTid(Long memberId, String tid) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        KakaoPay kakaoPay;
+        if (kakaoPayRepository.existsByMember_Id(member.getId())) {
+            kakaoPay = kakaoPayRepository.findByMember_Id(member.getId()).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_SID_UNSUPPORTED));
+            kakaoPay.setTid(tid);
+        }
+        else {
+            kakaoPay = KakaoPayConverter.toKakaoPayTid(tid, member);
+        }
+        kakaoPayRepository.save(kakaoPay);
+
+        member.setPremium(true);
+        memberRepository.save(member);
+    }
+
+    @Override
+    @Transactional
     public void savePayInfo(Long memberId, KakaoPayDTO.KakaoApproveResponse kakaoApproveResponse) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
 

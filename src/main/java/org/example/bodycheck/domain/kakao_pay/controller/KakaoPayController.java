@@ -20,26 +20,32 @@ public class KakaoPayController {
 
     @PostMapping("/ready")
     public ApiResponse<KakaoPayDTO.KakaoReadyResponse> readyToKakaoPay(@AuthUser Member member) {
-        return ApiResponse.onSuccess(kakaoPayService.kakaoPayReady());
-    }
-
-    @GetMapping("/success/ok")
-    public ApiResponse<KakaoPayDTO.KakaoApproveResponse> afterPayRequest(@AuthUser Member member, @RequestParam("pg_token") String pgToken, @RequestParam("tid") String tid) {
-        KakaoPayDTO.KakaoApproveResponse kakaoApproveResponse = kakaoPayService.approveResponse(pgToken, tid);
+        KakaoPayDTO.KakaoReadyResponse kakaoReadyResponse = kakaoPayService.kakaoPayReady();
 
         Long memberId = member.getId();
 
-        memberCommandService.savePayInfo(memberId, kakaoApproveResponse);
+        memberCommandService.saveTid(memberId, kakaoReadyResponse.getTid());
+
+        return ApiResponse.onSuccess(kakaoReadyResponse);
+    }
+
+    @GetMapping("/success")
+    public ApiResponse<KakaoPayDTO.KakaoApproveResponse> afterPayRequest(@RequestParam("pg_token") String pgToken) {
+        KakaoPayDTO.KakaoApproveResponse kakaoApproveResponse = kakaoPayService.approveResponse(pgToken);
+
+//        Long memberId = member.getId();
+//
+//        memberCommandService.savePayInfo(memberId, kakaoApproveResponse);
 
         return ApiResponse.onSuccess(kakaoApproveResponse);
     }
 
-    @GetMapping("/fail/ok")
-    public String fail(@AuthUser Member member) {
+    @GetMapping("/fail")
+    public String fail() {
         return "fail";
     }
 
-    @GetMapping("/cancel/ok")
+    @GetMapping("/cancel")
     public ApiResponse<KakaoPayDTO.KakaoCancelResponse> refund(@AuthUser Member member) {
 
         Long memberId = member.getId();
@@ -53,7 +59,7 @@ public class KakaoPayController {
         return ApiResponse.onSuccess(kakaoCancelResponse);
     }
 
-    @GetMapping("/regular/ok")
+    @GetMapping("/regular")
     public ApiResponse<KakaoPayDTO.KakaoApproveResponse> regularPayment(@AuthUser Member member) {
         Long memberId = member.getId();
 
