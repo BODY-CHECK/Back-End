@@ -37,7 +37,7 @@
 
         .payment-card .description {
             font-size: 0.9em;
-            color: black;
+            color: #fff;
             margin-bottom: 20px;
         }
 
@@ -61,11 +61,11 @@
         }
 
         .info-table .info-label {
+            font-weight: bold;
             color: black;
         }
 
         .info-table .info-value {
-            font-weight: bold;
             color: black;
         }
 
@@ -97,8 +97,7 @@
         </div>
         <div class="info-row">
             <span class="info-label">결제금액</span>
-            <span class="info-value" th:text="${paymentInfo.amount.total}"></span
-            >원
+            <span class="info-value" th:text="${paymentInfo.amount.total + '원'}"></span>
         </div>
     </div>
 
