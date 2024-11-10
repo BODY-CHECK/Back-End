@@ -34,10 +34,11 @@ public class MemberRestController {
 
     @PostMapping("/email/sign-up")
     @Operation(summary = "회원가입 API", description = "이메일로 회원가입을 하는 API 입니다.")
-    public ApiResponse<MemberResponseDTO.SignUpResponseDTO> signUp(@Valid @RequestBody MemberRequestDTO.SignUpDTO request) {
+    public ApiResponse<MemberResponseDTO.AccessTokenResponseDTO> signUp(@Valid @RequestBody MemberRequestDTO.SignUpDTO request) {
         Member member = memberCommandService.signUp(request);
         routineService.setRoutine(member);
-        return ApiResponse.onSuccess(MemberConverter.toSignUpResponseDTO(member));
+        JwtTokenDTO jwtTokenDTO = memberCommandService.directLogin(member);
+        return ApiResponse.onSuccess(MemberConverter.toAccessTokenResponseDTO(jwtTokenDTO));
     }
 
     @PostMapping("/email/sign-in")  // JWT 토큰을 생성하여 반환
@@ -47,12 +48,12 @@ public class MemberRestController {
         return ApiResponse.onSuccess(MemberConverter.toAccessTokenResponseDTO(jwtTokenDTO));
     }
 
-    @PostMapping("/social-login")  // JWT 토큰을 생성하여 반환
-    @Operation(summary = "소셜 로그인 API", description = "소셜로 로그인을 하는 API 입니다.")
-    public ApiResponse<MemberResponseDTO.AccessTokenResponseDTO> socialLogin(@RequestBody MemberRequestDTO.SocialLoginDTO request) {
-        JwtTokenDTO jwtTokenDTO = memberCommandService.socialLogin(request.getEmail());
-        return ApiResponse.onSuccess(MemberConverter.toAccessTokenResponseDTO(jwtTokenDTO));
-    }
+//    @PostMapping("/social-login")  // JWT 토큰을 생성하여 반환
+//    @Operation(summary = "소셜 로그인 API", description = "소셜로 로그인을 하는 API 입니다.")
+//    public ApiResponse<MemberResponseDTO.AccessTokenResponseDTO> socialLogin(@RequestBody MemberRequestDTO.SocialLoginDTO request) {
+//        JwtTokenDTO jwtTokenDTO = memberCommandService.socialLogin(request.getEmail());
+//        return ApiResponse.onSuccess(MemberConverter.toAccessTokenResponseDTO(jwtTokenDTO));
+//    }
 
     @PostMapping("/logout")
     @Operation(summary = "로그아웃 API", description = "로그아웃을 하는 API 입니다.")
