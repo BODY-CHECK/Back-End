@@ -19,4 +19,5 @@ public interface MemberCommandService {
     String changePassword(Long memberId, MemberRequestDTO.PasswordDTO request);
     Member findById(Long memberId);
     void savePayInfo(Long memberId, KakaoPayDTO.KakaoApproveResponse kakaoApproveResponse);
+    void cancelPay(Long memberId);
 }

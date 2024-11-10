@@ -5,7 +5,11 @@ import org.example.bodycheck.common.jwt.JwtTokenDTO;
 import org.example.bodycheck.common.jwt.JwtTokenProvider;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
+import org.example.bodycheck.domain.kakao_pay.controller.KakaoPayController;
+import org.example.bodycheck.domain.kakao_pay.converter.KakaoPayConverter;
 import org.example.bodycheck.domain.kakao_pay.dto.KakaoPayDTO;
+import org.example.bodycheck.domain.kakao_pay.entity.KakaoPay;
+import org.example.bodycheck.domain.kakao_pay.repository.KakaoPayRepository;
 import org.example.bodycheck.domain.member.converter.MemberConverter;
 import org.example.bodycheck.domain.member.converter.RefreshTokenConverter;
 import org.example.bodycheck.domain.member.entity.Member;
@@ -28,6 +32,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     private final RefreshRepository refreshRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final KakaoPayRepository kakaoPayRepository;
 
     @Override
     @Transactional
@@ -209,9 +214,31 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     public void savePayInfo(Long memberId, KakaoPayDTO.KakaoApproveResponse kakaoApproveResponse) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
-        member.setTid(kakaoApproveResponse.getTid());
-        member.setSid(kakaoApproveResponse.getSid());
+        KakaoPay kakaoPay;
+        if (kakaoPayRepository.existsByMember_Id(member.getId())) {
+            kakaoPay = kakaoPayRepository.findByMember_Id(member.getId()).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_SID_UNSUPPORTED));
+            kakaoPay.setTid(kakaoApproveResponse.getTid());
+            kakaoPay.setSid(kakaoApproveResponse.getSid());
+        }
+        else {
+            kakaoPay = KakaoPayConverter.toKakaoPay(kakaoApproveResponse.getTid(), kakaoApproveResponse.getSid(), member);
+        }
+        kakaoPayRepository.save(kakaoPay);
 
+        member.setPremium(true);
+        memberRepository.save(member);
+    }
+
+    @Override
+    @Transactional
+    public void cancelPay(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        KakaoPay kakaoPay = kakaoPayRepository.findByMember_Id(member.getId()).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_NOT_EXIST));
+
+        kakaoPayRepository.delete(kakaoPay);
+
+        member.setPremium(false);
         memberRepository.save(member);
     }
 }

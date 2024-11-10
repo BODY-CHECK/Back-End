@@ -1,9 +1,11 @@
-package org.example.bodycheck.domain.kakao_pay;
+package org.example.bodycheck.domain.kakao_pay.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
 import org.example.bodycheck.domain.kakao_pay.dto.KakaoPayDTO;
+import org.example.bodycheck.domain.kakao_pay.entity.KakaoPay;
+import org.example.bodycheck.domain.kakao_pay.repository.KakaoPayRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -21,6 +23,7 @@ public class KakaoPayService {
 
     private RestTemplate restTemplate = new RestTemplate();
     private KakaoPayDTO.KakaoReadyResponse kakaoReadyResponse;
+    private KakaoPayRepository kakaoPayRepository;
 
     @Value("${spring.kakaopay.secret_key}")
     private String secretKey;
@@ -98,4 +101,12 @@ public class KakaoPayService {
                 KakaoPayDTO.KakaoCancelResponse.class);
         return kakaoCancelResponse;
     }
+
+    public KakaoPay getKakaoPayInfo(Long memberId) {
+        KakaoPay kakaoPay =  kakaoPayRepository.findByMember_Id(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_NOT_EXIST));
+
+        return kakaoPay;
+    }
+
+
 }

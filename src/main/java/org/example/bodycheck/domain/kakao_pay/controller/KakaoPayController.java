@@ -1,13 +1,13 @@
-package org.example.bodycheck.domain.kakao_pay;
+package org.example.bodycheck.domain.kakao_pay.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.ApiResponse;
+import org.example.bodycheck.domain.kakao_pay.entity.KakaoPay;
+import org.example.bodycheck.domain.kakao_pay.service.KakaoPayService;
 import org.example.bodycheck.domain.kakao_pay.dto.KakaoPayDTO;
 import org.example.bodycheck.domain.member.annotation.AuthUser;
 import org.example.bodycheck.domain.member.entity.Member;
 import org.example.bodycheck.domain.member.service.MemberService.MemberCommandService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -37,13 +37,19 @@ public class KakaoPayController {
     @GetMapping("/cancel/ok")
     public ApiResponse<KakaoPayDTO.KakaoCancelResponse> refund(@AuthUser Member member) {
 
-        KakaoPayDTO.KakaoCancelResponse kakaoCancelResponse = kakaoPayService.kakaoCancel(member.getTid());
+        Long memberId = member.getId();
+
+        KakaoPay kakaoPay = kakaoPayService.getKakaoPayInfo(memberId);
+
+        KakaoPayDTO.KakaoCancelResponse kakaoCancelResponse = kakaoPayService.kakaoCancel(kakaoPay.getTid());
+
+        memberCommandService.cancelPay(memberId);
 
         return ApiResponse.onSuccess(kakaoCancelResponse);
     }
 
     @PostMapping("/ready")
-    public KakaoPayDTO.KakaoReadyResponse readyToKakaoPay(@AuthUser Member member) {
-        return kakaoPayService.kakaoPayReady();
+    public ApiResponse<KakaoPayDTO.KakaoReadyResponse> readyToKakaoPay(@AuthUser Member member) {
+        return ApiResponse.onSuccess(kakaoPayService.kakaoPayReady());
     }
 }
