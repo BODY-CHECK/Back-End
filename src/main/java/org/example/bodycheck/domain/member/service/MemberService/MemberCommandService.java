@@ -7,6 +7,7 @@ import org.example.bodycheck.domain.member.dto.MemberDTO.MemberRequestDTO;
 public interface MemberCommandService {
 
     Member signUp(MemberRequestDTO.SignUpDTO request);
+    JwtTokenDTO directLogin(Member member);
     JwtTokenDTO signIn(MemberRequestDTO.SignInDTO request);
     JwtTokenDTO socialLogin(String clientEmail);
     boolean isUser(String clientEmail);
