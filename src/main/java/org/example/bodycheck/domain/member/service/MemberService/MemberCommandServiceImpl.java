@@ -5,6 +5,7 @@ import org.example.bodycheck.common.jwt.JwtTokenDTO;
 import org.example.bodycheck.common.jwt.JwtTokenProvider;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
+import org.example.bodycheck.domain.kakao_pay.dto.KakaoPayDTO;
 import org.example.bodycheck.domain.member.converter.MemberConverter;
 import org.example.bodycheck.domain.member.converter.RefreshTokenConverter;
 import org.example.bodycheck.domain.member.entity.Member;
@@ -201,5 +202,16 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     public Member findById(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
+    }
+
+    @Override
+    @Transactional
+    public void savePayInfo(Long memberId, KakaoPayDTO.KakaoApproveResponse kakaoApproveResponse) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        member.setTid(kakaoApproveResponse.getTid());
+        member.setSid(kakaoApproveResponse.getSid());
+
+        memberRepository.save(member);
     }
 }
