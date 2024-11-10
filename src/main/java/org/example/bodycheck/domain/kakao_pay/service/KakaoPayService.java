@@ -45,7 +45,7 @@ public class KakaoPayService {
         parameters.put("cid", cid);
         parameters.put("partner_order_id", "ORDER_ID");
         parameters.put("partner_user_id", "USER_ID");
-        parameters.put("item_name", "ITEM_NAME");
+        parameters.put("item_name", "BodyCheck 구독");
         parameters.put("quantity", "1");
         parameters.put("total_amount", "4900");
         parameters.put("vat_amount", "200");
