@@ -26,8 +26,8 @@ public class KakaoPayService {
 
     private RestTemplate restTemplate = new RestTemplate();
     private KakaoPayDTO.KakaoReadyResponse kakaoReadyResponse;
-    private KakaoPayRepository kakaoPayRepository;
-    private MemberRepository memberRepository;
+    private final KakaoPayRepository kakaoPayRepository;
+    private final MemberRepository memberRepository;
 
     @Value("${spring.kakaopay.secret_key}")
     private String secretKey;
