@@ -61,6 +61,8 @@ public class KakaoPayController {
 
         KakaoPayDTO.KakaoApproveResponse kakaoApproveResponse = kakaoPayService.approveRegularResponse(kakaoPay.getTid(), kakaoPay.getSid());
 
+        memberCommandService.savePayInfo(memberId, kakaoApproveResponse);
+
         return ApiResponse.onSuccess(kakaoApproveResponse);
     }
 }
