@@ -52,23 +52,45 @@ public class KakaoPayController {
 
         KakaoPay kakaoPay = kakaoPayService.getKakaoPayInfo(memberId);
 
-        KakaoPayDTO.KakaoCancelResponse kakaoCancelResponse = kakaoPayService.kakaoCancel(kakaoPay.getTid());
+        KakaoPayDTO.KakaoCancelResponse kakaoCancelResponse = kakaoPayService.cancelResponse(kakaoPay.getTid());
 
         kakaoPayService.cancelPay(memberId);
 
         return ApiResponse.onSuccess(kakaoCancelResponse);
     }
 
-    @GetMapping("/regular")
-    public ApiResponse<KakaoPayDTO.KakaoApproveResponse> regularPayment(@AuthUser Member member) {
+    @PostMapping("/subscribe")
+    public ApiResponse<KakaoPayDTO.KakaoApproveResponse> subscribePayRequest(@AuthUser Member member) {
         Long memberId = member.getId();
 
         KakaoPay kakaoPay = kakaoPayService.getKakaoPayInfo(memberId);
 
-        KakaoPayDTO.KakaoApproveResponse kakaoApproveResponse = kakaoPayService.approveRegularResponse(kakaoPay.getTid(), kakaoPay.getSid());
+        KakaoPayDTO.KakaoApproveResponse kakaoApproveResponse = kakaoPayService.approveSubscribeResponse(kakaoPay.getSid());
 
         kakaoPayService.savePayInfo(memberId, kakaoApproveResponse);
 
         return ApiResponse.onSuccess(kakaoApproveResponse);
+    }
+
+    @PostMapping("/subscribe/cancel")
+    public ApiResponse<KakaoPayDTO.KakaoSubscribeCancelResponse> subscribeCancelRequest(@AuthUser Member member) {
+        Long memberId = member.getId();
+
+        KakaoPay kakaoPay = kakaoPayService.getKakaoPayInfo(memberId);
+
+        KakaoPayDTO.KakaoSubscribeCancelResponse kakaoSubscribeCancelResponse = kakaoPayService.subscribeCancelResponse(kakaoPay.getSid());
+
+        return ApiResponse.onSuccess(kakaoSubscribeCancelResponse);
+    }
+
+    @GetMapping("/subscribe/status")
+    public ApiResponse<KakaoPayDTO.KakaoSubscribeStatusResponse> subscribeStatusRequest(@AuthUser Member member) {
+        Long memberId = member.getId();
+
+        KakaoPay kakaoPay = kakaoPayService.getKakaoPayInfo(memberId);
+
+        KakaoPayDTO.KakaoSubscribeStatusResponse kakaoSubscribeStatusResponse = kakaoPayService.subscribeStatusResponse(kakaoPay.getSid());
+
+        return ApiResponse.onSuccess(kakaoSubscribeStatusResponse);
     }
 }

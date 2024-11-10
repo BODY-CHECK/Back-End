@@ -85,7 +85,7 @@ public class KakaoPayService {
         return kakaoApproveResponse;
     }
 
-    public KakaoPayDTO.KakaoCancelResponse kakaoCancel(String tid) {
+    public KakaoPayDTO.KakaoCancelResponse cancelResponse(String tid) {
         if (tid == null || tid.isEmpty()) {
             throw new GeneralHandler(ErrorStatus.TID_NOT_EXIST);
         }
@@ -112,13 +112,13 @@ public class KakaoPayService {
         return kakaoPay;
     }
 
-    public KakaoPayDTO.KakaoApproveResponse approveRegularResponse(String tid, String sid) {
+    public KakaoPayDTO.KakaoApproveResponse approveSubscribeResponse(String sid) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("cid", cid);
         parameters.put("sid", sid);
         parameters.put("partner_order_id", "ORDER_ID");
         parameters.put("partner_user_id", "USER_ID");
-        parameters.put("item_name", "ITEM_NAME");
+        parameters.put("item_name", "BodyCheck 구독");
         parameters.put("quantity", "1");
         parameters.put("total_amount", "4900");
         parameters.put("vat_amount", "200");
@@ -131,6 +131,34 @@ public class KakaoPayService {
                 requestEntity,
                 KakaoPayDTO.KakaoApproveResponse.class);
         return kakaoApproveResponse;
+    }
+
+    public KakaoPayDTO.KakaoSubscribeCancelResponse subscribeCancelResponse(String sid) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("cid", cid);
+        parameters.put("sid", sid);
+
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(parameters, this.getHeaders());
+
+        KakaoPayDTO.KakaoSubscribeCancelResponse kakaoSubscribeCancelResponse = restTemplate.postForObject(
+                "https://open-api.kakaopay.com/online/v1/payment/manage/subscription/active",
+                requestEntity,
+                KakaoPayDTO.KakaoSubscribeCancelResponse.class);
+        return kakaoSubscribeCancelResponse;
+    }
+
+    public KakaoPayDTO.KakaoSubscribeStatusResponse subscribeStatusResponse(String sid) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("cid", cid);
+        parameters.put("sid", sid);
+
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(parameters, this.getHeaders());
+
+        KakaoPayDTO.KakaoSubscribeStatusResponse kakaoSubscribeStatusResponse = restTemplate.postForObject(
+                "https://open-api.kakaopay.com/online/v1/payment/manage/subscription/status",
+                requestEntity,
+                KakaoPayDTO.KakaoSubscribeStatusResponse.class);
+        return kakaoSubscribeStatusResponse;
     }
 
     public void saveTid(Long memberId, String tid) {
@@ -169,9 +197,6 @@ public class KakaoPayService {
             kakaoPay = KakaoPayConverter.toKakaoPay(kakaoApproveResponse.getTid(), kakaoApproveResponse.getSid(), member);
         }
         kakaoPayRepository.save(kakaoPay);
-
-        member.setPremium(true);
-        memberRepository.save(member);
     }
 
     public void cancelPay(Long memberId) {
@@ -180,8 +205,5 @@ public class KakaoPayService {
         KakaoPay kakaoPay = kakaoPayRepository.findByMember_Id(member.getId()).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_NOT_EXIST));
 
         kakaoPayRepository.delete(kakaoPay);
-
-        member.setPremium(false);
-        memberRepository.save(member);
     }
 }

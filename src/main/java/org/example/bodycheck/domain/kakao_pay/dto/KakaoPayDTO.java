@@ -77,6 +77,33 @@ public class KakaoPayDTO {
     @Getter
     @Setter
     @ToString
+    public static class KakaoSubscribeCancelResponse {
+        private String cid;
+        private String sid;
+        private String status;
+        private String created_at;
+        private String last_approved_at;
+        private String inactivated_at;
+    }
+
+    @Getter
+    @Setter
+    @ToString
+    public static class KakaoSubscribeStatusResponse {
+        private boolean available;
+        private String cid;
+        private String sid;
+        private String status;
+        private String item_name;
+        private String payment_method_type;
+        private String created_at;
+        private String last_approved_at;
+        private String use_point_status;
+    }
+
+    @Getter
+    @Setter
+    @ToString
     public static class ApprovedCancelAmount {
         private int total;
         private int tax_free;
