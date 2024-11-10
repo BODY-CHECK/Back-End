@@ -123,7 +123,7 @@ public class TTSService {
 
 
         // TTS 생성 메서드를 사용하여 음성을 생성
-        VoiceCode voiceCode = VoiceCode.fromValue("ko-KR-Wavenet-B");
+        VoiceCode voiceCode = VoiceCode.fromValue("ko-KR-Standard-A");
         TTSResultDTO ttsResult = createSpeech(voiceCode.getValue(), scriptContent); // TTSResultDTO로 받기
         byte[] audioBytes = ttsResult.getAudioBytes();
 

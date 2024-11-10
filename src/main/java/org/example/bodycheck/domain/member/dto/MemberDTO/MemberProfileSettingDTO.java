@@ -12,6 +12,6 @@ import lombok.*;
 public class MemberProfileSettingDTO {
 
     @NotBlank
-    @Size(max = 5, message = "이름은 5자 이내여야 합니다.")
+    @Size(max = 10, message = "이름은 10자 이내여야 합니다.")
     String nickname;
 }
