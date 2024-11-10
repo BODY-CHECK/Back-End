@@ -7,6 +7,7 @@ import org.example.bodycheck.common.entity.BaseEntity;
 import org.example.bodycheck.domain.attendance.entity.Attendance;
 import org.example.bodycheck.domain.enums.ExerciseType;
 import org.example.bodycheck.domain.enums.Gender;
+import org.example.bodycheck.domain.kakao_pay.entity.KakaoPay;
 import org.example.bodycheck.domain.routine.entity.Routine;
 import org.example.bodycheck.domain.solution.entity.Solution;
 
@@ -44,10 +45,6 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ExerciseType exerciseType;
 
-    private String tid;
-
-    private String sid;
-
     private boolean premium = false;
 
     private LocalDate inactiveDate;
@@ -64,13 +61,14 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Solution> solutionList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL) // 원래는 OneToOne
+    private List<KakaoPay> kakaoPay = new ArrayList<>();
+
     public void setPw(String pw) { this.pw = pw; }
 
     public void setNickname(String nickname) { this.nickname = nickname; }
 
     public void setRoutineList(List<Routine> routineList) { this.routineList = routineList; }
 
-    public void setTid(String tid) { this.tid = tid; }
-
-    public void setSid(String sid) { this.sid = sid; }
+    public void setPremium(boolean premium) { this.premium = premium; }
 }
