@@ -52,4 +52,9 @@ public class RoutineController {
         return ApiResponse.onSuccess(routineService.resetCheck(member));
     }
 
+    @Operation(summary = "루틴 랜덤 4개 출력 API")
+    @PostMapping("/random")
+    public ApiResponse<List<RoutineRandomDTO>> randomRoutine(@AuthUser Member member){
+        return ApiResponse.onSuccess(routineService.randomRoutine(member));
+    }
 }

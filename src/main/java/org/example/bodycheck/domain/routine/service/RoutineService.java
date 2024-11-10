@@ -3,6 +3,7 @@ package org.example.bodycheck.domain.routine.service;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
+import org.example.bodycheck.domain.enums.ExerciseType;
 import org.example.bodycheck.domain.exercise.entity.Exercise;
 import org.example.bodycheck.domain.exercise.repository.ExerciseRepository;
 import org.example.bodycheck.domain.routine.dto.*;
@@ -13,10 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -161,5 +159,34 @@ public class RoutineService {
         return RoutineResetCheckDTO.builder()
                 .routineCheck(wasAnyRoutineReset)
                 .build();
+    }
+
+    public List<RoutineRandomDTO> randomRoutine(Member member) {
+        ExerciseType exerciseType = member.getExerciseType();
+
+        // exerciseType에 따라 운동 목록 필터링
+        List<Exercise> exercises;
+        if (exerciseType == ExerciseType.UPPER_BODY) {
+            exercises = exerciseRepository.findByType(ExerciseType.UPPER_BODY);
+        } else if (exerciseType == ExerciseType.LOWER_BODY) {
+            exercises = exerciseRepository.findByType(ExerciseType.LOWER_BODY);
+        } else {
+            exercises = exerciseRepository.findAll();
+        }
+
+        // 4개의 랜덤 운동 선택
+        Random random = new Random();
+        List<Exercise> randomExercises = random.ints(0, exercises.size())
+                .distinct()
+                .limit(4)
+                .mapToObj(exercises::get)
+                .collect(Collectors.toList());
+
+        // RoutineRandomDTO로 변환하여 반환
+        return randomExercises.stream()
+                .map(exercise -> RoutineRandomDTO.builder()
+                        .exerciseId(exercise.getId())
+                        .build())
+                .collect(Collectors.toList());
     }
 }
