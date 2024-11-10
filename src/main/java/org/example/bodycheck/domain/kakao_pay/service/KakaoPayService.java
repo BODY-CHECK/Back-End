@@ -64,10 +64,10 @@ public class KakaoPayService {
         return kakaoReadyResponse;
     }
 
-    public KakaoPayDTO.KakaoApproveResponse approveResponse(String pgToken, String tid) {
+    public KakaoPayDTO.KakaoApproveResponse approveResponse(String pgToken) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("cid", cid);
-        parameters.put("tid", tid);
+        parameters.put("tid", kakaoReadyResponse.getTid());
         parameters.put("partner_order_id", "ORDER_ID");
         parameters.put("partner_user_id", "USER_ID");
         parameters.put("pg_token", pgToken);
