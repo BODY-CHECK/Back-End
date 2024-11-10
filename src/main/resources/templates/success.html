@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결제 성공</title>
+</head>
+<body>
+
+<h2>결제 정보</h2>
+<p><strong>구매처:</strong> <span th:text="BodyCheck"></span></p>
+<p><strong>결제일시:</strong> <span th:text="${paymentInfo.approved_at}"></span></p>
+<p><strong>상품명:</strong> <span th:text="${paymentInfo.item_name}"></span></p>
+<p><strong>결제금액:</strong> <span th:text="${paymentInfo.amount.total}"></span>원</p>
+
+</body>
+</html>

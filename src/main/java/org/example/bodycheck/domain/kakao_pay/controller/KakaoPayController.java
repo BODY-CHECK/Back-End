@@ -9,6 +9,7 @@ import org.example.bodycheck.domain.member.annotation.AuthUser;
 import org.example.bodycheck.domain.member.entity.Member;
 import org.example.bodycheck.domain.member.service.MemberService.MemberCommandService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 @RestController
 @RequestMapping("/payment")
@@ -30,14 +31,13 @@ public class KakaoPayController {
     }
 
     @GetMapping("/success")
-    public ApiResponse<KakaoPayDTO.KakaoApproveResponse> afterPayRequest(@RequestParam("pg_token") String pgToken) {
+    public ModelAndView afterPayRequest(@RequestParam("pg_token") String pgToken) {
         KakaoPayDTO.KakaoApproveResponse kakaoApproveResponse = kakaoPayService.approveResponse(pgToken);
 
-//        Long memberId = member.getId();
-//
-//        memberCommandService.savePayInfo(memberId, kakaoApproveResponse);
+        ModelAndView modelAndView = new ModelAndView("success"); // "success"는 템플릿 파일 이름
+        modelAndView.addObject("paymentInfo", kakaoApproveResponse);
 
-        return ApiResponse.onSuccess(kakaoApproveResponse);
+        return modelAndView;
     }
 
     @GetMapping("/fail")
