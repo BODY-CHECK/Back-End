@@ -64,10 +64,10 @@ public class KakaoPayService {
         return kakaoReadyResponse;
     }
 
-    public KakaoPayDTO.KakaoApproveResponse approveResponse(String pgToken) {
+    public KakaoPayDTO.KakaoApproveResponse approveResponse(String pgToken, String tid) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("cid", cid);
-        parameters.put("tid", kakaoReadyResponse.getTid());
+        parameters.put("tid", tid);
         parameters.put("partner_order_id", "ORDER_ID");
         parameters.put("partner_user_id", "USER_ID");
         parameters.put("pg_token", pgToken);
@@ -106,6 +106,27 @@ public class KakaoPayService {
         KakaoPay kakaoPay =  kakaoPayRepository.findByMember_Id(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_NOT_EXIST));
 
         return kakaoPay;
+    }
+
+    public KakaoPayDTO.KakaoApproveResponse approveRegularResponse(String tid, String sid) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("cid", cid);
+        parameters.put("sid", sid);
+        parameters.put("partner_order_id", "ORDER_ID");
+        parameters.put("partner_user_id", "USER_ID");
+        parameters.put("item_name", "ITEM_NAME");
+        parameters.put("quantity", "1");
+        parameters.put("total_amount", "4900");
+        parameters.put("vat_amount", "200");
+        parameters.put("tax_free_amount", "0");
+
+        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(parameters, this.getHeaders());
+
+        KakaoPayDTO.KakaoApproveResponse kakaoApproveResponse = restTemplate.postForObject(
+                "https://open-api.kakaopay.com/online/v1/payment/subscription",
+                requestEntity,
+                KakaoPayDTO.KakaoApproveResponse.class);
+        return kakaoApproveResponse;
     }
 
 
