@@ -9,4 +9,5 @@ public interface KakaoPayRepository extends JpaRepository<KakaoPay, Long> {
 
     boolean existsByMember_Id(Long memberId);
     Optional<KakaoPay> findByMember_Id(Long memberId);
+    Optional<KakaoPay> findByTid(String tid);
 }

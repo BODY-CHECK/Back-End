@@ -7,7 +7,6 @@ import org.example.bodycheck.domain.kakao_pay.service.KakaoPayService;
 import org.example.bodycheck.domain.kakao_pay.dto.KakaoPayDTO;
 import org.example.bodycheck.domain.member.annotation.AuthUser;
 import org.example.bodycheck.domain.member.entity.Member;
-import org.example.bodycheck.domain.member.service.MemberService.MemberCommandService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -17,7 +16,6 @@ import org.springframework.web.servlet.ModelAndView;
 public class KakaoPayController {
 
     private final KakaoPayService kakaoPayService;
-    private final MemberCommandService memberCommandService;
 
     @PostMapping("/ready")
     public ApiResponse<KakaoPayDTO.KakaoReadyResponse> readyToKakaoPay(@AuthUser Member member) {
@@ -25,7 +23,7 @@ public class KakaoPayController {
 
         Long memberId = member.getId();
 
-        memberCommandService.saveTid(memberId, kakaoReadyResponse.getTid());
+        kakaoPayService.saveTid(memberId, kakaoReadyResponse.getTid());
 
         return ApiResponse.onSuccess(kakaoReadyResponse);
     }
@@ -36,6 +34,8 @@ public class KakaoPayController {
 
         ModelAndView modelAndView = new ModelAndView("success"); // "success"는 템플릿 파일 이름
         modelAndView.addObject("paymentInfo", kakaoApproveResponse);
+
+        kakaoPayService.saveSid(kakaoApproveResponse);
 
         return modelAndView;
     }
@@ -54,7 +54,7 @@ public class KakaoPayController {
 
         KakaoPayDTO.KakaoCancelResponse kakaoCancelResponse = kakaoPayService.kakaoCancel(kakaoPay.getTid());
 
-        memberCommandService.cancelPay(memberId);
+        kakaoPayService.cancelPay(memberId);
 
         return ApiResponse.onSuccess(kakaoCancelResponse);
     }
@@ -67,7 +67,7 @@ public class KakaoPayController {
 
         KakaoPayDTO.KakaoApproveResponse kakaoApproveResponse = kakaoPayService.approveRegularResponse(kakaoPay.getTid(), kakaoPay.getSid());
 
-        memberCommandService.savePayInfo(memberId, kakaoApproveResponse);
+        kakaoPayService.savePayInfo(memberId, kakaoApproveResponse);
 
         return ApiResponse.onSuccess(kakaoApproveResponse);
     }
