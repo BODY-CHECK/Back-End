@@ -59,7 +59,7 @@ public class KakaoPayController {
         return ApiResponse.onSuccess(kakaoCancelResponse);
     }
 
-    @GetMapping("/regular/ok")
+    @GetMapping("/regular")
     public ApiResponse<KakaoPayDTO.KakaoApproveResponse> regularPayment(@AuthUser Member member) {
         Long memberId = member.getId();
 
