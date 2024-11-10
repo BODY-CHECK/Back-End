@@ -1,6 +1,8 @@
 package org.example.bodycheck.domain.kakao_pay;
 
 import lombok.RequiredArgsConstructor;
+import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
+import org.example.bodycheck.common.exception.handler.GeneralHandler;
 import org.example.bodycheck.domain.kakao_pay.dto.KakaoPayDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -59,7 +61,7 @@ public class KakaoPayService {
         return kakaoReadyResponse;
     }
 
-    public KakaoPayDTO.KakaoApproveResponse approveResponse (String pgToken) {
+    public KakaoPayDTO.KakaoApproveResponse approveResponse(String pgToken) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("cid", cid);
         parameters.put("tid", kakaoReadyResponse.getTid());
@@ -77,6 +79,10 @@ public class KakaoPayService {
     }
 
     public KakaoPayDTO.KakaoCancelResponse kakaoCancel(String tid) {
+        if (tid == null || tid.isEmpty()) {
+            throw new GeneralHandler(ErrorStatus.TID_NOT_EXIST);
+        }
+
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("cid", cid);
         parameters.put("tid", tid);

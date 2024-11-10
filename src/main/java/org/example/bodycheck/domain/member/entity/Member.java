@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.example.bodycheck.common.entity.BaseEntity;
 import org.example.bodycheck.domain.attendance.entity.Attendance;
+import org.example.bodycheck.domain.enums.ExerciseType;
 import org.example.bodycheck.domain.enums.Gender;
 import org.example.bodycheck.domain.routine.entity.Routine;
 import org.example.bodycheck.domain.solution.entity.Solution;
@@ -40,6 +41,13 @@ public class Member extends BaseEntity {
 
     private Float weight;
 
+    @Enumerated(EnumType.STRING)
+    private ExerciseType exerciseType;
+
+    private String tid;
+
+    private String sid;
+
     private boolean premium = false;
 
     private LocalDate inactiveDate;
@@ -61,4 +69,8 @@ public class Member extends BaseEntity {
     public void setNickname(String nickname) { this.nickname = nickname; }
 
     public void setRoutineList(List<Routine> routineList) { this.routineList = routineList; }
+
+    public void setTid(String tid) { this.tid = tid; }
+
+    public void setSid(String sid) { this.sid = sid; }
 }
