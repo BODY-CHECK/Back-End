@@ -3,9 +3,12 @@ package org.example.bodycheck.domain.kakao_pay.service;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
+import org.example.bodycheck.domain.kakao_pay.converter.KakaoPayConverter;
 import org.example.bodycheck.domain.kakao_pay.dto.KakaoPayDTO;
 import org.example.bodycheck.domain.kakao_pay.entity.KakaoPay;
 import org.example.bodycheck.domain.kakao_pay.repository.KakaoPayRepository;
+import org.example.bodycheck.domain.member.entity.Member;
+import org.example.bodycheck.domain.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -24,6 +27,7 @@ public class KakaoPayService {
     private RestTemplate restTemplate = new RestTemplate();
     private KakaoPayDTO.KakaoReadyResponse kakaoReadyResponse;
     private KakaoPayRepository kakaoPayRepository;
+    private MemberRepository memberRepository;
 
     @Value("${spring.kakaopay.secret_key}")
     private String secretKey;
@@ -129,5 +133,55 @@ public class KakaoPayService {
         return kakaoApproveResponse;
     }
 
+    public void saveTid(Long memberId, String tid) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
+        KakaoPay kakaoPay;
+        if (kakaoPayRepository.existsByMember_Id(member.getId())) {
+            kakaoPay = kakaoPayRepository.findByMember_Id(member.getId()).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_SID_UNSUPPORTED));
+            kakaoPay.setTid(tid);
+        }
+        else {
+            kakaoPay = KakaoPayConverter.toKakaoPayTid(tid, member);
+        }
+        kakaoPayRepository.save(kakaoPay);
+    }
+
+    public void saveSid(KakaoPayDTO.KakaoApproveResponse kakaoApproveResponse) {
+
+        KakaoPay kakaoPay = kakaoPayRepository.findByTid(kakaoApproveResponse.getTid()).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_NOT_EXIST));
+
+        kakaoPay.setSid(kakaoApproveResponse.getSid());
+
+        kakaoPayRepository.save(kakaoPay);
+    }
+
+    public void savePayInfo(Long memberId, KakaoPayDTO.KakaoApproveResponse kakaoApproveResponse) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        KakaoPay kakaoPay;
+        if (kakaoPayRepository.existsByMember_Id(member.getId())) {
+            kakaoPay = kakaoPayRepository.findByMember_Id(member.getId()).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_SID_UNSUPPORTED));
+            kakaoPay.setTid(kakaoApproveResponse.getTid());
+            kakaoPay.setSid(kakaoApproveResponse.getSid());
+        }
+        else {
+            kakaoPay = KakaoPayConverter.toKakaoPay(kakaoApproveResponse.getTid(), kakaoApproveResponse.getSid(), member);
+        }
+        kakaoPayRepository.save(kakaoPay);
+
+        member.setPremium(true);
+        memberRepository.save(member);
+    }
+
+    public void cancelPay(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        KakaoPay kakaoPay = kakaoPayRepository.findByMember_Id(member.getId()).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_NOT_EXIST));
+
+        kakaoPayRepository.delete(kakaoPay);
+
+        member.setPremium(false);
+        memberRepository.save(member);
+    }
 }
