@@ -18,9 +18,14 @@ public class KakaoPayController {
     private final KakaoPayService kakaoPayService;
     private final MemberCommandService memberCommandService;
 
+    @PostMapping("/ready")
+    public ApiResponse<KakaoPayDTO.KakaoReadyResponse> readyToKakaoPay(@AuthUser Member member) {
+        return ApiResponse.onSuccess(kakaoPayService.kakaoPayReady());
+    }
+
     @GetMapping("/success/ok")
-    public ApiResponse<KakaoPayDTO.KakaoApproveResponse> afterPayRequest(@AuthUser Member member, @RequestParam("pg_token") String pgToken) {
-        KakaoPayDTO.KakaoApproveResponse kakaoApproveResponse = kakaoPayService.approveResponse(pgToken);
+    public ApiResponse<KakaoPayDTO.KakaoApproveResponse> afterPayRequest(@AuthUser Member member, @RequestParam("pg_token") String pgToken, @RequestParam("tid") String tid) {
+        KakaoPayDTO.KakaoApproveResponse kakaoApproveResponse = kakaoPayService.approveResponse(pgToken, tid);
 
         Long memberId = member.getId();
 
@@ -48,8 +53,16 @@ public class KakaoPayController {
         return ApiResponse.onSuccess(kakaoCancelResponse);
     }
 
-    @PostMapping("/ready")
-    public ApiResponse<KakaoPayDTO.KakaoReadyResponse> readyToKakaoPay(@AuthUser Member member) {
-        return ApiResponse.onSuccess(kakaoPayService.kakaoPayReady());
+    @GetMapping("/regular/ok")
+    public ApiResponse<KakaoPayDTO.KakaoApproveResponse> regularPayment(@AuthUser Member member) {
+        Long memberId = member.getId();
+
+        KakaoPay kakaoPay = kakaoPayService.getKakaoPayInfo(memberId);
+
+        KakaoPayDTO.KakaoApproveResponse kakaoApproveResponse = kakaoPayService.approveRegularResponse(kakaoPay.getTid(), kakaoPay.getSid());
+
+        memberCommandService.savePayInfo(memberId, kakaoApproveResponse);
+
+        return ApiResponse.onSuccess(kakaoApproveResponse);
     }
 }
