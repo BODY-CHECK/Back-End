@@ -12,6 +12,8 @@ import org.example.bodycheck.domain.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -22,6 +24,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@EnableScheduling
 public class KakaoPayService {
 
     private RestTemplate restTemplate = new RestTemplate();
@@ -141,7 +144,7 @@ public class KakaoPayService {
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(parameters, this.getHeaders());
 
         KakaoPayDTO.KakaoSubscribeCancelResponse kakaoSubscribeCancelResponse = restTemplate.postForObject(
-                "https://open-api.kakaopay.com/online/v1/payment/manage/subscription/active",
+                "https://open-api.kakaopay.com/online/v1/payment/manage/subscription/inactive",
                 requestEntity,
                 KakaoPayDTO.KakaoSubscribeCancelResponse.class);
         return kakaoSubscribeCancelResponse;
@@ -205,5 +208,10 @@ public class KakaoPayService {
         KakaoPay kakaoPay = kakaoPayRepository.findByMember_Id(member.getId()).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_NOT_EXIST));
 
         kakaoPayRepository.delete(kakaoPay);
+    }
+
+    @Scheduled(cron = "* * 14 * * ?")
+    public void regularPayment() {
+        System.out.println("정기 결제");
     }
 }
