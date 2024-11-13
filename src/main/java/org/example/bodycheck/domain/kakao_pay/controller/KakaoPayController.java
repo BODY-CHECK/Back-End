@@ -2,6 +2,7 @@ package org.example.bodycheck.domain.kakao_pay.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.ApiResponse;
+import org.example.bodycheck.domain.kakao_pay.converter.KakaoPayConverter;
 import org.example.bodycheck.domain.kakao_pay.entity.KakaoPay;
 import org.example.bodycheck.domain.kakao_pay.service.KakaoPayService;
 import org.example.bodycheck.domain.kakao_pay.dto.KakaoPayDTO;
@@ -84,13 +85,19 @@ public class KakaoPayController {
     }
 
     @GetMapping("/subscribe/status")
-    public ApiResponse<KakaoPayDTO.KakaoSubscribeStatusResponse> subscribeStatusRequest(@AuthUser Member member) {
+    public ApiResponse<KakaoPayDTO.KakaoPayStatus> subscribeStatusRequest(@AuthUser Member member) {
         Long memberId = member.getId();
 
-        KakaoPay kakaoPay = kakaoPayService.getKakaoPayInfo(memberId);
+        boolean isLogExist = kakaoPayService.getKakaoPayLog(memberId);
 
-        KakaoPayDTO.KakaoSubscribeStatusResponse kakaoSubscribeStatusResponse = kakaoPayService.subscribeStatusResponse(kakaoPay.getSid());
+        KakaoPayDTO.KakaoSubscribeStatusResponse kakaoSubscribeStatusResponse = new KakaoPayDTO.KakaoSubscribeStatusResponse();
 
-        return ApiResponse.onSuccess(kakaoSubscribeStatusResponse);
+        if (isLogExist) {
+            KakaoPay kakaoPay = kakaoPayService.getKakaoPayInfo(memberId);
+
+            kakaoSubscribeStatusResponse = kakaoPayService.subscribeStatusResponse(kakaoPay.getSid());
+        }
+
+        return ApiResponse.onSuccess(KakaoPayConverter.toKakaoPayStatus(isLogExist, kakaoSubscribeStatusResponse));
     }
 }
