@@ -18,7 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -168,11 +171,6 @@ public class KakaoPayService {
         return kakaoSubscribeStatusResponse;
     }
 
-    public KakaoPayDTO.KakaoSubscribeStatusResponse subscribeStatusSetNull() {
-        KakaoPayDTO.KakaoSubscribeStatusResponse kakaoSubscribeStatusResponse = new KakaoPayDTO.KakaoSubscribeStatusResponse();
-        return kakaoSubscribeStatusResponse;
-    }
-
     public void saveTid(Long memberId, String tid) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
@@ -219,8 +217,48 @@ public class KakaoPayService {
         kakaoPayRepository.delete(kakaoPay);
     }
 
-    @Scheduled(cron = "* * 14 * * ?")
+    @Scheduled(cron = "0 0 14 * * ?")
     public void regularPayment() {
-        System.out.println("정기 결제");
+        List<KakaoPay> kakaoPayList = kakaoPayRepository.findAll();
+
+        kakaoPayList.stream()
+                .forEach(kakaoPay -> {
+                    if (kakaoPay.getSid() == null || kakaoPay.getSid().isEmpty()) {}
+                    else {
+                        KakaoPayDTO.KakaoSubscribeStatusResponse kakaoSubscribeStatusResponse = subscribeStatusResponse(kakaoPay.getSid());
+
+                        // "ACTIVE" 상태인지 확인
+                        if (kakaoSubscribeStatusResponse.getStatus().equals("ACTIVE")) {
+                            String lastApprovedAtStr;
+                            if (kakaoSubscribeStatusResponse.getLast_approved_at() == null || kakaoSubscribeStatusResponse.getLast_approved_at().isEmpty()) {
+                                lastApprovedAtStr = kakaoSubscribeStatusResponse.getCreated_at();
+                            }
+                            else lastApprovedAtStr = kakaoSubscribeStatusResponse.getLast_approved_at();
+
+                            // last_approved_at을 LocalDate로 변환
+                            DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+                            LocalDate lastApprovedAt = LocalDate.parse(lastApprovedAtStr, formatter);
+
+                            LocalDate today = LocalDate.now();
+
+                            // 결제일과 오늘의 일(day)이 같고, 마지막 결제일이 이번 달이 아닌 경우에만 결제 수행
+                            if (today.getDayOfMonth() == lastApprovedAt.getDayOfMonth() &&
+                                    (today.getYear() != lastApprovedAt.getYear() || today.getMonthValue() != lastApprovedAt.getMonthValue())) {
+
+                                KakaoPayDTO.KakaoApproveResponse approveResponse = approveSubscribeResponse(kakaoPay.getSid());
+
+                                savePayInfo(kakaoPay.getMember().getId(), approveResponse);
+                            }
+//                            if (today.getDayOfMonth() == lastApprovedAt.getDayOfMonth()) {
+//                                KakaoPayDTO.KakaoApproveResponse approveResponse = approveSubscribeResponse(kakaoPay.getSid());
+//
+//                                savePayInfo(kakaoPay.getMember().getId(), approveResponse);
+//                            }
+                        }
+                    }
+
+                });
+
+//        System.out.println("정기 결제 작업 완료");
     }
 }
