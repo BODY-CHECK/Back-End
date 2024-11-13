@@ -1,9 +1,6 @@
 package org.example.bodycheck.domain.kakao_pay.dto;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 public class KakaoPayDTO {
 
@@ -135,5 +132,15 @@ public class KakaoPayDTO {
         private int point;
         private int discount;
         private int green_deposit;
+    }
+
+    @Builder
+    @Getter
+    @Setter
+    @ToString
+    public static class KakaoPayStatus {
+        private boolean isLogExist;
+        private String status;
+        private String last_approved_at;
     }
 }

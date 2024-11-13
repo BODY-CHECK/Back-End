@@ -115,6 +115,10 @@ public class KakaoPayService {
         return kakaoPay;
     }
 
+    public boolean getKakaoPayLog(Long memberId) {
+        return kakaoPayRepository.existsByMember_Id(memberId);
+    }
+
     public KakaoPayDTO.KakaoApproveResponse approveSubscribeResponse(String sid) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("cid", cid);
@@ -161,6 +165,11 @@ public class KakaoPayService {
                 "https://open-api.kakaopay.com/online/v1/payment/manage/subscription/status",
                 requestEntity,
                 KakaoPayDTO.KakaoSubscribeStatusResponse.class);
+        return kakaoSubscribeStatusResponse;
+    }
+
+    public KakaoPayDTO.KakaoSubscribeStatusResponse subscribeStatusSetNull() {
+        KakaoPayDTO.KakaoSubscribeStatusResponse kakaoSubscribeStatusResponse = new KakaoPayDTO.KakaoSubscribeStatusResponse();
         return kakaoSubscribeStatusResponse;
     }
 
