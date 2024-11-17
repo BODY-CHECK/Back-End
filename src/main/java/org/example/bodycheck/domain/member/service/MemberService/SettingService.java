@@ -23,10 +23,13 @@ public class SettingService {
         }
 
             member.setNickname(profileSettingDTO.getNickname());
-            memberRepository.save(member);
 
-            return MemberSettingDTO.builder()
-                    .memberId(member.getId())
-                    .build();
+        member.setExerciseType(profileSettingDTO.getExerciseType());
+
+        memberRepository.save(member);
+
+        return MemberSettingDTO.builder()
+                .memberId(member.getId())
+                .build();
     }
 }

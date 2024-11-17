@@ -68,6 +68,8 @@ public class Member extends BaseEntity {
 
     public void setNickname(String nickname) { this.nickname = nickname; }
 
+    public void setExerciseType(ExerciseType exerciseType) { this.exerciseType = exerciseType; }
+
     public void setRoutineList(List<Routine> routineList) { this.routineList = routineList; }
 
     public void setPremium(boolean premium) { this.premium = premium; }
