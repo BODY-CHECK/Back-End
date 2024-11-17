@@ -128,44 +128,53 @@ public class KakaoPayService {
 
         if (kakaoPayRepository.existsByMember_Id(memberId)) {
             KakaoPay kakaoPay =  kakaoPayRepository.findByMember_Id(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_NOT_EXIST));
-            Map<String, Object> parameters = new HashMap<>();
-            parameters.put("cid", cid);
-            parameters.put("sid", kakaoPay.getSid());
 
-            HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(parameters, this.getHeaders());
-
-            KakaoPayDTO.KakaoSubscribeStatusResponse kakaoSubscribeStatusResponse = restTemplate.postForObject(
-                    "https://open-api.kakaopay.com/online/v1/payment/manage/subscription/status",
-                    requestEntity,
-                    KakaoPayDTO.KakaoSubscribeStatusResponse.class);
-
-            if (kakaoSubscribeStatusResponse.getStatus().equals("ACTIVE")) {
-                isPremium = true;
-            }
+            if (kakaoPay.getSid() == null || kakaoPay.getSid().isEmpty()) {}
             else {
-                String last_approved_at;
-                if(kakaoSubscribeStatusResponse.getLast_approved_at() == null || kakaoSubscribeStatusResponse.getLast_approved_at().isEmpty()) {
-                    last_approved_at = kakaoSubscribeStatusResponse.getCreated_at();
-                }
-                else last_approved_at = kakaoSubscribeStatusResponse.getLast_approved_at();
+                Map<String, Object> parameters = new HashMap<>();
+                parameters.put("cid", cid);
+                parameters.put("sid", kakaoPay.getSid());
 
-                DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-                LocalDateTime lastApprovedAt = LocalDateTime.parse(last_approved_at, formatter);
+                HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(parameters, this.getHeaders());
 
-                LocalDateTime oneMonthLater = lastApprovedAt.plusMonths(1).withHour(14).withMinute(0).withSecond(0);
+                KakaoPayDTO.KakaoSubscribeStatusResponse kakaoSubscribeStatusResponse = restTemplate.postForObject(
+                        "https://open-api.kakaopay.com/online/v1/payment/manage/subscription/status",
+                        requestEntity,
+                        KakaoPayDTO.KakaoSubscribeStatusResponse.class);
 
-                LocalDateTime now = LocalDateTime.now();
-
-                if (now.isBefore(oneMonthLater)) {
+                if (kakaoSubscribeStatusResponse.getStatus().equals("ACTIVE")) {
                     isPremium = true;
                 }
+                else {
+                    String last_approved_at;
+                    if(kakaoSubscribeStatusResponse.getLast_approved_at() == null || kakaoSubscribeStatusResponse.getLast_approved_at().isEmpty()) {
+                        last_approved_at = kakaoSubscribeStatusResponse.getCreated_at();
+                    }
+                    else last_approved_at = kakaoSubscribeStatusResponse.getLast_approved_at();
+
+                    DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+                    LocalDateTime lastApprovedAt = LocalDateTime.parse(last_approved_at, formatter);
+
+                    LocalDateTime oneMonthLater = lastApprovedAt.plusMonths(1).withHour(14).withMinute(0).withSecond(0);
+
+                    LocalDateTime now = LocalDateTime.now();
+
+                    if (now.isBefore(oneMonthLater)) {
+                        isPremium = true;
+                    }
+                }
             }
+
         }
 
         return isPremium;
     }
 
     public KakaoPayDTO.KakaoApproveResponse approveSubscribeResponse(String sid) {
+        if (sid == null || sid.isEmpty()) {
+            throw new GeneralHandler(ErrorStatus.SID_NOT_EXIST);
+        }
+
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("cid", cid);
         parameters.put("sid", sid);
@@ -187,6 +196,10 @@ public class KakaoPayService {
     }
 
     public KakaoPayDTO.KakaoSubscribeCancelResponse subscribeCancelResponse(String sid) {
+        if (sid == null || sid.isEmpty()) {
+            throw new GeneralHandler(ErrorStatus.SID_NOT_EXIST);
+        }
+
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("cid", cid);
         parameters.put("sid", sid);
@@ -201,6 +214,10 @@ public class KakaoPayService {
     }
 
     public KakaoPayDTO.KakaoSubscribeStatusResponse subscribeStatusResponse(String sid) {
+        if (sid == null || sid.isEmpty()) {
+            throw new GeneralHandler(ErrorStatus.SID_NOT_EXIST);
+        }
+
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("cid", cid);
         parameters.put("sid", sid);
