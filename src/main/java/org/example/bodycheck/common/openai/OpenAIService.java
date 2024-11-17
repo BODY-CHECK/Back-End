@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.openai.dto.MessageDTO;
 import org.example.bodycheck.common.openai.dto.OpenAIRequestDTO;
 import org.example.bodycheck.common.openai.dto.OpenAIResponseDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -22,7 +21,7 @@ public class OpenAIService {
     @Transactional
     public String chat(String prompt) {
 
-        String model = "gpt-3.5-turbo"; // "gpt-3.5-turbo", "gpt-4o"
+        String model = "gpt-4o-mini"; // "gpt-3.5-turbo", "gpt-4o-mini", "gpt-4o"
         String url = "https://api.openai.com/v1/chat/completions";
 
         MessageDTO.Message message = new MessageDTO.Message("user", prompt);

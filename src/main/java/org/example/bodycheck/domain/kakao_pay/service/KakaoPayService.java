@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -120,6 +121,48 @@ public class KakaoPayService {
 
     public boolean getKakaoPayLog(Long memberId) {
         return kakaoPayRepository.existsByMember_Id(memberId);
+    }
+
+    public boolean getPremiumState(Long memberId) {
+        boolean isPremium = false;
+
+        if (kakaoPayRepository.existsByMember_Id(memberId)) {
+            KakaoPay kakaoPay =  kakaoPayRepository.findByMember_Id(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_NOT_EXIST));
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("cid", cid);
+            parameters.put("sid", kakaoPay.getSid());
+
+            HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(parameters, this.getHeaders());
+
+            KakaoPayDTO.KakaoSubscribeStatusResponse kakaoSubscribeStatusResponse = restTemplate.postForObject(
+                    "https://open-api.kakaopay.com/online/v1/payment/manage/subscription/status",
+                    requestEntity,
+                    KakaoPayDTO.KakaoSubscribeStatusResponse.class);
+
+            if (kakaoSubscribeStatusResponse.getStatus().equals("ACTIVE")) {
+                isPremium = true;
+            }
+            else {
+                String last_approved_at;
+                if(kakaoSubscribeStatusResponse.getLast_approved_at() == null || kakaoSubscribeStatusResponse.getLast_approved_at().isEmpty()) {
+                    last_approved_at = kakaoSubscribeStatusResponse.getCreated_at();
+                }
+                else last_approved_at = kakaoSubscribeStatusResponse.getLast_approved_at();
+
+                DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+                LocalDateTime lastApprovedAt = LocalDateTime.parse(last_approved_at, formatter);
+
+                LocalDateTime oneMonthLater = lastApprovedAt.plusMonths(1).withHour(14).withMinute(0).withSecond(0);
+
+                LocalDateTime now = LocalDateTime.now();
+
+                if (now.isBefore(oneMonthLater)) {
+                    isPremium = true;
+                }
+            }
+        }
+
+        return isPremium;
     }
 
     public KakaoPayDTO.KakaoApproveResponse approveSubscribeResponse(String sid) {
