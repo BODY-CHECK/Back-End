@@ -1,5 +1,6 @@
 package org.example.bodycheck.domain.kakao_pay.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.ApiResponse;
 import org.example.bodycheck.domain.kakao_pay.converter.KakaoPayConverter;
@@ -19,6 +20,7 @@ public class KakaoPayController {
     private final KakaoPayService kakaoPayService;
 
     @PostMapping("/ready")
+    @Operation(summary = "카카오페이 URL 생성 API", description = "카카오페이 URL을 생성하는 API 입니다.")
     public ApiResponse<KakaoPayDTO.KakaoReadyResponse> readyToKakaoPay(@AuthUser Member member) {
         KakaoPayDTO.KakaoReadyResponse kakaoReadyResponse = kakaoPayService.kakaoPayReady();
 
@@ -74,6 +76,7 @@ public class KakaoPayController {
     }
 
     @PostMapping("/subscribe/cancel")
+    @Operation(summary = "카카오페이 구독 취소 API", description = "카카오페이 구독을 취소하는 API 입니다.")
     public ApiResponse<KakaoPayDTO.KakaoSubscribeCancelResponse> subscribeCancelRequest(@AuthUser Member member) {
         Long memberId = member.getId();
 
@@ -85,6 +88,7 @@ public class KakaoPayController {
     }
 
     @GetMapping("/subscribe/status")
+    @Operation(summary = "카카오페이 구독 상태 확인 API", description = "카카오페이 구독 상태를 확인하는 API 입니다.")
     public ApiResponse<KakaoPayDTO.KakaoPayStatus> subscribeStatusRequest(@AuthUser Member member) {
         Long memberId = member.getId();
 

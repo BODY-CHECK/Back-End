@@ -105,7 +105,7 @@ public class MemberRestController {
     @CrossOrigin
     @PostMapping("/setting/profile")
     @Operation(summary = "프로필 변경 API")
-    public ApiResponse<MemberSettingDTO> profileSetting(@AuthUser Member member, MemberProfileSettingDTO request) {
+    public ApiResponse<MemberSettingDTO> profileSetting(@AuthUser Member member, @RequestBody MemberProfileSettingDTO request) {
         return ApiResponse.onSuccess(settingService.profileSetting(member, request));
     }
 }

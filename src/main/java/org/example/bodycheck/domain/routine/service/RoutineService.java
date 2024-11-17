@@ -10,6 +10,7 @@ import org.example.bodycheck.domain.routine.dto.*;
 import org.example.bodycheck.domain.routine.entity.Routine;
 import org.example.bodycheck.domain.routine.repository.RoutineRepository;
 import org.example.bodycheck.domain.member.entity.Member;
+import org.example.bodycheck.domain.solution.dto.SolutionRequestDTO;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -188,5 +189,48 @@ public class RoutineService {
                         .exerciseId(exercise.getId())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    public String generateRoutine(RoutineRequestDTO.PromptDTO request) {
+        String prompt1 = "Your task is to respond in a consistent style. Answer in the given output format.\n"
+                + "12 types of existing exercises:\n"
+                + "푸쉬업, UPPER_BODY\n"
+                + "푸쉬업(무릎), UPPER_BODY\n"
+                + "풀업, UPPER_BODY\n"
+                + "풀업(밴드), UPPER_BODY\n"
+                + "윗몸일으키기, UPPER_BODY\n"
+                + "레그레이즈, UPPER_BODY\n"
+                + "레그레이즈(행잉), UPPER_BODY\n"
+                + "스쿼드, LOWER_BODY\n"
+                + "한 발 스쿼트, LOWER_BODY\n"
+                + "런지, LOWER_BODY\n"
+                + "카프레이즈, LOWER_BODY\n"
+                + "힙 쓰러스트, LOWER_BODY\n"
+                + "input: \n"
+                + "난 상체를 부수고 싶어.\n"
+                + "output:\n"
+                + "상체 위주의 루틴을 추천해드릴게요!\n\n"
+                + "월 - 푸쉬업, 풀업, 스쿼트\n"
+                + "화 - 윗몸일으키기, 레그레이즈, 힙 쓰러스트\n"
+                + "수 - 풀업, 휴식, 런지\n"
+                + "목 - 스쿼트, 푸쉬업, 레그레이즈\n"
+                + "금 - 윗몸일으키기, 런지, 휴식\n"
+                + "토 - 푸쉬업(무릎), 카프레이즈, 레그레이즈\n"
+                + "일 - 풀업, 윗몸일으키기, 휴식\n"
+                + "input: \n"
+                + "월요일 가슴, 화요일 팔, 수요일 하체, 목요일 등, 금요일 어깨, 주말에는 못한 운동, 매일 복근 운동을 하며 균형잡힌 운동을 하고 싶어.\n"
+                + "output:\n"
+                + "균형 잡힌 운동을 위한 루틴을 추천해드릴게요!\n\n"
+                + "월 - 푸쉬업, 윗몸일으키기, 스쿼트\n"
+                + "화 - 풀업, 레그레이즈, 한 발 스쿼트\n"
+                + "수 - 스쿼트, 카프레이즈, 레그레이즈(행잉)\n"
+                + "목 - 풀업(밴드), 힙 쓰러스트, 윗몸일으키기\n"
+                + "금 - 푸쉬업, 한 발 스쿼트, 레그레이즈\n"
+                + "토 - 푸쉬업(무릎), 카프레이즈, 런지\n"
+                + "일 - 풀업, 윗몸일으키기, 스쿼트\n"
+                + "input: \n";
+        String prompt2 = request.getPrompt();
+        String prompt3 = "\noutput: ";
+        return prompt1 + prompt2 + prompt3;
     }
 }
