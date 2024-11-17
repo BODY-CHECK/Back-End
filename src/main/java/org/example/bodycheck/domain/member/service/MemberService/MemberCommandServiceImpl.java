@@ -53,9 +53,6 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         Member member = MemberConverter.toMember(request, pw);
 
-        System.out.println("Saving Member: " + member); // 디버깅용 출력
-
-
         return memberRepository.save(member);
     }
 
