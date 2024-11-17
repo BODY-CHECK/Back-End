@@ -92,14 +92,18 @@ public class KakaoPayController {
     public ApiResponse<KakaoPayDTO.KakaoPayStatus> subscribeStatusRequest(@AuthUser Member member) {
         Long memberId = member.getId();
 
-        boolean isLogExist = kakaoPayService.getKakaoPayLog(memberId);
-
         KakaoPayDTO.KakaoSubscribeStatusResponse kakaoSubscribeStatusResponse = new KakaoPayDTO.KakaoSubscribeStatusResponse();
 
-        if (isLogExist) {
+        boolean isLogExist = false;
+        if (kakaoPayService.getKakaoPayLog(memberId)) {
             KakaoPay kakaoPay = kakaoPayService.getKakaoPayInfo(memberId);
 
-            kakaoSubscribeStatusResponse = kakaoPayService.subscribeStatusResponse(kakaoPay.getSid());
+            if (kakaoPay.getSid() == null || kakaoPay.getSid().isEmpty()) {}
+            else {
+                isLogExist = true;
+
+                kakaoSubscribeStatusResponse = kakaoPayService.subscribeStatusResponse(kakaoPay.getSid());
+            }
         }
 
         return ApiResponse.onSuccess(KakaoPayConverter.toKakaoPayStatus(isLogExist, kakaoSubscribeStatusResponse));

@@ -29,6 +29,7 @@ public enum ErrorStatus implements BaseErrorCode {
     NICKNAME_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "MEMBER4003", "이미 존재하는 닉네임입니다."),
     TID_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4004", "tid가 존재하지 않습니다."),
     TID_SID_UNSUPPORTED(HttpStatus.BAD_REQUEST, "MEMBER4005", "지원되지 않는 tid, sid 입니다."),
+    SID_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4006", "sid가 존재하지 않습니다."),
 
     // Token Error
     TOKEN_MISSING_AUTHORITY(HttpStatus.UNAUTHORIZED, "TOKEN4001", "권한 정보가 없는 토큰입니다."),
