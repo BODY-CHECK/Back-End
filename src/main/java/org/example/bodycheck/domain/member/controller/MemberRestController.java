@@ -1,19 +1,17 @@
 package org.example.bodycheck.domain.member.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.jwt.JwtTokenDTO;
 import org.example.bodycheck.common.apiPayload.ApiResponse;
+import org.example.bodycheck.domain.kakao_pay.service.KakaoPayService;
 import org.example.bodycheck.domain.member.annotation.AuthUser;
 import org.example.bodycheck.domain.member.converter.MemberConverter;
 import org.example.bodycheck.domain.member.dto.MemberDTO.MemberProfileSettingDTO;
 import org.example.bodycheck.domain.member.dto.MemberDTO.MemberSettingDTO;
 import org.example.bodycheck.domain.member.entity.Member;
 import org.example.bodycheck.domain.member.service.MemberService.MemberCommandService;
-import org.example.bodycheck.domain.member.service.MemberService.MemberQueryService;
 import org.example.bodycheck.domain.member.dto.MemberDTO.MemberRequestDTO;
 import org.example.bodycheck.domain.member.dto.MemberDTO.MemberResponseDTO;
 import org.example.bodycheck.domain.member.service.MemberService.SettingService;
@@ -30,6 +28,7 @@ public class MemberRestController {
     private final MemberCommandService memberCommandService;
     private final SettingService settingService;
     private final RoutineService routineService;
+    private final KakaoPayService kakaoPayService;
 
     @PostMapping("/email/sign-up")
     @Operation(summary = "회원가입 API", description = "이메일로 회원가입을 하는 API 입니다.")
@@ -98,7 +97,9 @@ public class MemberRestController {
     @Operation(summary = "마이페이지 조회 API", description = "마이페이지 정보를 조회하는 API 입니다.")
     public ApiResponse<MemberResponseDTO.MyPageResponseDTO> myPage(@AuthUser Member member) {
 
-        boolean isPremium = false;
+        Long memberId = member.getId();
+
+        boolean isPremium = kakaoPayService.getPremiumState(memberId);
 
         return ApiResponse.onSuccess(MemberConverter.toMyPageResponseDTO(member, isPremium));
     }
