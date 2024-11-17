@@ -15,6 +15,7 @@ public class MemberConverter {
                 .gender(request.getGender())
                 .email(request.getEmail())
                 .pw(encodedPw)
+                .exerciseType(request.getExerciseType())
                 .build();
     }
 
