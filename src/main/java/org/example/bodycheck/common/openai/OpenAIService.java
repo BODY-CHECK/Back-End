@@ -31,7 +31,10 @@ public class OpenAIService {
         messages.add(message);
         OpenAIRequestDTO.ChatGPTRequestDTO request = new OpenAIRequestDTO.ChatGPTRequestDTO(model, messages);
 
+        Long startTime = System.currentTimeMillis();
         OpenAIResponseDTO.ChatGPTResponseDTO response = restTemplate.postForObject(url, request, OpenAIResponseDTO.ChatGPTResponseDTO.class);
+        Long endTime = System.currentTimeMillis();
+        System.out.printf("OpenAIService: Response took %.2f seconds%n", (double)(endTime - startTime)/1000);
 
         String content = response.getChoices().get(0).getMessage().getContent();
 

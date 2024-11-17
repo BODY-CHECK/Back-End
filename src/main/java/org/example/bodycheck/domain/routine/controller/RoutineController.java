@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.ApiResponse;
+import org.example.bodycheck.common.openai.OpenAIService;
 import org.example.bodycheck.domain.routine.dto.*;
 import org.example.bodycheck.domain.routine.service.RoutineService;
 
@@ -20,6 +21,7 @@ import java.util.List;
 @RequestMapping("/api/routine")
 public class RoutineController {
     private final RoutineService routineService;
+    private final OpenAIService openAIService;
 
 //    @Operation(summary = "루틴 생성 API")
 //    @PostMapping("/setting")
@@ -42,7 +44,7 @@ public class RoutineController {
 
     @Operation(summary = "루틴 운동 체크 API")
     @PostMapping("/check")
-    public ApiResponse<RoutineCheckDTO> updateRoutineCheck(@AuthUser Member member, RoutineCheckDTO request){
+    public ApiResponse<RoutineCheckDTO> updateRoutineCheck(@AuthUser Member member, @RequestBody RoutineCheckDTO request){
         return ApiResponse.onSuccess(routineService.checkRoutine(member, request));
     }
 
@@ -56,5 +58,16 @@ public class RoutineController {
     @PostMapping("/random")
     public ApiResponse<List<RoutineRandomDTO>> randomRoutine(@AuthUser Member member){
         return ApiResponse.onSuccess(routineService.randomRoutine(member));
+    }
+
+    @PostMapping("/recommendation")
+    @Operation(summary = "AI 추천 루틴 제공 API")
+    public ApiResponse<String> recommendationRoutine(@AuthUser Member member, @RequestBody RoutineRequestDTO.PromptDTO request) {
+
+        String prompt = routineService.generateRoutine(request);
+
+        String response = openAIService.chat(prompt);
+
+        return ApiResponse.onSuccess(response);
     }
 }

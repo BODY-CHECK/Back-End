@@ -47,7 +47,7 @@ public class SolutionCommandServiceImpl implements SolutionCommandService {
                 + "output:\n"
                 + "총점: 75 / 100\n"
                 + "팔을 잘 구부립니다! 하지만 푸쉬업을 할 때 허리를 곧게 피고, 무릎을 잘 구부리는 것이 중요하니, 신경써서 다시 시도해보세요!\n"
-                + "input: ";
+                + "input: \n";
         String prompt2 = "Exercise Name: " + exercise.getName() + "\nCriteria / Score:\n" + criteriaText;
         String prompt3 = "\noutput: ";
         return prompt1 + prompt2 + prompt3;
