@@ -59,14 +59,14 @@ public class MemberConverter {
                 .build();
     }
 
-    public static MemberResponseDTO.MyPageResponseDTO toMyPageResponseDTO(Member member) {
+    public static MemberResponseDTO.MyPageResponseDTO toMyPageResponseDTO(Member member, boolean isPremium) {
         return MemberResponseDTO.MyPageResponseDTO.builder()
                 .email(member.getEmail())
                 .nickname(member.getNickname())
                 .gender(member.getGender())
                 .height(member.getHeight())
                 .weight(member.getWeight())
-                .premium(member.isPremium())
+                .premium(isPremium)
                 .build();
     }
 }

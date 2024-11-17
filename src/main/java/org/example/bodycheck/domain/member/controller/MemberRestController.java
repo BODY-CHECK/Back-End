@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 public class MemberRestController {
 
     private final MemberCommandService memberCommandService;
-    private final MemberQueryService memberQueryService;
     private final SettingService settingService;
     private final RoutineService routineService;
 
@@ -99,7 +98,9 @@ public class MemberRestController {
     @Operation(summary = "마이페이지 조회 API", description = "마이페이지 정보를 조회하는 API 입니다.")
     public ApiResponse<MemberResponseDTO.MyPageResponseDTO> myPage(@AuthUser Member member) {
 
-        return ApiResponse.onSuccess(MemberConverter.toMyPageResponseDTO(member));
+        boolean isPremium = false;
+
+        return ApiResponse.onSuccess(MemberConverter.toMyPageResponseDTO(member, isPremium));
     }
 
     @CrossOrigin

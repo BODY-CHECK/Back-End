@@ -45,8 +45,6 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ExerciseType exerciseType;
 
-    private boolean premium = false;
-
     private LocalDate inactiveDate;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL) // 원래는 OneToOne
@@ -71,6 +69,4 @@ public class Member extends BaseEntity {
     public void setExerciseType(ExerciseType exerciseType) { this.exerciseType = exerciseType; }
 
     public void setRoutineList(List<Routine> routineList) { this.routineList = routineList; }
-
-    public void setPremium(boolean premium) { this.premium = premium; }
 }
