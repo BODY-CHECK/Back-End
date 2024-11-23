@@ -120,6 +120,7 @@ public class AttendanceService {
 
         return attendanceList.stream()
                 .map(attendance -> AttendanceDTO.builder()
+                        .grade(attendance.getGrade())
                         .date(attendance.getDate().toString()) // "yyyy.MM.dd" 형식으로 반환
                         .build())
                 .collect(Collectors.toList());

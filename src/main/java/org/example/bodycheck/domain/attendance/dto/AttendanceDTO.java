@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class AttendanceDTO {
-    Long memberId;
+    int grade;
     String date;
 }
