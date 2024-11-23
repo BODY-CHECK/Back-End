@@ -17,25 +17,25 @@ public class SolutionCriteria extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "solution_id")
-//    private Solution solution;
-//
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "criteria_id")
-//    private Criteria criteria;
-//
-//    private Integer score;
-//
-//    public void setSolution(Solution solution) {
-//        if(this.solution != null)
-//            solution.getSolutionCriteriaList().remove(this);
-//        this.solution = solution;
-//    }
-//
-//    public void setCriteria(Criteria criteria) {
-//        if(this.criteria != null)
-//            criteria.getSolutionCriteriaList().remove(this);
-//        this.criteria = criteria;
-//    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "solution_id")
+    private Solution solution;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "criteria_id")
+    private Criteria criteria;
+
+    private Integer score;
+
+    public void setSolution(Solution solution) {
+        if(this.solution != null)
+            solution.getSolutionCriteriaList().remove(this);
+        this.solution = solution;
+    }
+
+    public void setCriteria(Criteria criteria) {
+        if(this.criteria != null)
+            criteria.getSolutionCriteriaList().remove(this);
+        this.criteria = criteria;
+    }
 }

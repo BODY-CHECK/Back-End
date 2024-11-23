@@ -25,19 +25,7 @@ public class Criteria extends BaseEntity {
 
     private String criteriaName;
 
-    private Integer score;
+    @OneToMany(mappedBy = "criteria", cascade = CascadeType.ALL)
+    private List<SolutionCriteria> solutionCriteriaList = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "solution_id")
-    private Solution solution;
-
-//    @OneToMany(mappedBy = "criteria", cascade = CascadeType.ALL)
-//    private List<SolutionCriteria> solutionCriteriaList = new ArrayList<>();
-
-    public void setSolution(Solution solution) {
-        if(this.solution != null)
-            solution.getCriteriaList().remove(this);
-        this.solution = solution;
-        //solution.getCriteriaList().add(this);
-    }
 }

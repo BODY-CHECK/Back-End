@@ -34,10 +34,7 @@ public class Solution extends BaseEntity {
     private Exercise exercise;
 
     @OneToMany(mappedBy = "solution", cascade = CascadeType.ALL)
-    private List<Criteria> criteriaList = new ArrayList<>();
-
-//    @OneToMany(mappedBy = "solution", cascade = CascadeType.ALL)
-//    private List<SolutionCriteria> solutionCriteriaList = new ArrayList<>();
+    private List<SolutionCriteria> solutionCriteriaList = new ArrayList<>();
 
     @OneToMany(mappedBy = "solution", cascade = CascadeType.ALL) // 원래는 OneToOne
     private List<SolutionVideo> solutionVideoList = new ArrayList<>();
@@ -55,6 +52,4 @@ public class Solution extends BaseEntity {
         this.exercise = exercise;
         exercise.getSolutionList().add(this);
     }
-
-    public void setCriteriaList(List<Criteria> criteriaList) {this.criteriaList = criteriaList;}
 }
