@@ -85,6 +85,7 @@ public class RoutineService {
                         .weekId(routine.getWeekId())
                         .routineIdx(routine.getRoutineIdx())
                         .exercise(routine.getExercise() != null ? routine.getExercise().getName() : null)
+                        .routineCheck(routine.isRoutineCheck() && routine.getUpdatedAt().toLocalDate().equals(LocalDate.now()))
                         .build())
                 .collect(Collectors.toList());
 
@@ -108,8 +109,10 @@ public class RoutineService {
                         Exercise updatedExercise = exerciseRepository.findById(Long.valueOf(updateDTO.getExerciseId()))
                                 .orElseThrow(() -> new GeneralHandler(ErrorStatus.EXERCISE_NOT_FOUND));
                         existingRoutine.setExercise(updatedExercise); // Exercise 객체 업데이트
+                        existingRoutine.setRoutineCheck(false);
                     } else {
                         existingRoutine.setExercise(null);
+                        existingRoutine.setRoutineCheck(false);
                     }
                     routineRepository.save(existingRoutine);
                     updatedRoutines.add(updateDTO);
