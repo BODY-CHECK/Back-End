@@ -6,8 +6,6 @@ public class CriteriaRequestDTO {
 
     @Getter
     public static class CriteriaDTO {
-        Integer criteriaIdx;
-        String criteriaName;
         Integer score;
     }
 }

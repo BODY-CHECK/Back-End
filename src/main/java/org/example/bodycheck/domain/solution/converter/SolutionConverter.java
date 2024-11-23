@@ -1,8 +1,8 @@
 package org.example.bodycheck.domain.solution.converter;
 
-import org.example.bodycheck.domain.criteria.converter.CriteriaConverter;
 import org.example.bodycheck.domain.criteria.dto.CriteriaResponseDTO;
-import org.example.bodycheck.domain.criteria.entity.Criteria;
+import org.example.bodycheck.domain.mapping.converter.SolutionCriteriaConverter;
+import org.example.bodycheck.domain.mapping.entity.SolutionCriteria;
 import org.example.bodycheck.domain.solution.dto.SolutionRequestDTO;
 import org.example.bodycheck.domain.solution.dto.SolutionResponseDTO;
 import org.example.bodycheck.domain.solution.entity.Solution;
@@ -55,9 +55,9 @@ public class SolutionConverter {
                 .build();
     }
 
-    public static SolutionResponseDTO.SolutionDetailDTO toSolutionDetailDTO(String url, List<Criteria> criteriaList, String content) {
-        List<CriteriaResponseDTO.CriteriaDetailDTO> criteriaDetailDTOList = criteriaList.stream()
-                .map(CriteriaConverter::toCriteriaDetailDTO).collect(Collectors.toList());
+    public static SolutionResponseDTO.SolutionDetailDTO toSolutionDetailDTO(String url, List<SolutionCriteria> solutionCriteriaList, String content) {
+        List<CriteriaResponseDTO.CriteriaDetailDTO> criteriaDetailDTOList = solutionCriteriaList.stream()
+                .map(SolutionCriteriaConverter::toCriteriaDetailDTO).collect(Collectors.toList());
 
         return SolutionResponseDTO.SolutionDetailDTO.builder()
                 .solutionVideoUrl(url)

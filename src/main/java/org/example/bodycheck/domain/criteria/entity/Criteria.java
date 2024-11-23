@@ -3,8 +3,8 @@ package org.example.bodycheck.domain.criteria.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.bodycheck.common.entity.BaseEntity;
+import org.example.bodycheck.domain.exercise.entity.Exercise;
 import org.example.bodycheck.domain.mapping.entity.SolutionCriteria;
-import org.example.bodycheck.domain.solution.entity.Solution;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,19 +25,17 @@ public class Criteria extends BaseEntity {
 
     private String criteriaName;
 
-    private Integer score;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "solution_id")
-    private Solution solution;
+    @JoinColumn(name = "exercise_id")
+    private Exercise exercise;
 
-//    @OneToMany(mappedBy = "criteria", cascade = CascadeType.ALL)
-//    private List<SolutionCriteria> solutionCriteriaList = new ArrayList<>();
+    @OneToMany(mappedBy = "criteria", cascade = CascadeType.ALL)
+    private List<SolutionCriteria> solutionCriteriaList = new ArrayList<>();
 
-    public void setSolution(Solution solution) {
-        if(this.solution != null)
-            solution.getCriteriaList().remove(this);
-        this.solution = solution;
-        //solution.getCriteriaList().add(this);
+    public void setExercise(Exercise exercise) {
+        if(this.exercise != null)
+            exercise.getCriteriaList().remove(this);
+        this.exercise = exercise;
+        exercise.getCriteriaList().add(this);
     }
 }

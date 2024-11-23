@@ -3,7 +3,6 @@ package org.example.bodycheck.domain.solution.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.bodycheck.common.entity.BaseEntity;
-import org.example.bodycheck.domain.criteria.entity.Criteria;
 import org.example.bodycheck.domain.exercise.entity.Exercise;
 import org.example.bodycheck.domain.mapping.entity.SolutionCriteria;
 import org.example.bodycheck.domain.member.entity.Member;
@@ -34,10 +33,7 @@ public class Solution extends BaseEntity {
     private Exercise exercise;
 
     @OneToMany(mappedBy = "solution", cascade = CascadeType.ALL)
-    private List<Criteria> criteriaList = new ArrayList<>();
-
-//    @OneToMany(mappedBy = "solution", cascade = CascadeType.ALL)
-//    private List<SolutionCriteria> solutionCriteriaList = new ArrayList<>();
+    private List<SolutionCriteria> solutionCriteriaList = new ArrayList<>();
 
     @OneToMany(mappedBy = "solution", cascade = CascadeType.ALL) // 원래는 OneToOne
     private List<SolutionVideo> solutionVideoList = new ArrayList<>();
@@ -56,5 +52,5 @@ public class Solution extends BaseEntity {
         exercise.getSolutionList().add(this);
     }
 
-    public void setCriteriaList(List<Criteria> criteriaList) {this.criteriaList = criteriaList;}
+    public void setSolutionCriteriaList(List<SolutionCriteria> solutionCriteriaList) {this.solutionCriteriaList = solutionCriteriaList;}
 }

@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface CriteriaRepository extends JpaRepository<Criteria, Long> {
 
-    List<Criteria> findBySolution_Id(Long solutionId);
+    List<Criteria> findByExercise_Id(Long exerciseId);
+
 }
