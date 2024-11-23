@@ -24,4 +24,10 @@ public class Attendance extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    private int grade;
+
+    public void setGrade(int grade) { // setter 메서드 추가
+        this.grade = grade;
+    }
 }

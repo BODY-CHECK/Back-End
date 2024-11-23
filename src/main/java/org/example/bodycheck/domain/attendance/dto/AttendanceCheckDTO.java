@@ -7,5 +7,6 @@ import lombok.Getter;
 @Builder
 public class AttendanceCheckDTO {
     Boolean checked;
+    int grade;
     String message;
 }
