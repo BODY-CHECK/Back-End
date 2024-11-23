@@ -3,7 +3,7 @@ package org.example.bodycheck.domain.solution.service;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
-import org.example.bodycheck.domain.criteria.converter.CriteriaConverter;
+import org.example.bodycheck.domain.criteria.dto.CriteriaRequestDTO;
 import org.example.bodycheck.domain.criteria.entity.Criteria;
 import org.example.bodycheck.domain.criteria.repository.CriteriaRepository;
 import org.example.bodycheck.domain.exercise.entity.Exercise;
@@ -16,8 +16,9 @@ import org.example.bodycheck.domain.solution.repository.SolutionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -27,12 +28,19 @@ public class SolutionCommandServiceImpl implements SolutionCommandService {
     private final SolutionRepository solutionRepository;
     private final MemberRepository memberRepository;
     private final ExerciseRepository exerciseRepository;
+    private final CriteriaRepository criteriaRepository;
 
     @Override
     @Transactional
     public String generateSolution(Long memberId, Long exerciseId, SolutionRequestDTO.PromptDTO request) {
-        String criteriaText = request.getCriteria().stream()
-                .map(criteriaItem -> criteriaItem.getCriteriaIdx() + ". " + criteriaItem.getCriteriaName() + " / " + criteriaItem.getScore() + "\n")
+        List<Criteria> criterias = criteriaRepository.findByExercise_Id(exerciseId);
+
+        String criteriaText = IntStream.range(0, criterias.size())
+                .mapToObj(i -> {
+                    Criteria criteria = criterias.get(i);
+                    CriteriaRequestDTO.CriteriaDTO criteriaDTO = request.getCriteria().get(i);
+                    return criteria.getCriteriaIdx() + ". " + criteria.getCriteriaName() + " / " + criteriaDTO.getScore() + "\n";
+                })
                 .collect(Collectors.joining());
 
         Exercise exercise = exerciseRepository.findById(exerciseId).orElseThrow(() -> new GeneralHandler(ErrorStatus.EXERCISE_NOT_FOUND));

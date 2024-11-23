@@ -11,9 +11,9 @@ import org.example.bodycheck.common.apiPayload.ApiResponse;
 import org.example.bodycheck.common.openai.OpenAIService;
 import org.example.bodycheck.common.validation.annotation.ExistExercise;
 import org.example.bodycheck.common.validation.annotation.ExistSolution;
-import org.example.bodycheck.domain.criteria.entity.Criteria;
-import org.example.bodycheck.domain.criteria.service.CriteriaCommandService;
-import org.example.bodycheck.domain.criteria.service.CriteriaQueryService;
+import org.example.bodycheck.domain.mapping.entity.SolutionCriteria;
+import org.example.bodycheck.domain.mapping.service.SolutionCriteriaCommandService;
+import org.example.bodycheck.domain.mapping.service.SolutionCriteriaQueryService;
 import org.example.bodycheck.domain.member.annotation.AuthUser;
 import org.example.bodycheck.domain.member.entity.Member;
 import org.example.bodycheck.domain.member.service.MemberService.MemberQueryService;
@@ -38,13 +38,12 @@ import java.util.List;
 @RequestMapping("/solutions")
 public class SolutionRestController {
 
-    private final MemberQueryService memberQueryService;
     private final SolutionCommandService solutionCommandService;
     private final SolutionQueryService solutionQueryService;
-    private final CriteriaCommandService criteriaCommandService;
+    private final SolutionCriteriaCommandService solutionCriteriaCommandService;
+    private final SolutionCriteriaQueryService solutionCriteriaQueryService;
     private final SolutionVideoCommandService solutionVideoCommandService;
     private final SolutionVideoQueryService solutionVideoQueryService;
-    private final CriteriaQueryService criteriaQueryService;
     private final OpenAIService openAIService;
 
 
@@ -86,7 +85,7 @@ public class SolutionRestController {
         Long memberId = member.getId();
 
         Solution solution = solutionCommandService.saveSolution(memberId, exerciseId, request);
-        criteriaCommandService.saveCriteria(solution, request);
+        solutionCriteriaCommandService.saveSolutionCriteria(solution, exerciseId, request);
         solutionVideoCommandService.uploadFile(solution, file);
 
         return ApiResponse.onSuccess(SolutionConverter.toSolutionResultDTO(solution));
@@ -122,11 +121,11 @@ public class SolutionRestController {
 
         String url = solutionVideoQueryService.getUrl(solutionId);
 
-        List<Criteria> criteriaList = criteriaQueryService.getCriteriaList(solutionId);
+        List<SolutionCriteria> solutionCriteriaList = solutionCriteriaQueryService.getSolutionCriteriaList(solutionId);
 
         String content = solutionQueryService.getSolutionContent(solutionId, memberId);
 
-        return ApiResponse.onSuccess(SolutionConverter.toSolutionDetailDTO(url, criteriaList, content));
+        return ApiResponse.onSuccess(SolutionConverter.toSolutionDetailDTO(url, solutionCriteriaList, content));
     }
 
     @GetMapping("/expert/{solutionId}")

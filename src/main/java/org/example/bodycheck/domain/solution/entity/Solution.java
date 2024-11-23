@@ -3,7 +3,6 @@ package org.example.bodycheck.domain.solution.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.bodycheck.common.entity.BaseEntity;
-import org.example.bodycheck.domain.criteria.entity.Criteria;
 import org.example.bodycheck.domain.exercise.entity.Exercise;
 import org.example.bodycheck.domain.mapping.entity.SolutionCriteria;
 import org.example.bodycheck.domain.member.entity.Member;
@@ -52,4 +51,6 @@ public class Solution extends BaseEntity {
         this.exercise = exercise;
         exercise.getSolutionList().add(this);
     }
+
+    public void setSolutionCriteriaList(List<SolutionCriteria> solutionCriteriaList) {this.solutionCriteriaList = solutionCriteriaList;}
 }

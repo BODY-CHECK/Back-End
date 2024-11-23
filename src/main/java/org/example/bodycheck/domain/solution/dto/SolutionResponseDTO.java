@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.bodycheck.domain.criteria.dto.CriteriaRequestDTO;
 import org.example.bodycheck.domain.criteria.dto.CriteriaResponseDTO;
 
 import java.util.Date;
