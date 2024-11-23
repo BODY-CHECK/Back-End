@@ -64,4 +64,10 @@ public class SolutionConverter {
                 .criteriaDetailList(criteriaDetailDTOList)
                 .content(content).build();
     }
+
+    public static SolutionResponseDTO.ExpertSolutionDTO toExpertSolutionDTO(String url) {
+        return SolutionResponseDTO.ExpertSolutionDTO.builder()
+                .solutionVideoUrl(url)
+                .build();
+    }
 }

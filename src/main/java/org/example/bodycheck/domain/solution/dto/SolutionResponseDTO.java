@@ -52,4 +52,12 @@ public class SolutionResponseDTO {
         List<CriteriaResponseDTO.CriteriaDetailDTO> criteriaDetailList;
         String content;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ExpertSolutionDTO {
+        String solutionVideoUrl;
+    }
 }

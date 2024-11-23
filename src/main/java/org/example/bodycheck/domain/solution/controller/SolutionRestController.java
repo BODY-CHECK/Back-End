@@ -111,7 +111,7 @@ public class SolutionRestController {
     }
 
     @GetMapping("/{solutionId}")
-    @Operation(summary = "솔루션 단건 조회 API", description = "사용자가 솔루션을 저장하는 API입니다.")
+    @Operation(summary = "솔루션 단건 조회 API", description = "솔루션 단건 조회하는 API입니다.")
     @Parameters({
             @Parameter(name = "solutionId", description = "어떤 솔루션인지 판단하는 솔루션 아이디, path variable 입니다!")
     })
@@ -127,5 +127,17 @@ public class SolutionRestController {
         String content = solutionQueryService.getSolutionContent(solutionId, memberId);
 
         return ApiResponse.onSuccess(SolutionConverter.toSolutionDetailDTO(url, criteriaList, content));
+    }
+
+    @GetMapping("/expert/{solutionId}")
+    @Operation(summary = "전문가 영상 조회 API", description = "전문가 영상을 조회하는 API입니다.")
+    @Parameters({
+            @Parameter(name = "solutionId", description = "운동 전문가에 대한 솔루션 id, path variable 입니다!")
+    })
+    public ApiResponse<SolutionResponseDTO.ExpertSolutionDTO> getExpertExerciseVideoDetail(@AuthUser Member member,
+                                                                                @ExistSolution @PathVariable("solutionId") Long solutionId) {
+        String url = solutionVideoQueryService.getUrl(solutionId);
+
+        return ApiResponse.onSuccess(SolutionConverter.toExpertSolutionDTO(url));
     }
 }
