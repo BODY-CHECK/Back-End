@@ -38,5 +38,6 @@ public class OpenAIService {
         String content = response.getChoices().get(0).getMessage().getContent();
 
         return content;
+
     }
 }
