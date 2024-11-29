@@ -194,7 +194,7 @@ public class RoutineService {
                 .collect(Collectors.toList());
     }
 
-    public String generateRoutine(RoutineRequestDTO.PromptDTO request) {
+    public String generateRoutine(String request) {
         String prompt1 = "Your task is to create a workout routine based on the input."
                 + "You must reflect the degree of rest that the user wants."
                 + "How many times you want to rest means all day long."
@@ -275,7 +275,7 @@ public class RoutineService {
                 + "토 - 윗몸일으키기, 카프레이즈, 스쿼트\n"
                 + "일 - 푸쉬업, 레그레이즈(행잉), 런지\n\n"
                 + "Input: ";
-        String prompt2 = request.getPrompt();
+        String prompt2 = request;
         String prompt3 = "\nOutput:";
         return prompt1 + prompt2 + prompt3;
 

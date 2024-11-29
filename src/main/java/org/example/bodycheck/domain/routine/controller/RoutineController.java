@@ -12,7 +12,9 @@ import org.example.bodycheck.domain.routine.service.RoutineService;
 import org.example.bodycheck.domain.member.annotation.AuthUser;
 import org.example.bodycheck.domain.member.entity.Member;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Tag(name = "루틴 관련 API")
@@ -60,13 +62,21 @@ public class RoutineController {
         return ApiResponse.onSuccess(routineService.randomRoutine(member));
     }
 
-    @PostMapping("/recommendation")
+    @PostMapping(value = "/recommendation", consumes = "multipart/form-data")
     @Operation(summary = "AI 추천 루틴 제공 API")
-    public ApiResponse<String> recommendationRoutine(@AuthUser Member member, @RequestBody RoutineRequestDTO.PromptDTO request) {
+    public ApiResponse<String> recommendationRoutine(@AuthUser Member member,
+                                                     @RequestPart(value = "image", required = false) MultipartFile image,
+                                                     @RequestPart(value = "prompt") @Valid String request) throws IOException {
 
         String prompt = routineService.generateRoutine(request);
 
-        String response = openAIService.chat(prompt);
+        String response;
+        if (image == null) {
+            response = openAIService.chat(prompt);
+        }
+        else {
+            response = openAIService.vision(image, prompt);
+        }
 
         return ApiResponse.onSuccess(response);
     }
