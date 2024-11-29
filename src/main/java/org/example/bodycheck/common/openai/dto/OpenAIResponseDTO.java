@@ -9,7 +9,7 @@ public class OpenAIResponseDTO { // openAI에서 받은 DTO
     @Getter
     public static class ChoiceDTO {
         private int index;
-        private MessageDTO.Message message;
+        private MessageDTO.TextMessage message;
     }
 
     @Getter

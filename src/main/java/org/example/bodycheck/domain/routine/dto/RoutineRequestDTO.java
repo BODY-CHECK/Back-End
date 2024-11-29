@@ -19,9 +19,4 @@ public class RoutineRequestDTO {
         String exercise;
 
     }
-
-    @Getter
-    public static class PromptDTO {
-        String prompt;
-    }
 }
