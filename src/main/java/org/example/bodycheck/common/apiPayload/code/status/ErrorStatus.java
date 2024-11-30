@@ -30,6 +30,7 @@ public enum ErrorStatus implements BaseErrorCode {
     TID_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4004", "tid가 존재하지 않습니다."),
     TID_SID_UNSUPPORTED(HttpStatus.BAD_REQUEST, "MEMBER4005", "지원되지 않는 tid, sid 입니다."),
     SID_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4006", "sid가 존재하지 않습니다."),
+    KAKAO_USER(HttpStatus.BAD_REQUEST, "MEMBER4007", "카카오 유저에게는 지원하지 않는 기능입니다."),
 
     // Token Error
     TOKEN_MISSING_AUTHORITY(HttpStatus.UNAUTHORIZED, "TOKEN4001", "권한 정보가 없는 토큰입니다."),
