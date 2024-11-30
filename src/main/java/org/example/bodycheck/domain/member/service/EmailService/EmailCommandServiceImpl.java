@@ -82,6 +82,10 @@ public class EmailCommandServiceImpl implements EmailCommandService {
     public void sendNewPwEmail(EmailRequestDTO.EmailDTO request) {
         Member member = memberRepository.findByEmail(request.getEmail()).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
+        if (member.getPw() == null || member.getPw().isEmpty()) {
+            throw new GeneralHandler(ErrorStatus.KAKAO_USER);
+        }
+
         String newPw = generateNewPw();
 
         SimpleMailMessage message = new SimpleMailMessage();

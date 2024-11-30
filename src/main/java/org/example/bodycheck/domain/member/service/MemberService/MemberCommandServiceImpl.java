@@ -189,6 +189,10 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     @Transactional
     public boolean verifyPassword(Long memberId, MemberRequestDTO.PasswordDTO request) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        if (member.getPw() == null || member.getPw().isEmpty()) {
+            throw new GeneralHandler(ErrorStatus.KAKAO_USER);
+        }
+
         String clientPw = request.getPw();
         return passwordEncoder.matches(clientPw, member.getPw());
     }
