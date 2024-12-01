@@ -2,6 +2,7 @@ package org.example.bodycheck.domain.member.dto.MemberDTO;
 
 import jakarta.validation.constraints.Email;
 import lombok.*;
+import org.example.bodycheck.domain.enums.ExerciseType;
 import org.example.bodycheck.domain.enums.Gender;
 
 public class MemberResponseDTO {
@@ -60,6 +61,8 @@ public class MemberResponseDTO {
         private Float height;
 
         private Float weight;
+
+        private ExerciseType exerciseType;
 
         private boolean premium;
     }
