@@ -47,8 +47,8 @@ public class Member extends BaseEntity {
 
     private LocalDate inactiveDate;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL) // 원래는 OneToOne
-    private List<RefreshToken> refreshToken = new ArrayList<>();
+//    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL) // 원래는 OneToOne
+//    private List<RefreshToken> refreshToken = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Attendance> attendanceList = new ArrayList<>();
