@@ -20,7 +20,7 @@ public class KakaoPay extends BaseEntity {
 
     private String sid;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
