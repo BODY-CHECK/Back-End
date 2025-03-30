@@ -48,7 +48,7 @@ public class Member extends BaseEntity {
     private LocalDate inactiveDate;
 
 //    // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
-//    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL) // 원래는 OneToOne
+//    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
 //    private List<RefreshToken> refreshToken = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
@@ -60,8 +60,8 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Solution> solutionList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL) // 원래는 OneToOne
-    private List<KakaoPay> kakaoPay = new ArrayList<>();
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
+    private KakaoPay kakaoPay;
 
     public void updatePw(String pw) { this.pw = pw; }
 
