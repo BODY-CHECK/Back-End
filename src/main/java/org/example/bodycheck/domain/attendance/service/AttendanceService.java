@@ -45,7 +45,7 @@ public class AttendanceService {
         for (Routine routine : routines) {
             if (routine.getExercise() != null && routine.getExercise().getId() != null &&
                     routine.getExercise().getId().equals(exerciseId)) { // exerciseId 비교
-                routine.setRoutineCheck(true); // check 값을 true로 설정
+                routine.updateRoutineCheck(true); // check 값을 true로 설정
                 routineRepository.save(routine);
             }
         }
@@ -91,7 +91,7 @@ public class AttendanceService {
         attendance = attendanceRepository.findByMemberAndDate(member, today).orElseThrow(() -> new GeneralHandler(ErrorStatus.ATTENDANCE_NOT_FOUND));
 
         if (attendance.getGrade() < grade) {
-            attendance.setGrade(grade);
+            attendance.updateGrade(grade);
             attendanceRepository.save(attendance);
         }
 

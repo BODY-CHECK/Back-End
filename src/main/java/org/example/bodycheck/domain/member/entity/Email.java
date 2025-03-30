@@ -21,5 +21,5 @@ public class Email extends BaseEntity {
 
     private String code;
 
-    public void setCode(String code) { this.code = code; }
+    public void updateCode(String code) { this.code = code; }
 }

@@ -31,11 +31,4 @@ public class Criteria extends BaseEntity {
 
     @OneToMany(mappedBy = "criteria", cascade = CascadeType.ALL)
     private List<SolutionCriteria> solutionCriteriaList = new ArrayList<>();
-
-    public void setExercise(Exercise exercise) {
-        if(this.exercise != null)
-            exercise.getCriteriaList().remove(this);
-        this.exercise = exercise;
-        exercise.getCriteriaList().add(this);
-    }
 }

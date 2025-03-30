@@ -71,7 +71,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         if (existingRefreshToken != null) {
             redisService.deleteValue(clientEmail);
         }
-        redisService.setValuesWithTTL(clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
+        redisService.saveKeyValueWithTTL(clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
 
 //        // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
 //        RefreshToken refreshToken;
@@ -107,7 +107,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         if (existingRefreshToken != null) {
             redisService.deleteValue(clientEmail);
         }
-        redisService.setValuesWithTTL(clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
+        redisService.saveKeyValueWithTTL(clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
 
 //        // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
 //        RefreshToken refreshToken;
@@ -137,7 +137,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         if (existingRefreshToken != null) {
             redisService.deleteValue(clientEmail);
         }
-        redisService.setValuesWithTTL(clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
+        redisService.saveKeyValueWithTTL(clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
 
 //        // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
 //        RefreshToken refreshToken;
@@ -216,7 +216,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         JwtTokenDTO jwtTokenDTO = jwtTokenProvider.generateTokenDTO(authentication);
 
-        redisService.setValuesWithTTL(clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
+        redisService.saveKeyValueWithTTL(clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
 
 //        // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
 //        String email = authentication.getName();
@@ -244,7 +244,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     @Transactional
     public String changePassword(Long memberId, MemberRequestDTO.PasswordDTO request) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
-        member.setPw(passwordEncoder.encode(request.getPw()));
+        member.updatePw(passwordEncoder.encode(request.getPw()));
         memberRepository.save(member);
 
         return "비밀번호가 성공적으로 변경되었습니다.";

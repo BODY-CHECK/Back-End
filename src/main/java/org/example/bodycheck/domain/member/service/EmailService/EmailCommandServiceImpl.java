@@ -47,7 +47,7 @@ public class EmailCommandServiceImpl implements EmailCommandService {
         Email mail;
         if (emailRepository.existsByEmail(request.getEmail())) {
             mail = emailRepository.findByEmail(request.getEmail()).orElseThrow(() -> new GeneralHandler(ErrorStatus.EMAIL_NOT_FOUND));
-            mail.setCode(code);
+            mail.updateCode(code);
         }
         else {
             mail = EmailConverter.toMail(request.getEmail(), code);
@@ -95,7 +95,7 @@ public class EmailCommandServiceImpl implements EmailCommandService {
 
         mailSender.send(message);
 
-        member.setPw(passwordEncoder.encode(newPw));
+        member.updatePw(passwordEncoder.encode(newPw));
         memberRepository.save(member);
     }
 
