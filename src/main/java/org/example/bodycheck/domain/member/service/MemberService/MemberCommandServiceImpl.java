@@ -5,6 +5,7 @@ import org.example.bodycheck.common.jwt.JwtTokenDTO;
 import org.example.bodycheck.common.jwt.JwtTokenProvider;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
+import org.example.bodycheck.common.redis.RedisService;
 import org.example.bodycheck.domain.kakao_pay.controller.KakaoPayController;
 import org.example.bodycheck.domain.kakao_pay.converter.KakaoPayConverter;
 import org.example.bodycheck.domain.kakao_pay.dto.KakaoPayDTO;
@@ -29,10 +30,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberCommandServiceImpl implements MemberCommandService {
 
     private final MemberRepository memberRepository;
-    private final RefreshRepository refreshRepository;
+//    private final RefreshRepository refreshRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final KakaoPayRepository kakaoPayRepository;
+    private final RedisService redisService;
 
     @Override
     @Transactional
@@ -65,15 +67,22 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         JwtTokenDTO jwtTokenDTO = jwtTokenProvider.generateTokenDTO(authentication);
 
-        RefreshToken refreshToken;
-        if (refreshRepository.existsByMember_Id(member.getId())) {
-            refreshToken = refreshRepository.findByMember_Id(member.getId()).orElseThrow(() -> new GeneralHandler(ErrorStatus.TOKEN_UNSUPPORTED));
-            refreshToken.setRefreshToken(jwtTokenDTO.getRefreshToken());
+        String existingRefreshToken = redisService.getValues(clientEmail);
+        if (existingRefreshToken != null) {
+            redisService.deleteValue(clientEmail);
         }
-        else {
-            refreshToken = RefreshTokenConverter.toRefreshToken(jwtTokenDTO.getRefreshToken(), member);
-        }
-        refreshRepository.save(refreshToken);
+        redisService.setValuesWithTTL(clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
+
+//        // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
+//        RefreshToken refreshToken;
+//        if (refreshRepository.existsByMember_Id(member.getId())) {
+//            refreshToken = refreshRepository.findByMember_Id(member.getId()).orElseThrow(() -> new GeneralHandler(ErrorStatus.TOKEN_UNSUPPORTED));
+//            refreshToken.setRefreshToken(jwtTokenDTO.getRefreshToken());
+//        }
+//        else {
+//            refreshToken = RefreshTokenConverter.toRefreshToken(jwtTokenDTO.getRefreshToken(), member);
+//        }
+//        refreshRepository.save(refreshToken);
 
         return jwtTokenDTO;
     }
@@ -94,15 +103,22 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         JwtTokenDTO jwtTokenDTO = jwtTokenProvider.generateTokenDTO(authentication);
 
-        RefreshToken refreshToken;
-        if (refreshRepository.existsByMember_Id(member.getId())) {
-            refreshToken = refreshRepository.findByMember_Id(member.getId()).orElseThrow(() -> new GeneralHandler(ErrorStatus.TOKEN_UNSUPPORTED));
-            refreshToken.setRefreshToken(jwtTokenDTO.getRefreshToken());
+        String existingRefreshToken = redisService.getValues(clientEmail);
+        if (existingRefreshToken != null) {
+            redisService.deleteValue(clientEmail);
         }
-        else {
-            refreshToken = RefreshTokenConverter.toRefreshToken(jwtTokenDTO.getRefreshToken(), member);
-        }
-        refreshRepository.save(refreshToken);
+        redisService.setValuesWithTTL(clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
+
+//        // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
+//        RefreshToken refreshToken;
+//        if (refreshRepository.existsByMember_Id(member.getId())) {
+//            refreshToken = refreshRepository.findByMember_Id(member.getId()).orElseThrow(() -> new GeneralHandler(ErrorStatus.TOKEN_UNSUPPORTED));
+//            refreshToken.setRefreshToken(jwtTokenDTO.getRefreshToken());
+//        }
+//        else {
+//            refreshToken = RefreshTokenConverter.toRefreshToken(jwtTokenDTO.getRefreshToken(), member);
+//        }
+//        refreshRepository.save(refreshToken);
 
         return jwtTokenDTO;
     }
@@ -117,15 +133,22 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         JwtTokenDTO jwtTokenDTO = jwtTokenProvider.generateTokenDTO(authentication);
 
-        RefreshToken refreshToken;
-        if (refreshRepository.existsByMember_Id(member.getId())) {
-            refreshToken = refreshRepository.findByMember_Id(member.getId()).orElseThrow(() -> new GeneralHandler(ErrorStatus.TOKEN_UNSUPPORTED));
-            refreshToken.setRefreshToken(jwtTokenDTO.getRefreshToken());
+        String existingRefreshToken = redisService.getValues(clientEmail);
+        if (existingRefreshToken != null) {
+            redisService.deleteValue(clientEmail);
         }
-        else {
-            refreshToken = RefreshTokenConverter.toRefreshToken(jwtTokenDTO.getRefreshToken(), member);
-        }
-        refreshRepository.save(refreshToken);
+        redisService.setValuesWithTTL(clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
+
+//        // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
+//        RefreshToken refreshToken;
+//        if (refreshRepository.existsByMember_Id(member.getId())) {
+//            refreshToken = refreshRepository.findByMember_Id(member.getId()).orElseThrow(() -> new GeneralHandler(ErrorStatus.TOKEN_UNSUPPORTED));
+//            refreshToken.setRefreshToken(jwtTokenDTO.getRefreshToken());
+//        }
+//        else {
+//            refreshToken = RefreshTokenConverter.toRefreshToken(jwtTokenDTO.getRefreshToken(), member);
+//        }
+//        refreshRepository.save(refreshToken);
 
         return jwtTokenDTO;
     }
@@ -155,10 +178,13 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
     @Override
     @Transactional
-    public void logout(Long memberId) {
-        RefreshToken deleteRefreshToken = refreshRepository.findByMember_Id(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.TOKEN_NOT_EXIST));
-        refreshRepository.delete(deleteRefreshToken);
-        refreshRepository.flush();
+    public void logout(String clientEmail) {
+        redisService.deleteValue(clientEmail);
+
+//        // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
+//        RefreshToken deleteRefreshToken = refreshRepository.findByMember_Id(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.TOKEN_NOT_EXIST));
+//        refreshRepository.delete(deleteRefreshToken);
+//        refreshRepository.flush();
     }
 
     @Override
@@ -166,21 +192,38 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     public JwtTokenDTO refreshToken(MemberRequestDTO.refreshTokenDTO request) {
         String token = request.getRefreshToken();
 
-        if (!refreshRepository.existsByRefreshToken(token) || !jwtTokenProvider.validateToken(token)) {
+        if (!jwtTokenProvider.validateToken(token)) {
             throw new GeneralHandler(ErrorStatus.TOKEN_NOT_EXIST);
         }
 
+//        // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
+//        if (!refreshRepository.existsByRefreshToken(token) || !jwtTokenProvider.validateToken(token)) {
+//            throw new GeneralHandler(ErrorStatus.TOKEN_NOT_EXIST);
+//        }
+
         Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(token);
-        RefreshToken deleteRefreshToken = refreshRepository.findByRefreshToken(token).orElseThrow(() -> new GeneralHandler(ErrorStatus.TOKEN_NOT_EXIST));
-        refreshRepository.delete(deleteRefreshToken);
+        String clientEmail = authentication.getName();
+
+        if (!token.equals(redisService.getValues(clientEmail))) {
+            throw new GeneralHandler(ErrorStatus.TOKEN_NOT_EXIST);
+        }
+
+        redisService.deleteValue(clientEmail);
+
+//        // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
+//        RefreshToken deleteRefreshToken = refreshRepository.findByRefreshToken(token).orElseThrow(() -> new GeneralHandler(ErrorStatus.TOKEN_NOT_EXIST));
+//        refreshRepository.delete(deleteRefreshToken);
 
         JwtTokenDTO jwtTokenDTO = jwtTokenProvider.generateTokenDTO(authentication);
 
-        String email = authentication.getName();
-        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        redisService.setValuesWithTTL(clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
 
-        RefreshToken refreshToken = RefreshTokenConverter.toRefreshToken(jwtTokenDTO.getRefreshToken(), member);
-        refreshRepository.save(refreshToken);
+//        // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
+//        String email = authentication.getName();
+//        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
+//
+//        RefreshToken refreshToken = RefreshTokenConverter.toRefreshToken(jwtTokenDTO.getRefreshToken(), member);
+//        refreshRepository.save(refreshToken);
 
         return jwtTokenDTO;
     }

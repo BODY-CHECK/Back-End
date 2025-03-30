@@ -13,7 +13,7 @@ public interface MemberCommandService {
     JwtTokenDTO socialLogin(String clientEmail);
     boolean isUser(String clientEmail);
     boolean isNormalUser(String clientEmail);
-    void logout(Long memberId);
+    void logout(String clientEmail);
     JwtTokenDTO refreshToken(MemberRequestDTO.refreshTokenDTO request);
     boolean verifyPassword(Long memberId, MemberRequestDTO.PasswordDTO request);
     String changePassword(Long memberId, MemberRequestDTO.PasswordDTO request);
