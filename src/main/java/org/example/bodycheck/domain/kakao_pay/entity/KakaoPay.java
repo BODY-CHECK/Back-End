@@ -24,7 +24,12 @@ public class KakaoPay extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public void setTid(String tid) { this.tid = tid; }
+    public void updateTid(String tid) { this.tid = tid; }
 
-    public void setSid(String sid) { this.sid = sid; }
+    public void updateSid(String sid) { this.sid = sid; }
+
+    public void updatePayInfo(String tid, String sid) {
+        this.tid = tid;
+        this.sid = sid;
+    }
 }

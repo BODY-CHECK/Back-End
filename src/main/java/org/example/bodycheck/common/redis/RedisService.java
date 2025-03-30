@@ -19,12 +19,12 @@ public class RedisService {
     }
 
     @Transactional
-    public void setValues(String key, String value) {
+    public void saveKeyValue(String key, String value) {
         redisTemplate.opsForValue().set(key, value);
     }
 
     @Transactional
-    public void setValuesWithTTL(String key, String value, long ttl) {
+    public void saveKeyValueWithTTL(String key, String value, long ttl) {
         redisTemplate.opsForValue().set(key, value, Duration.ofMillis(ttl));
     }
 

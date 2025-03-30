@@ -38,19 +38,17 @@ public class Solution extends BaseEntity {
     @OneToMany(mappedBy = "solution", cascade = CascadeType.ALL) // 원래는 OneToOne
     private List<SolutionVideo> solutionVideoList = new ArrayList<>();
 
-    public void setMember(Member member) {
+    public void mappingMemberAndExercise(Member member, Exercise exercise) {
         if(this.member != null)
             member.getSolutionList().remove(this);
         this.member = member;
         member.getSolutionList().add(this);
-    }
 
-    public void setExercise(Exercise exercise) {
         if(this.exercise != null)
             exercise.getSolutionList().remove(this);
         this.exercise = exercise;
         exercise.getSolutionList().add(this);
     }
 
-    public void setSolutionCriteriaList(List<SolutionCriteria> solutionCriteriaList) {this.solutionCriteriaList = solutionCriteriaList;}
+    public void initSolutionCriteriaList(List<SolutionCriteria> solutionCriteriaList) {this.solutionCriteriaList = solutionCriteriaList;}
 }

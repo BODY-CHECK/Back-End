@@ -9,9 +9,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+@Deprecated
 @RestController
 @RequiredArgsConstructor
 public class OpenAIController {
+    // 테스트 용
 
     private final OpenAIService openAIService;
 

@@ -27,13 +27,11 @@ public class SolutionCriteria extends BaseEntity {
 
     private Integer score;
 
-    public void setSolution(Solution solution) {
+    public void mappingSolutionAndCriteria(Solution solution ,Criteria criteria) {
         if(this.solution != null)
             solution.getSolutionCriteriaList().remove(this);
         this.solution = solution;
-    }
 
-    public void setCriteria(Criteria criteria) {
         if(this.criteria != null)
             criteria.getSolutionCriteriaList().remove(this);
         this.criteria = criteria;

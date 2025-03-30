@@ -4,12 +4,13 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.example.bodycheck.common.entity.BaseEntity;
 
+@Deprecated
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class RefreshToken extends BaseEntity {
+public class RefreshToken extends BaseEntity { // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -237,7 +237,7 @@ public class KakaoPayService {
         KakaoPay kakaoPay;
         if (kakaoPayRepository.existsByMember_Id(member.getId())) {
             kakaoPay = kakaoPayRepository.findByMember_Id(member.getId()).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_SID_UNSUPPORTED));
-            kakaoPay.setTid(tid);
+            kakaoPay.updateTid(tid);
         }
         else {
             kakaoPay = KakaoPayConverter.toKakaoPayTid(tid, member);
@@ -249,7 +249,7 @@ public class KakaoPayService {
 
         KakaoPay kakaoPay = kakaoPayRepository.findByTid(kakaoApproveResponse.getTid()).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_NOT_EXIST));
 
-        kakaoPay.setSid(kakaoApproveResponse.getSid());
+        kakaoPay.updateSid(kakaoApproveResponse.getSid());
 
         kakaoPayRepository.save(kakaoPay);
     }
@@ -260,8 +260,7 @@ public class KakaoPayService {
         KakaoPay kakaoPay;
         if (kakaoPayRepository.existsByMember_Id(member.getId())) {
             kakaoPay = kakaoPayRepository.findByMember_Id(member.getId()).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_SID_UNSUPPORTED));
-            kakaoPay.setTid(kakaoApproveResponse.getTid());
-            kakaoPay.setSid(kakaoApproveResponse.getSid());
+            kakaoPay.updatePayInfo(kakaoApproveResponse.getTid(), kakaoApproveResponse.getSid());
         }
         else {
             kakaoPay = KakaoPayConverter.toKakaoPay(kakaoApproveResponse.getTid(), kakaoApproveResponse.getSid(), member);

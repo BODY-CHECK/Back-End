@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
+@Deprecated
 public interface RefreshRepository extends JpaRepository<RefreshToken, Long> {
 
     boolean existsByMember_Id(Long memberId);
