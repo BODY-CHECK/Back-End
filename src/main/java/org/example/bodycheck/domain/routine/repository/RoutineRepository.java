@@ -12,5 +12,6 @@ import java.util.Optional;
 @Repository
 public interface RoutineRepository extends JpaRepository<Routine, Long> {
     List<Routine> findByMemberIdAndWeekId(@Param("memberId") Long memberId, @Param("weekId") Integer weekId);
+    List<Routine> findByMember_IdAndWeekIdAndExercise_Id(Long memberId, Integer weekId, Long exerciseId);
     List<Routine> findByMemberId(@Param("memberId") Long memberId);
 }
