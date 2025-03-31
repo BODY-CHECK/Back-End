@@ -40,14 +40,11 @@ public class AttendanceService {
 
         int dayNumber = (dayOfWeek.getValue() % 7) + 1;
 
-        List<Routine> routines = routineRepository.findByMemberIdAndWeekId(member.getId(), dayNumber);
+        List<Routine> routines = routineRepository.findByMember_IdAndWeekIdAndExercise_Id(member.getId(), dayNumber, exerciseId);
 
         for (Routine routine : routines) {
-            if (routine.getExercise() != null && routine.getExercise().getId() != null &&
-                    routine.getExercise().getId().equals(exerciseId)) { // exerciseId 비교
-                routine.updateRoutineCheck(true); // check 값을 true로 설정
-                routineRepository.save(routine);
-            }
+            routine.updateRoutineCheck(true); // check 값을 true로 설정
+            routineRepository.save(routine);
         }
 
         double avgScore = request.getCriteria().stream()
