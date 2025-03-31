@@ -74,7 +74,7 @@ public class RoutineService {
 
     public List<WeekRoutineDTO> getWeekRoutine(Integer weekId, Member member) {
 
-        List<Routine> routines = routineRepository.findByMemberIdAndWeekId(member.getId(), weekId);
+        List<Routine> routines = routineRepository.findByMemberIdAndWeekIdWithExercise(member.getId(), weekId);
 
         if (routines.isEmpty()) {
             throw new GeneralHandler(ErrorStatus.ROUTINE_WEEK_NOT_FOUND);
