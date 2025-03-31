@@ -6,11 +6,6 @@ import org.example.bodycheck.common.jwt.JwtTokenProvider;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
 import org.example.bodycheck.common.redis.RedisService;
-import org.example.bodycheck.domain.kakao_pay.controller.KakaoPayController;
-import org.example.bodycheck.domain.kakao_pay.converter.KakaoPayConverter;
-import org.example.bodycheck.domain.kakao_pay.dto.KakaoPayDTO;
-import org.example.bodycheck.domain.kakao_pay.entity.KakaoPay;
-import org.example.bodycheck.domain.kakao_pay.repository.KakaoPayRepository;
 import org.example.bodycheck.domain.member.converter.MemberConverter;
 import org.example.bodycheck.domain.member.converter.RefreshTokenConverter;
 import org.example.bodycheck.domain.member.entity.Member;
@@ -33,7 +28,6 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 //    private final RefreshRepository refreshRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final KakaoPayRepository kakaoPayRepository;
     private final RedisService redisService;
 
     @Override
@@ -127,7 +121,8 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     @Transactional
     public JwtTokenDTO socialLogin(String clientEmail) {
 
-        Member member = memberRepository.findByEmail(clientEmail).orElseThrow(() -> new GeneralHandler(ErrorStatus.LOGIN_UNAUTHORIZED));
+//        // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
+//        Member member = memberRepository.findByEmail(clientEmail).orElseThrow(() -> new GeneralHandler(ErrorStatus.LOGIN_UNAUTHORIZED));
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(clientEmail, null);
 
@@ -157,9 +152,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     @Transactional
     public boolean isUser(String clientEmail) {
 
-        boolean isUser = memberRepository.existsByEmail(clientEmail);
-
-        return isUser;
+        return memberRepository.existsByEmail(clientEmail);
     }
 
     @Override
