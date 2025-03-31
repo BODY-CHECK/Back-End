@@ -40,11 +40,12 @@ public class Routine extends BaseEntity {
         member.getRoutineList().add(this);
     }
 
-    public void setExercise(Exercise exercise) {
+    public void updateRoutineInfo(Exercise exercise, Boolean routineCheck) {
         this.exercise = exercise;
+        this.routineCheck = routineCheck;
     }
 
-    public void setRoutineCheck(Boolean routineCheck) { // setter 메서드 추가
+    public void updateRoutineCheck(Boolean routineCheck) { // setter 메서드 추가
         this.routineCheck = routineCheck;
     }
 }

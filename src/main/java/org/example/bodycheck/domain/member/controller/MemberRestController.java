@@ -34,7 +34,7 @@ public class MemberRestController {
     @Operation(summary = "회원가입 API", description = "이메일로 회원가입을 하는 API 입니다.")
     public ApiResponse<MemberResponseDTO.AccessTokenResponseDTO> signUp(@Valid @RequestBody MemberRequestDTO.SignUpDTO request) {
         Member member = memberCommandService.signUp(request);
-        routineService.setRoutine(member);
+        routineService.initRoutine(member);
         JwtTokenDTO jwtTokenDTO = memberCommandService.directLogin(member);
         return ApiResponse.onSuccess(MemberConverter.toAccessTokenResponseDTO(jwtTokenDTO));
     }
@@ -56,9 +56,9 @@ public class MemberRestController {
     @PostMapping("/logout")
     @Operation(summary = "로그아웃 API", description = "로그아웃을 하는 API 입니다.")
     public ApiResponse<String> logout(@AuthUser Member member) {
-        Long memberId = member.getId();
+        String email = member.getEmail();
 
-        memberCommandService.logout(memberId);
+        memberCommandService.logout(email);
         return ApiResponse.onSuccess("로그아웃이 완료되었습니다.");
     }
 

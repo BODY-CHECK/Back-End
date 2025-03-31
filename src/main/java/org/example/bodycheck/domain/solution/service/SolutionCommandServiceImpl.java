@@ -65,8 +65,7 @@ public class SolutionCommandServiceImpl implements SolutionCommandService {
     @Transactional
     public Solution saveSolution(Long memberId, Long exerciseId, SolutionRequestDTO.SaveDTO request) {
         Solution solution = SolutionConverter.toSolution(request);
-        solution.setMember(memberRepository.findById(memberId).get());
-        solution.setExercise(exerciseRepository.findById(exerciseId).get());
+        solution.mappingMemberAndExercise(memberRepository.findById(memberId).get(), exerciseRepository.findById(exerciseId).get());
 
         return solutionRepository.save(solution);
     }

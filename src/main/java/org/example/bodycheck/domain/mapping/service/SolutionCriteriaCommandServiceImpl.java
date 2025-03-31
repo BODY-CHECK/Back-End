@@ -27,7 +27,7 @@ public class SolutionCriteriaCommandServiceImpl implements SolutionCriteriaComma
     @Transactional
     public void saveSolutionCriteria(Solution solution, Long exerciseId, SolutionRequestDTO.SaveDTO request) {
         if (solution.getSolutionCriteriaList() == null) {
-            solution.setSolutionCriteriaList(new ArrayList<>()); // `criteriaList`가 `null`이면 초기화
+            solution.initSolutionCriteriaList(new ArrayList<>()); // `criteriaList`가 `null`이면 초기화
         }
         List<Criteria> criterias = criteriaRepository.findByExercise_Id(exerciseId);
 
@@ -38,8 +38,7 @@ public class SolutionCriteriaCommandServiceImpl implements SolutionCriteriaComma
 
                     // SolutionCriteria 변환 및 설정
                     SolutionCriteria solutionCriteria = SolutionCriteriaConverter.toSolutionCriteria(criteriaDTO);
-                    solutionCriteria.setSolution(solution); // Solution 설정
-                    solutionCriteria.setCriteria(criteria); // 매핑된 Criteria 설정
+                    solutionCriteria.mappingSolutionAndCriteria(solution, criteria); // Solution과 Criteria 매핑
 
                     // Repository에 저장
                     solutionCriteriaRepository.save(solutionCriteria);

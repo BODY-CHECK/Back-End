@@ -22,9 +22,7 @@ public class SettingService {
             }
         }
 
-            member.setNickname(profileSettingDTO.getNickname());
-
-        member.setExerciseType(profileSettingDTO.getExerciseType());
+        member.updateProfile(profileSettingDTO.getNickname(), profileSettingDTO.getExerciseType());
 
         memberRepository.save(member);
 

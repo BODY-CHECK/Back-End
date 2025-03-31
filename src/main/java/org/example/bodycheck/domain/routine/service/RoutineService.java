@@ -25,9 +25,9 @@ public class RoutineService {
     private final RoutineRepository routineRepository;
     private final ExerciseRepository exerciseRepository;
 
-    public void setRoutine(Member member) {
+    public void initRoutine(Member member) {
         if (member.getRoutineList() == null) {
-            member.setRoutineList(new ArrayList<>()); // `routineList`가 `null`이면 초기화
+            member.initRoutineList(new ArrayList<>()); // `routineList`가 `null`이면 초기화
         }
 
         List<Routine> routines = new ArrayList<>();
@@ -74,7 +74,7 @@ public class RoutineService {
 
     public List<WeekRoutineDTO> getWeekRoutine(Integer weekId, Member member) {
 
-        List<Routine> routines = routineRepository.findByMemberIdAndWeekId(member.getId(), weekId);
+        List<Routine> routines = routineRepository.findByMemberIdAndWeekIdWithExercise(member.getId(), weekId);
 
         if (routines.isEmpty()) {
             throw new GeneralHandler(ErrorStatus.ROUTINE_WEEK_NOT_FOUND);
@@ -108,11 +108,9 @@ public class RoutineService {
                     if (updateDTO.getExerciseId() != null) {
                         Exercise updatedExercise = exerciseRepository.findById(Long.valueOf(updateDTO.getExerciseId()))
                                 .orElseThrow(() -> new GeneralHandler(ErrorStatus.EXERCISE_NOT_FOUND));
-                        existingRoutine.setExercise(updatedExercise); // Exercise 객체 업데이트
-                        existingRoutine.setRoutineCheck(false);
+                        existingRoutine.updateRoutineInfo(updatedExercise, false); // 루틴 정보 업데이트
                     } else {
-                        existingRoutine.setExercise(null);
-                        existingRoutine.setRoutineCheck(false);
+                        existingRoutine.updateRoutineInfo(null, false);
                     }
                     routineRepository.save(existingRoutine);
                     updatedRoutines.add(updateDTO);
@@ -123,11 +121,9 @@ public class RoutineService {
     }
 
     public RoutineCheckDTO checkRoutine(Member member, RoutineCheckDTO routineCheckDTO) {
-        Routine routine = routineRepository.findById(routineCheckDTO.getRoutineId())
+        Routine routine = routineRepository.findByIdAndMember_id(routineCheckDTO.getRoutineId(), member.getId())
                 .orElseThrow(() -> new GeneralHandler(ErrorStatus.ROUTINE_NOT_FOUND));
-        if(!Objects.equals(routine.getMember().getId(), member.getId())){
-            throw new GeneralHandler(ErrorStatus.TOKEN_MISSING_AUTHORITY);
-        }
+
         DayOfWeek currentDayOfWeek = LocalDate.now().getDayOfWeek();
         int currentWeekId = currentDayOfWeek.getValue();
 
@@ -135,7 +131,7 @@ public class RoutineService {
             throw new GeneralHandler(ErrorStatus.INVALID_ROUTINE_CHECK); // 요일이 맞지 않으면 예외 처리
         }
 
-        routine.setRoutineCheck(true);
+        routine.updateRoutineCheck(true);
         routineRepository.save(routine);
 
         return RoutineCheckDTO.builder()
@@ -155,7 +151,7 @@ public class RoutineService {
 
         for (Routine routine : routines) {
             if (routine.getWeekId() != currentWeekId) {
-                routine.setRoutineCheck(false);
+                routine.updateRoutineCheck(false);
             }
         }
         routineRepository.saveAll(routines);

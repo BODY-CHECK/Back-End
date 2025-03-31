@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
+@Deprecated
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
