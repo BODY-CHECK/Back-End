@@ -121,11 +121,9 @@ public class RoutineService {
     }
 
     public RoutineCheckDTO checkRoutine(Member member, RoutineCheckDTO routineCheckDTO) {
-        Routine routine = routineRepository.findById(routineCheckDTO.getRoutineId())
+        Routine routine = routineRepository.findByIdAndMember_id(routineCheckDTO.getRoutineId(), member.getId())
                 .orElseThrow(() -> new GeneralHandler(ErrorStatus.ROUTINE_NOT_FOUND));
-        if(!Objects.equals(routine.getMember().getId(), member.getId())){
-            throw new GeneralHandler(ErrorStatus.TOKEN_MISSING_AUTHORITY);
-        }
+
         DayOfWeek currentDayOfWeek = LocalDate.now().getDayOfWeek();
         int currentWeekId = currentDayOfWeek.getValue();
 
