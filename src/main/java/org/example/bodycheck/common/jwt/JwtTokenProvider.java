@@ -77,6 +77,15 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(principal, "", principal.getAuthorities());
     }
 
+    public long getExpiration(String accessToken) {
+        Claims claims = parseClaims(accessToken);
+
+        long expiration = claims.getExpiration().getTime();
+        long now = new Date().getTime();
+
+        return expiration - now;
+    }
+
     public Authentication getAuthenticationFromRefreshToken(String refreshToken) {
         Claims claims = parseClaims(refreshToken);
 

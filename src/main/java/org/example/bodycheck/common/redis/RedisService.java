@@ -18,6 +18,8 @@ public class RedisService {
         return redisTemplate.opsForValue().get(key);
     }
 
+    public boolean existKey(String key) { return Boolean.TRUE.equals(redisTemplate.hasKey(key)); }
+
     @Transactional
     public void saveKeyValue(String key, String value) {
         redisTemplate.opsForValue().set(key, value);

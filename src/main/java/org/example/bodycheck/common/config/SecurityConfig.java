@@ -3,6 +3,7 @@ package org.example.bodycheck.common.config;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.jwt.JwtAuthenticationFilter;
 import org.example.bodycheck.common.jwt.JwtTokenProvider;
+import org.example.bodycheck.common.redis.RedisService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisService redisService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -37,7 +39,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 // JWT 인증을 위하여 직접 구현한 필터를 UsernamePasswordAuthenticationFilter 전에 실행
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisService), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
