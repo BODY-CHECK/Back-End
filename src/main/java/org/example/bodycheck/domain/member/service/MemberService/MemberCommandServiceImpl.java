@@ -61,11 +61,10 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         JwtTokenDTO jwtTokenDTO = jwtTokenProvider.generateTokenDTO(authentication);
 
-        String existingRefreshToken = redisService.getValues(clientEmail);
-        if (existingRefreshToken != null) {
-            redisService.deleteValue(clientEmail);
+        if (redisService.existKey("refresh:" + clientEmail)) {
+            redisService.deleteValue("refresh:" + clientEmail);
         }
-        redisService.saveKeyValueWithTTL(clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
+        redisService.saveKeyValueWithTTL("refresh:" + clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
 
 //        // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
 //        RefreshToken refreshToken;
@@ -97,11 +96,10 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         JwtTokenDTO jwtTokenDTO = jwtTokenProvider.generateTokenDTO(authentication);
 
-        String existingRefreshToken = redisService.getValues(clientEmail);
-        if (existingRefreshToken != null) {
-            redisService.deleteValue(clientEmail);
+        if (redisService.existKey("refresh:" + clientEmail)) {
+            redisService.deleteValue("refresh:" + clientEmail);
         }
-        redisService.saveKeyValueWithTTL(clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
+        redisService.saveKeyValueWithTTL("refresh:" + clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
 
 //        // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
 //        RefreshToken refreshToken;
@@ -128,11 +126,10 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         JwtTokenDTO jwtTokenDTO = jwtTokenProvider.generateTokenDTO(authentication);
 
-        String existingRefreshToken = redisService.getValues(clientEmail);
-        if (existingRefreshToken != null) {
-            redisService.deleteValue(clientEmail);
+        if (redisService.existKey("refresh:" + clientEmail)) {
+            redisService.deleteValue("refresh:" + clientEmail);
         }
-        redisService.saveKeyValueWithTTL(clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
+        redisService.saveKeyValueWithTTL("refresh:" + clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
 
 //        // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
 //        RefreshToken refreshToken;
@@ -171,8 +168,10 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
     @Override
     @Transactional
-    public void logout(String clientEmail) {
-        redisService.deleteValue(clientEmail);
+    public void logout(String clientEmail, String accessToken) {
+        long ttl = jwtTokenProvider.getExpiration(accessToken);
+        redisService.saveKeyValueWithTTL("blacklist:" + accessToken, "logout", ttl);
+        redisService.deleteValue("refresh:" + clientEmail);
 
 //        // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
 //        RefreshToken deleteRefreshToken = refreshRepository.findByMember_Id(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.TOKEN_NOT_EXIST));
@@ -197,11 +196,11 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(token);
         String clientEmail = authentication.getName();
 
-        if (!token.equals(redisService.getValues(clientEmail))) {
+        if (!token.equals(redisService.getValues("refresh:" + clientEmail))) {
             throw new GeneralHandler(ErrorStatus.TOKEN_NOT_EXIST);
         }
 
-        redisService.deleteValue(clientEmail);
+        redisService.deleteValue("refresh:" + clientEmail);
 
 //        // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
 //        RefreshToken deleteRefreshToken = refreshRepository.findByRefreshToken(token).orElseThrow(() -> new GeneralHandler(ErrorStatus.TOKEN_NOT_EXIST));
@@ -209,7 +208,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         JwtTokenDTO jwtTokenDTO = jwtTokenProvider.generateTokenDTO(authentication);
 
-        redisService.saveKeyValueWithTTL(clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
+        redisService.saveKeyValueWithTTL("refresh:" + clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
 
 //        // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
 //        String email = authentication.getName();

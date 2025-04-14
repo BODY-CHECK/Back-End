@@ -38,6 +38,7 @@ public enum ErrorStatus implements BaseErrorCode {
     TOKEN_SIGNATURE_INVALID(HttpStatus.UNAUTHORIZED, "TOKEN4003", "잘못된 JWT 서명입니다."),
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "TOKEN4004", "만료된 JWT 토큰입니다."),
     TOKEN_UNSUPPORTED(HttpStatus.BAD_REQUEST, "TOKEN4005", "지원되지 않는 JWT 토큰입니다."),
+    TOKEN_BLACKLIST(HttpStatus.BAD_REQUEST, "TOKEN4006", "블랙리스트 JWT 토큰입니다."),
 
     // Exercise Error
     EXERCISE_NOT_FOUND(HttpStatus.BAD_REQUEST, "EXERCISE4001", "운동이 없습니다."),

@@ -55,10 +55,12 @@ public class MemberRestController {
 
     @PostMapping("/logout")
     @Operation(summary = "로그아웃 API", description = "로그아웃을 하는 API 입니다.")
-    public ApiResponse<String> logout(@AuthUser Member member) {
+    public ApiResponse<String> logout(@AuthUser Member member,
+                                      @RequestHeader("Authorization") String authorizationHeader) {
         String email = member.getEmail();
+        String token = authorizationHeader.startsWith("Bearer ") ? authorizationHeader.substring(7) : authorizationHeader;
 
-        memberCommandService.logout(email);
+        memberCommandService.logout(email, token);
         return ApiResponse.onSuccess("로그아웃이 완료되었습니다.");
     }
 
