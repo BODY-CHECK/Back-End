@@ -1,20 +1,23 @@
 package org.example.bodycheck.common.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
-import org.example.bodycheck.common.exception.handler.GeneralHandler;
 import org.example.bodycheck.common.redis.RedisService;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends GenericFilterBean {
@@ -31,15 +34,21 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         String token = resolveToken((HttpServletRequest) request);
         //System.out.println(token + " Filter - validate 위에 토큰");
 
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            if (redisService.existKey("blacklist:" + token)) {
-                throw new GeneralHandler(ErrorStatus.TOKEN_BLACKLIST);
-            }
+        try {
+            if (token != null && jwtTokenProvider.validateToken(token)) {
+                if (redisService.existKey("blacklist:" + token)) {
+                    throw new RuntimeException("블랙리스트 JWT 토큰입니다.");
+                }
 
-            Authentication authentication = jwtTokenProvider.getAuthenticationFromAccessToken(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                Authentication authentication = jwtTokenProvider.getAuthenticationFromAccessToken(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+            chain.doFilter(request, response);
         }
-        chain.doFilter(request, response);
+        catch (RuntimeException e) {
+            errorResponse((HttpServletResponse) response, e);
+        }
+
     }
 
     private String resolveToken(HttpServletRequest request) {
@@ -48,5 +57,19 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             return bearerToken.substring(7);
         }
         return null;
+    }
+
+    private void errorResponse(HttpServletResponse response, RuntimeException e) throws IOException {
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        Map<String, Object> errorBody = new HashMap<>();
+        errorBody.put("isSuccess", false);
+        errorBody.put("code", HttpStatus.UNAUTHORIZED.value());
+        errorBody.put("message", e.getMessage());
+
+        String json = new ObjectMapper().writeValueAsString(errorBody);
+        response.getWriter().write(json);
     }
 }
