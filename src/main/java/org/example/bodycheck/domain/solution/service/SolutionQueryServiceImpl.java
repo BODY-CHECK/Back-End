@@ -4,15 +4,20 @@ import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.GeneralException;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
+import org.example.bodycheck.common.jwt.JwtTokenProvider;
+import org.example.bodycheck.common.redis.RedisService;
 import org.example.bodycheck.domain.enums.ExerciseType;
 import org.example.bodycheck.domain.solution.entity.Solution;
 import org.example.bodycheck.domain.solution.repository.SolutionRepository;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,6 +26,7 @@ import java.util.Optional;
 public class SolutionQueryServiceImpl implements SolutionQueryService {
 
     private final SolutionRepository solutionRepository;
+    private final RedisService redisService;
 
     @Override
     public Optional<Solution> findSolution(Long id) {
@@ -28,7 +34,7 @@ public class SolutionQueryServiceImpl implements SolutionQueryService {
     }
 
     @Override
-    public Slice<Solution> getSolutionList(Long memberId, String exerciseType, Integer period, Integer page) {
+    public List<Solution> getSolutionList(Long memberId, String exerciseType, Integer period, Integer page) {
         if (!exerciseType.equals("NULL") && !exerciseType.equals("UPPER_BODY") && !exerciseType.equals("LOWER_BODY")) {
             throw new GeneralHandler(ErrorStatus.EXERCISE_TYPE_NOT_FOUND);
         }
@@ -65,10 +71,40 @@ public class SolutionQueryServiceImpl implements SolutionQueryService {
                 throw new GeneralHandler(ErrorStatus.SOLUTION_CATEGORY_NOT_FOUND);
         }
 
-        Slice<Solution> solutionList = solutionRepository.findSolutions(memberId, type, year, month, PageRequest.of(page, 10));
+        LocalDateTime cursor;
+        Integer pageSize = 10;
+        Pageable pageable = PageRequest.of(0, pageSize + 1, Sort.by("createdAt").descending());
 
-        if (solutionList.isEmpty() && page != 0) {
-            throw new GeneralHandler(ErrorStatus.SOLUTION_PAGE_NOT_FOUND);
+        if (page == 0) {
+            cursor = LocalDateTime.now();
+        } else {
+            if (redisService.existKey("cursor:" + memberId)) {
+                String cursor_value = redisService.getValues("cursor:" + memberId);
+                cursor = LocalDateTime.parse(cursor_value);
+            }
+            else {
+                throw new GeneralHandler(ErrorStatus.SOLUTION_PAGE_NOT_FOUND);
+            }
+        }
+
+        List<Solution> solutionList = solutionRepository.findSolutions(memberId, type, year, month, cursor, pageable);
+
+        if (solutionList.isEmpty()) {
+            if (page != 0) {
+                throw new GeneralHandler(ErrorStatus.SOLUTION_PAGE_NOT_FOUND);
+            }
+
+            return solutionList;
+        }
+
+        boolean hasNext = solutionList.size() > pageSize;
+        if (hasNext) {
+            LocalDateTime new_cursor = solutionList.get(pageSize - 1).getCreatedAt();
+            redisService.saveKeyValueWithTTL("cursor:" + memberId, String.valueOf(new_cursor), 1000 * 60 * 60);
+        }
+        else {
+            LocalDateTime new_cursor = solutionList.getLast().getCreatedAt();
+            redisService.saveKeyValueWithTTL("cursor:" + memberId, String.valueOf(new_cursor), 1000 * 60 * 60);
         }
 
         return solutionList;
