@@ -187,7 +187,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(token);
         String clientEmail = authentication.getName();
 
-        if (!token.equals(redisService.getValues("refresh:" + clientEmail))) {
+        if (!redisService.existKey("refresh:" + clientEmail) || !token.equals(redisService.getValues("refresh:" + clientEmail))) {
             throw new GeneralHandler(ErrorStatus.TOKEN_NOT_EXIST);
         }
 
