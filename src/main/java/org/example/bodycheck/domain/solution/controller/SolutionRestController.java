@@ -16,7 +16,6 @@ import org.example.bodycheck.domain.mapping.service.SolutionCriteriaCommandServi
 import org.example.bodycheck.domain.mapping.service.SolutionCriteriaQueryService;
 import org.example.bodycheck.domain.member.annotation.AuthUser;
 import org.example.bodycheck.domain.member.entity.Member;
-import org.example.bodycheck.domain.member.service.MemberService.MemberQueryService;
 import org.example.bodycheck.domain.solution.converter.SolutionConverter;
 import org.example.bodycheck.domain.solution.dto.SolutionRequestDTO;
 import org.example.bodycheck.domain.solution.dto.SolutionResponseDTO;
@@ -25,7 +24,6 @@ import org.example.bodycheck.domain.solution.service.SolutionCommandService;
 import org.example.bodycheck.domain.solution.service.SolutionQueryService;
 import org.example.bodycheck.domain.solutionVideo.service.SolutionVideoCommandService;
 import org.example.bodycheck.domain.solutionVideo.service.SolutionVideoQueryService;
-import org.springframework.data.domain.Slice;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -105,8 +103,8 @@ public class SolutionRestController {
 
         Long memberId = member.getId();
 
-        Slice<Solution> solutionList = solutionQueryService.getSolutionList(memberId, exerciseType, period, page);
-        return ApiResponse.onSuccess(SolutionConverter.solutionListDTO(solutionList));
+        List<Solution> solutionList = solutionQueryService.getSolutionList(memberId, exerciseType, period, page);
+        return ApiResponse.onSuccess(SolutionConverter.solutionListDTO(solutionList, page));
     }
 
     @GetMapping("/{solutionId}")

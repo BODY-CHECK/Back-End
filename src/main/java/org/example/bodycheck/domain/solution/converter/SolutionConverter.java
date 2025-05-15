@@ -6,7 +6,6 @@ import org.example.bodycheck.domain.mapping.entity.SolutionCriteria;
 import org.example.bodycheck.domain.solution.dto.SolutionRequestDTO;
 import org.example.bodycheck.domain.solution.dto.SolutionResponseDTO;
 import org.example.bodycheck.domain.solution.entity.Solution;
-import org.springframework.data.domain.Slice;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -41,17 +40,25 @@ public class SolutionConverter {
                 .build();
     }
 
-    public static SolutionResponseDTO.SolutionListDTO solutionListDTO(Slice<Solution> solutionList) {
+    public static SolutionResponseDTO.SolutionListDTO solutionListDTO(List<Solution> solutionList, Integer page) {
 
         List<SolutionResponseDTO.SolutionInfoDTO> solutionInfoDTOList = solutionList.stream()
                 .map(SolutionConverter::toSolutionInfoDTO).collect(Collectors.toList());
 
+        boolean isFirst = page.equals(0);
+        boolean hasNext = solutionInfoDTOList.size() > 10;
+        boolean isLast = !hasNext;
+
+        if (hasNext) {
+            solutionInfoDTOList = solutionInfoDTOList.subList(0, 10);
+        }
+
         return SolutionResponseDTO.SolutionListDTO.builder()
                 .solutionList(solutionInfoDTOList)
-                .isFirst(solutionList.isFirst())
-                .isLast(solutionList.isLast())
-                .listSize(solutionList.getSize())
-                .hasNext(solutionList.hasNext())
+                .isFirst(isFirst)
+                .isLast(isLast)
+                .listSize(solutionInfoDTOList.size())
+                .hasNext(hasNext)
                 .build();
     }
 
