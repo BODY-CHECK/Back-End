@@ -61,9 +61,6 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         JwtTokenDTO jwtTokenDTO = jwtTokenProvider.generateTokenDTO(authentication);
 
-        if (redisService.existKey("refresh:" + clientEmail)) {
-            redisService.deleteValue("refresh:" + clientEmail);
-        }
         redisService.saveKeyValueWithTTL("refresh:" + clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
 
 //        // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
@@ -96,9 +93,6 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         JwtTokenDTO jwtTokenDTO = jwtTokenProvider.generateTokenDTO(authentication);
 
-        if (redisService.existKey("refresh:" + clientEmail)) {
-            redisService.deleteValue("refresh:" + clientEmail);
-        }
         redisService.saveKeyValueWithTTL("refresh:" + clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
 
 //        // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
@@ -126,9 +120,6 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         JwtTokenDTO jwtTokenDTO = jwtTokenProvider.generateTokenDTO(authentication);
 
-        if (redisService.existKey("refresh:" + clientEmail)) {
-            redisService.deleteValue("refresh:" + clientEmail);
-        }
         redisService.saveKeyValueWithTTL("refresh:" + clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
 
 //        // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
