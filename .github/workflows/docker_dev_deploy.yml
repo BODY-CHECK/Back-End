@@ -43,7 +43,7 @@ jobs:
         run: docker build -t bodycheck .
 
       - name: Tag Docker image
-        run: docker tag silverbridge/backend-user ${{ steps.login-ecr.outputs.registry }}/bodycheck:latest
+        run: docker tag bodycheck:latest ${{ steps.login-ecr.outputs.registry }}/bodycheck:latest
 
       - name: Push Docker image to ECR
         run: docker push ${{ steps.login-ecr.outputs.registry }}/bodycheck:latest
