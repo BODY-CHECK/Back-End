@@ -1,14 +1,14 @@
-name: bodycheck Dev CI/CD
+name: bodycheck docker Dev CI/CD
 
 on:
-  pull_request:
-    types: [closed]
-  workflow_dispatch: # (2).수동 실행도 가능하도록
+  push:
+    branches:
+      - core/132   # (1) core/132 브랜치에 push될 때 실행
+  workflow_dispatch: # (2) 수동 실행도 가능하도록
 
 jobs:
   build:
     runs-on: ubuntu-latest # (3).OS환경
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop'
 
     steps:
       - name: Checkout
@@ -28,6 +28,26 @@ jobs:
         run: ./gradlew clean build -x test
         shell: bash # (7).build시작
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ap-northeast-2
+          aws-access-key-id: ${{ secrets.AWS_ECR_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_ECR_SECRET_ACCESS_KEY }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image
+        run: docker build -t bodycheck .
+
+      - name: Tag Docker image
+        run: docker tag silverbridge/backend-user ${{ steps.login-ecr.outputs.registry }}/bodycheck:latest
+
+      - name: Push Docker image to ECR
+        run: docker push ${{ steps.login-ecr.outputs.registry }}/bodycheck:latest
+
       - name: Get current time
         uses: 1466587594/get-current-time@v2
         id: current-time
@@ -42,9 +62,8 @@ jobs:
       - name: Generate deployment package
         run: |
           mkdir -p deploy
-          cp build/libs/*.jar deploy/application.jar
-          cp Procfile deploy/Procfile
-          cp -r .ebextensions_dev deploy/.ebextensions
+          cp -r .ebextensions_docker_dev deploy/.ebextensions
+          cp Dockerrun.aws.json deploy/Dockerrun.aws.json
           cp -r .platform deploy/.platform
           cd deploy && zip -r deploy.zip .
 
@@ -53,8 +72,8 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_ACTION_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_ACTION_SECRET_ACCESS_KEY }}
-          application_name: body-check-dev
-          environment_name: Body-check-dev-env
+          application_name: body-check-v2-dev
+          environment_name: Body-check-v2-dev-env
           version_label: github-action-${{ steps.current-time.outputs.formattedTime }}
           region: ap-northeast-2
           deployment_package: deploy/deploy.zip
