@@ -16,7 +16,7 @@
       "essential": true,
       "memory": 512,
       "portMappings": [
-        { "containerPort": 8080 }
+        { "containerPort": 8080, "hostPort": 8080 }
       ],
       "links": ["redis"]
     },
