@@ -1,12 +1,41 @@
 {
-  "AWSEBDockerrunVersion": "1",
-  "Image": {
-    "Name": "205930641663.dkr.ecr.ap-northeast-2.amazonaws.com/bodycheck:latest",
-    "Update": "true"
-  },
-  "Ports": [
+  "AWSEBDockerrunVersion": "3",
+  "containerDefinitions": [
     {
-      "ContainerPort": "8080"
+      "name": "springboot",
+      "image": "205930641663.dkr.ecr.ap-northeast-2.amazonaws.com/bodycheck/springboot:latest",
+      "essential": true,
+      "memory": 512,
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 8080
+        }
+      ]
+    },
+    {
+      "name": "nginx",
+      "image": "205930641663.dkr.ecr.ap-northeast-2.amazonaws.com/bodycheck/nginx:latest",
+      "essential": true,
+      "memory": 256,
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 80
+        }
+      ]
+    },
+    {
+      "name": "redis",
+      "image": "redis:6.2-alpine",
+      "essential": true,
+      "memory": 128,
+      "portMappings": [
+        {
+          "containerPort": 6379,
+          "hostPort": 6379
+        }
+      ]
     }
   ]
 }

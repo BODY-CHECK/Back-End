@@ -39,14 +39,23 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build Docker image
-        run: docker build -t bodycheck .
+      - name: Build Springboot Docker image
+        run: docker build -t bodycheck/springboot -f springboot/Dockerfile .
 
-      - name: Tag Docker image
-        run: docker tag bodycheck:latest ${{ steps.login-ecr.outputs.registry }}/bodycheck:latest
+      - name: Tag Springboot Docker image
+        run: docker tag bodycheck/springboot:latest ${{ steps.login-ecr.outputs.registry }}/bodycheck/springboot:latest
 
-      - name: Push Docker image to ECR
-        run: docker push ${{ steps.login-ecr.outputs.registry }}/bodycheck:latest
+      - name: Push Springboot Docker image to ECR
+        run: docker push ${{ steps.login-ecr.outputs.registry }}/bodycheck/springboot:latest
+
+      - name: Build Nginx Docker image
+        run: docker build -t bodycheck/nginx -f nginx/Dockerfile .
+
+      - name: Tag Nginx Docker image
+        run: docker tag bodycheck/nginx:latest ${{ steps.login-ecr.outputs.registry }}/bodycheck/nginx:latest
+
+      - name: Push Nginx Docker image to ECR
+        run: docker push ${{ steps.login-ecr.outputs.registry }}/bodycheck/nginx:latest
 
       - name: Get current time
         uses: 1466587594/get-current-time@v2
@@ -62,9 +71,7 @@ jobs:
       - name: Generate deployment package
         run: |
           mkdir -p deploy
-          cp -r .ebextensions_docker_dev deploy/.ebextensions
           cp Dockerrun.aws.json deploy/Dockerrun.aws.json
-          cp -r .platform deploy/.platform
           cd deploy && zip -r deploy.zip .
 
       - name: Beanstalk Deploy
@@ -72,8 +79,8 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_ACTION_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_ACTION_SECRET_ACCESS_KEY }}
-          application_name: body-check-v2-dev
-          environment_name: Body-check-v2-dev-env
+          application_name: body-check-dev-v2
+          environment_name: Body-check-dev-v2-env
           version_label: github-action-${{ steps.current-time.outputs.formattedTime }}
           region: ap-northeast-2
           deployment_package: deploy/deploy.zip

@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY build/libs/*SNAPSHOT.jar app.jar
 
-COPY start.sh start.sh
+COPY springboot/start.sh start.sh
 RUN chmod +x start.sh
 
 ENTRYPOINT ["./start.sh"]
