@@ -49,7 +49,7 @@ jobs:
         run: docker push ${{ steps.login-ecr.outputs.registry }}/bodycheck/springboot:latest
 
       - name: Build Nginx Docker image
-        run: docker build -t bodycheck/nginx -f nginx/Dockerfile .
+        run: docker build -t bodycheck/nginx -f proxy/Dockerfile .
 
       - name: Tag Nginx Docker image
         run: docker tag bodycheck/nginx:latest ${{ steps.login-ecr.outputs.registry }}/bodycheck/nginx:latest

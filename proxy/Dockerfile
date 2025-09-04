@@ -2,9 +2,9 @@ FROM nginx:latest
 
 WORKDIR /etc/nginx
 
-COPY nginx/nginx.conf /etc/nginx/nginx.conf
+COPY proxy/nginx.conf /etc/nginx/nginx.conf
 
-COPY nginx/nginx/conf.d /etc/nginx/conf.d
+COPY proxy/conf.d/ /etc/nginx/conf.d/
 
 EXPOSE 80
 
