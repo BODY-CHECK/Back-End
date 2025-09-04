@@ -1,5 +1,5 @@
 {
-  "AWSEBDockerrunVersion": "3",
+  "AWSEBDockerrunVersion": "2",
   "containerDefinitions": [
     {
       "name": "springboot",
@@ -11,7 +11,8 @@
           "containerPort": 8080,
           "hostPort": 8080
         }
-      ]
+      ],
+      "links": ["redis"]
     },
     {
       "name": "nginx",
