@@ -2,7 +2,7 @@
   "AWSEBDockerrunVersion": 2,
   "containerDefinitions": [
     {
-      "name": "redis",
+      "name": "redis-server",
       "image": "redis:7-alpine",
       "essential": true,
       "memory": 128,
@@ -18,7 +18,7 @@
       "portMappings": [
         { "containerPort": 8080, "hostPort": 8080 }
       ],
-      "links": ["redis"]
+      "links": ["redis-server"]
     },
     {
       "name": "nginx",
