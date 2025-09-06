@@ -1,12 +1,52 @@
 {
-  "AWSEBDockerrunVersion": "1",
-  "Image": {
-    "Name": "205930641663.dkr.ecr.ap-northeast-2.amazonaws.com/bodycheck/springboot:latest",
-    "Update": "true"
-  },
-  "Ports": [
+  "AWSEBDockerrunVersion": 2,
+  "containerDefinitions": [
     {
-      "ContainerPort": "8080"
+      "name": "redis-server",
+      "image": "redis:7-alpine",
+      "essential": true,
+      "memory": 128,
+      "portMappings": [
+        { "containerPort": 6379 }
+      ],
+      "healthCheck": {
+        "command": ["CMD", "redis-cli", "ping"],
+        "interval": 5,
+        "timeout": 2,
+        "retries": 5,
+        "startPeriod": 5
+      }
+    },
+    {
+      "name": "springboot",
+      "image": "205930641663.dkr.ecr.ap-northeast-2.amazonaws.com/bodycheck/springboot:latest",
+      "essential": true,
+      "memory": 512,
+      "portMappings": [
+        { "containerPort": 8080, "hostPort": 8080 }
+      ],
+      "dependsOn": [
+        { "containerName": "redis-server", "condition": "HEALTHY" }
+      ],
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"],
+        "interval": 10,
+        "timeout": 5,
+        "retries": 10,
+        "startPeriod": 60
+      }
+    },
+    {
+      "name": "nginx",
+      "image": "205930641663.dkr.ecr.ap-northeast-2.amazonaws.com/bodycheck/nginx:latest",
+      "essential": true,
+      "memory": 128,
+      "portMappings": [
+        { "containerPort": 80, "hostPort": 80 }
+      ],
+      "dependsOn": [
+        { "containerName": "springboot", "condition": "HEALTHY" }
+      ]
     }
   ]
 }
