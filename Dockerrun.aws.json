@@ -36,8 +36,25 @@
         "startPeriod": 60
       },
       "environment": [
-        { "Name": "REDIS_HOST", "Value": "redis" },
-        { "Name": "REDIS_PORT", "Value": "6379" }
+        { "name": "AWS_DB_PASSWORD", "value": "${AWS_DB_PASSWORD}" },
+        { "name": "AWS_DB_URL", "value": "${AWS_DB_URL}" },
+        { "name": "AWS_DB_USERNAME", "value": "${AWS_DB_USERNAME}" },
+        { "name": "AWS_S3_ACCESS_KEY_ID", "value": "${AWS_S3_ACCESS_KEY_ID}" },
+        { "name": "AWS_S3_SECRET_ACCESS_KEY_ID", "value": "${AWS_S3_SECRET_ACCESS_KEY_ID}" },
+        { "name": "GOOGLE_CLIENT_ID", "value": "${GOOGLE_CLIENT_ID}" },
+        { "name": "GOOGLE_CLIENT_SECRET", "value": "${GOOGLE_CLIENT_SECRET}" },
+        { "name": "GOOGLE_REDIRECT_URL", "value": "${GOOGLE_REDIRECT_URL}" },
+        { "name": "GOOGLE_API_KEY", "value": "${GOOGLE_API_KEY}" },
+        { "name": "JWT_SECRET", "value": "${JWT_SECRET}" },
+        { "name": "KAKAO_CLIENT_ID", "value": "${KAKAO_CLIENT_ID}" },
+        { "name": "KAKAO_REDIRECT_URL", "value": "${KAKAO_REDIRECT_URL}" },
+        { "name": "KAKAO_SECRET_KEY", "value": "${KAKAO_SECRET_KEY}" },
+        { "name": "KAKAO_CID", "value": "${KAKAO_CID}" },
+        { "name": "REDIS_HOST", "value": "${REDIS_HOST}" },
+        { "name": "REDIS_PORT", "value": "${REDIS_PORT}" },
+        { "name": "MAIL_EMAIL", "value": "${MAIL_EMAIL}" },
+        { "name": "MAIL_PASSWORD", "value": "${MAIL_PASSWORD}" },
+        { "name": "OPENAI_API_KEY", "value": "${OPENAI_API_KEY}" }
       ]
     },
     {
