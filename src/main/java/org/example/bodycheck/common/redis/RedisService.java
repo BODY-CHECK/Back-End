@@ -14,6 +14,14 @@ public class RedisService {
 
     private final RedisTemplate<String, String> redisTemplate;
 
+    public String healthCheck() {
+        try {
+            return redisTemplate.getConnectionFactory().getConnection().ping();
+        } catch (Exception e) {
+            return "FAIL";
+        }
+    }
+
     public String getValues(String key) {
         return redisTemplate.opsForValue().get(key);
     }
