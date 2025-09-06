@@ -62,7 +62,7 @@ jobs:
       - name: Generate deployment package
         run: |
           mkdir -p deploy
-          cp -r .ebextensions_docker_dev deploy/.ebextensions
+          cp -r .ebextensions_dev_docker_v1 deploy/.ebextensions
           cp Dockerrun.aws.json deploy/Dockerrun.aws.json
           cp -r .platform deploy/.platform
           cd deploy && zip -r deploy.zip .

@@ -21,7 +21,7 @@
       "name": "springboot",
       "image": "205930641663.dkr.ecr.ap-northeast-2.amazonaws.com/bodycheck/springboot:latest",
       "essential": true,
-      "memory": 512,
+      "memory": 1024,
       "portMappings": [
         { "containerPort": 8080, "hostPort": 8080 }
       ],
