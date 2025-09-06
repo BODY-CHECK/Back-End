@@ -1,5 +1,5 @@
 {
-  "AWSEBDockerrunVersion": 1,
+  "AWSEBDockerrunVersion": "1",
   "Image": {
     "Name": "205930641663.dkr.ecr.ap-northeast-2.amazonaws.com/bodycheck/springboot:latest",
     "Update": "true"

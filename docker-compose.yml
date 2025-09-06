@@ -1,0 +1,18 @@
+version: "3"
+services:
+  redis:
+    image: redis:7-alpine
+
+  springboot:
+    image: 205930641663.dkr.ecr.ap-northeast-2.amazonaws.com/bodycheck/springboot:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+
+  nginx:
+    image: 205930641663.dkr.ecr.ap-northeast-2.amazonaws.com/bodycheck/nginx:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - springboot
