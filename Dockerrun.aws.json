@@ -33,7 +33,7 @@
         "interval": 10,
         "timeout": 5,
         "retries": 10,
-        "startPeriod": 60
+        "startPeriod": 300
       },
       "environment": [
         { "name": "AWS_DB_PASSWORD", "value": "${AWS_DB_PASSWORD}" },
