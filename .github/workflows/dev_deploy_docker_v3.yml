@@ -48,6 +48,15 @@ jobs:
       - name: Push Springboot Docker image to ECR
         run: docker push ${{ steps.login-ecr.outputs.registry }}/bodycheck/springboot:latest
 
+      - name: Build Nginx Docker image
+        run: docker build -t bodycheck/nginx -f proxy/Dockerfile .
+
+      - name: Tag Nginx Docker image
+        run: docker tag bodycheck/nginx:latest ${{ steps.login-ecr.outputs.registry }}/bodycheck/nginx:latest
+
+      - name: Push Nginx Docker image to ECR
+        run: docker push ${{ steps.login-ecr.outputs.registry }}/bodycheck/nginx:latest
+
       - name: Get current time
         uses: 1466587594/get-current-time@v2
         id: current-time
@@ -64,7 +73,6 @@ jobs:
           mkdir -p deploy
           cp -r .ebextensions_dev_docker deploy/.ebextensions
           cp docker-compose.yml deploy/docker-compose.yml
-          cp -r .platform deploy/.platform
           cd deploy && zip -r deploy.zip .
 
       - name: Beanstalk Deploy
