@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: local
+    active: ${profiles.active}
 springdoc:
   swagger-ui:
     tags-sorter: alpha # API 문서 태그 알파벳순 정렬

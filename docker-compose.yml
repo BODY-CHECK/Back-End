@@ -1,0 +1,38 @@
+version: "3"
+services:
+  redis-service:
+    image: redis:7-alpine
+
+  springboot-service:
+    image: 205930641663.dkr.ecr.ap-northeast-2.amazonaws.com/bodycheck/springboot:latest
+    environment:
+      - AWS_DB_PASSWORD=${AWS_DB_PASSWORD}
+      - AWS_DB_URL=${AWS_DB_URL}
+      - AWS_DB_USERNAME=${AWS_DB_USERNAME}
+      - AWS_S3_ACCESS_KEY_ID=${AWS_S3_ACCESS_KEY_ID}
+      - AWS_S3_SECRET_ACCESS_KEY_ID=${AWS_S3_SECRET_ACCESS_KEY_ID}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_REDIRECT_URL=${GOOGLE_REDIRECT_URL}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}
+      - KAKAO_REDIRECT_URL=${KAKAO_REDIRECT_URL}
+      - KAKAO_SECRET_KEY=${KAKAO_SECRET_KEY}
+      - KAKAO_CID=${KAKAO_CID}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - MAIL_EMAIL=${MAIL_EMAIL}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis-service
+
+  nginx-service:
+    image: 205930641663.dkr.ecr.ap-northeast-2.amazonaws.com/bodycheck/nginx:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - springboot-service
