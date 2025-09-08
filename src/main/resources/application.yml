@@ -65,6 +65,7 @@ spring:
   kakaopay:
     secret_key: ${kakao.secret.key}
     cid: ${kakao.cid}
+    domain: ${domain}
 
   google:
     client_id: ${google.client.id}
@@ -147,6 +148,7 @@ spring:
   kakaopay:
     secret_key: ${kakao.secret.key}
     cid: ${kakao.cid}
+    domain: ${domain}
 
   google:
     client_id: ${google.client.id}

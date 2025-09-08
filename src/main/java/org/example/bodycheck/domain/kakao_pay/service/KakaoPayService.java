@@ -42,6 +42,9 @@ public class KakaoPayService {
     @Value("${spring.kakaopay.cid}")
     private String cid;
 
+    @Value("${spring.kakaopay.domain}")
+    private String domain;
+
     private HttpHeaders getHeaders() {
         HttpHeaders httpHeaders = new HttpHeaders();
         String auth = "SECRET_KEY " + secretKey;
@@ -61,9 +64,9 @@ public class KakaoPayService {
         parameters.put("total_amount", "4900");
         parameters.put("vat_amount", "200");
         parameters.put("tax_free_amount", "0");
-        parameters.put("approval_url", "https://dev.bodycheck.store/payment/success"); // http://localhost:8080/payment/success
-        parameters.put("fail_url", "https://dev.bodycheck.store/payment/fail"); // http://localhost:8080/payment/fail
-        parameters.put("cancel_url", "https://dev.bodycheck.store/payment/cancel"); // http://localhost:8080/payment/cancel
+        parameters.put("approval_url", domain + "/payment/success"); // http://localhost:8080/payment/success
+        parameters.put("fail_url", domain + "/payment/fail"); // http://localhost:8080/payment/fail
+        parameters.put("cancel_url", domain + "/payment/cancel"); // http://localhost:8080/payment/cancel
 
 
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(parameters, this.getHeaders());
