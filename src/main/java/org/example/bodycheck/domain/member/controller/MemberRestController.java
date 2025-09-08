@@ -39,6 +39,16 @@ public class MemberRestController {
         return ApiResponse.onSuccess(MemberConverter.toAccessTokenResponseDTO(jwtTokenDTO));
     }
 
+    @PostMapping("/deactivate")
+    @Operation(summary = "회원 탈퇴 API", description = "회원 탈퇴하는 API 입니다.")
+    public ApiResponse<String> deactivate(@AuthUser Member member,
+                                          @RequestHeader("Authorization") String authorizationHeader) {
+        String token = authorizationHeader.startsWith("Bearer ") ? authorizationHeader.substring(7) : authorizationHeader;
+
+        memberCommandService.deactivate(member, token);
+        return ApiResponse.onSuccess("OK");
+    }
+
     @PostMapping("/email/sign-in")  // JWT 토큰을 생성하여 반환
     @Operation(summary = "로그인 API", description = "로그인을 하는 API 입니다.")
     public ApiResponse<MemberResponseDTO.AccessTokenResponseDTO> signIn(@RequestBody MemberRequestDTO.SignInDTO request) {

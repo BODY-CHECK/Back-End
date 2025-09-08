@@ -19,6 +19,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -54,6 +56,17 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
     @Override
     @Transactional
+    public void deactivate(Member member, String accessToken) {
+        member.deactivate(LocalDate.now());
+        memberRepository.save(member);
+
+        long ttl = jwtTokenProvider.getExpiration(accessToken);
+        redisService.saveKeyValueWithTTL("blacklist:" + accessToken, "logout", ttl);
+        redisService.deleteValue("refresh:" + member.getEmail());
+    }
+
+    @Override
+    @Transactional
     public JwtTokenDTO directLogin(Member member) {
         String clientEmail = member.getEmail();
 
@@ -85,6 +98,10 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         Member member = memberRepository.findByEmail(clientEmail).orElseThrow(() -> new GeneralHandler(ErrorStatus.LOGIN_UNAUTHORIZED));
 
+        if (member.getInactiveDate() != null) {
+            throw new GeneralHandler(ErrorStatus.MEMBER_DEACTIVATED);
+        }
+
         if (!passwordEncoder.matches(clientPw, member.getPw())) {
             throw new GeneralHandler(ErrorStatus.LOGIN_UNAUTHORIZED);
         }
@@ -113,8 +130,11 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     @Transactional
     public JwtTokenDTO socialLogin(String clientEmail) {
 
-//        // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
-//        Member member = memberRepository.findByEmail(clientEmail).orElseThrow(() -> new GeneralHandler(ErrorStatus.LOGIN_UNAUTHORIZED));
+        Member member = memberRepository.findByEmail(clientEmail).orElseThrow(() -> new GeneralHandler(ErrorStatus.LOGIN_UNAUTHORIZED));
+
+        if (member.getInactiveDate() != null) {
+            throw new GeneralHandler(ErrorStatus.MEMBER_DEACTIVATED);
+        }
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(clientEmail, null);
 
