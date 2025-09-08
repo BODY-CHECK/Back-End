@@ -70,5 +70,7 @@ public class Member extends BaseEntity {
         this.exerciseType = exerciseType;
     }
 
+    public void deactivate(LocalDate inactiveDate) { this.inactiveDate = inactiveDate; }
+
     public void initRoutineList(List<Routine> routineList) { this.routineList = routineList; }
 }
