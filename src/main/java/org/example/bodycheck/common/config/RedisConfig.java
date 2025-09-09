@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -20,13 +21,23 @@ public class RedisConfig {
     @Value("${spring.data.redis.port}")
     private int port;
 
+    @Value("${spring.data.redis.ssl.enabled}")
+    private Boolean ssl;
+
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
         redisStandaloneConfiguration.setHostName(host);
         redisStandaloneConfiguration.setPort(port);
 
-        return new LettuceConnectionFactory(host, port);
+        LettuceClientConfiguration.LettuceClientConfigurationBuilder clientConfigurationBuilder =
+                LettuceClientConfiguration.builder();
+
+        if (Boolean.TRUE.equals(ssl)) {
+            clientConfigurationBuilder.useSsl();
+        }
+
+        return new LettuceConnectionFactory(redisStandaloneConfiguration, clientConfigurationBuilder.build());
     }
 
     @Bean

@@ -37,6 +37,8 @@ spring:
     redis:
       host: ${redis.host}
       port: ${redis.port}
+      ssl:
+        enabled: ${redis.ssl.enabled}
 
   servlet:
     multipart:
@@ -120,6 +122,8 @@ spring:
     redis:
       host: ${redis.host}
       port: ${redis.port}
+      ssl:
+        enabled: ${redis.ssl.enabled}
 
   servlet:
     multipart:

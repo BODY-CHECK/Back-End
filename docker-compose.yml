@@ -1,8 +1,5 @@
 version: "3"
 services:
-  redis-service:
-    image: redis:7-alpine
-
   springboot-service:
     image: 205930641663.dkr.ecr.ap-northeast-2.amazonaws.com/bodycheck/springboot:latest
     environment:
@@ -24,13 +21,12 @@ services:
       - PROFILE_ACTIVE=${PROFILE_ACTIVE}
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
+      - REDIS_SSL_ENABLED=${REDIS_SSL_ENABLED}
       - MAIL_EMAIL=${MAIL_EMAIL}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     ports:
       - "8080:8080"
-    depends_on:
-      - redis-service
 
   nginx-service:
     image: 205930641663.dkr.ecr.ap-northeast-2.amazonaws.com/bodycheck/nginx:latest
