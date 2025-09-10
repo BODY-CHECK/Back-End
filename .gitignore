@@ -7,6 +7,8 @@ build/
 .env
 compose.yml
 ec2-compose.yml
+monitoring-compose.yml
+prometheus.yml
 
 ### STS ###
 .apt_generated

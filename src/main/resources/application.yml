@@ -94,6 +94,12 @@ cloud:
 openai:
   key: ${openai.api.key}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, beans, httptrace, info, metrics, prometheus
+
 ---
 spring:
   config:
@@ -178,3 +184,9 @@ cloud:
 
 openai:
   key: ${openai.api.key}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, beans, httptrace, info, metrics, prometheus
