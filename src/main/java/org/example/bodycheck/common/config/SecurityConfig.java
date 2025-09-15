@@ -3,7 +3,7 @@ package org.example.bodycheck.common.config;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.jwt.JwtAuthenticationFilter;
 import org.example.bodycheck.common.jwt.JwtTokenProvider;
-import org.example.bodycheck.common.redis.RedisService;
+import org.example.bodycheck.external.redis.service.RedisService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

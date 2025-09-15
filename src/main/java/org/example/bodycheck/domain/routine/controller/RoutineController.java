@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.ApiResponse;
-import org.example.bodycheck.common.openai.OpenAIService;
+import org.example.bodycheck.external.openai.service.OpenAIService;
 import org.example.bodycheck.domain.routine.dto.*;
 import org.example.bodycheck.domain.routine.service.RoutineService;
 

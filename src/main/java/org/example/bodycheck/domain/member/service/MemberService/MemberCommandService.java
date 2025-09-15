@@ -1,7 +1,6 @@
 package org.example.bodycheck.domain.member.service.MemberService;
 
 import org.example.bodycheck.common.jwt.JwtTokenDTO;
-import org.example.bodycheck.domain.kakao_pay.dto.KakaoPayDTO;
 import org.example.bodycheck.domain.member.entity.Member;
 import org.example.bodycheck.domain.member.dto.MemberDTO.MemberRequestDTO;
 

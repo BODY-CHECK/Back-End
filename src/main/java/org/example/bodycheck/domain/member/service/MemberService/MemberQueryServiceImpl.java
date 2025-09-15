@@ -4,13 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.jwt.JwtTokenProvider;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
+import org.example.bodycheck.domain.member.entity.FcmToken;
 import org.example.bodycheck.domain.member.entity.Member;
+import org.example.bodycheck.domain.member.repository.FcmTokenRepository;
 import org.example.bodycheck.domain.member.repository.MemberRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,6 +22,7 @@ import java.util.Optional;
 public class MemberQueryServiceImpl implements MemberQueryService {
 
     private final MemberRepository memberRepository;
+    private final FcmTokenRepository fcmTokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
@@ -49,5 +53,10 @@ public class MemberQueryServiceImpl implements MemberQueryService {
 
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
+    }
+
+    @Override
+    public List<FcmToken> findFirebaseTokenList(Long memberId) {
+        return fcmTokenRepository.findByMember_Id(memberId);
     }
 }

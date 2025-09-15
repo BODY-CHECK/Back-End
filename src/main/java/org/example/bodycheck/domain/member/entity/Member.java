@@ -7,7 +7,7 @@ import org.example.bodycheck.common.entity.BaseEntity;
 import org.example.bodycheck.domain.attendance.entity.Attendance;
 import org.example.bodycheck.domain.enums.ExerciseType;
 import org.example.bodycheck.domain.enums.Gender;
-import org.example.bodycheck.domain.kakao_pay.entity.KakaoPay;
+import org.example.bodycheck.external.kakao_pay.entity.KakaoPay;
 import org.example.bodycheck.domain.routine.entity.Routine;
 import org.example.bodycheck.domain.solution.entity.Solution;
 
@@ -50,6 +50,9 @@ public class Member extends BaseEntity {
 //    // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
 //    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
 //    private List<RefreshToken> refreshToken = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<FcmToken> fcmTokenList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Attendance> attendanceList = new ArrayList<>();

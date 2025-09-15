@@ -1,7 +1,7 @@
 package org.example.bodycheck;
 
 import lombok.RequiredArgsConstructor;
-import org.example.bodycheck.common.redis.RedisService;
+import org.example.bodycheck.external.redis.service.RedisService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
