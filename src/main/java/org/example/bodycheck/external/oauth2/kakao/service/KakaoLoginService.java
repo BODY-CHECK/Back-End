@@ -14,22 +14,24 @@ import reactor.core.publisher.Mono;
 
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
 public class KakaoLoginService {
 
-    private String clientId;
-    private final String KAUTH_TOKEN_URL_HOST;
-    private final String KAUTH_USER_URL_HOST;
+    private static final String KAUTH_TOKEN_URL_HOST = "https://kauth.kakao.com";
+    private static final String KAUTH_USER_URL_HOST = "https://kapi.kakao.com";
+    private final String clientId;
 
     @Autowired
     public KakaoLoginService(@Value("${spring.kakao.client_id}") String clientId) {
         this.clientId = clientId;
-        KAUTH_TOKEN_URL_HOST ="https://kauth.kakao.com";
-        KAUTH_USER_URL_HOST = "https://kapi.kakao.com";
     }
 
-    public String getAccessTokenFromKakao(String code) {
+    public KakaoLoginDto.KakaoUserInfoResponseDto loginWithKakao(String code) {
+        String accessToken = getAccessTokenFromKakao(code);
+        return getUserInfo(accessToken);
+    }
+
+    private String getAccessTokenFromKakao(String code) {
 
         KakaoLoginDto.KakaoTokenResponseDto kakaoTokenResponseDto = WebClient.create(KAUTH_TOKEN_URL_HOST).post()
                 .uri(uriBuilder -> uriBuilder
@@ -57,7 +59,7 @@ public class KakaoLoginService {
         return kakaoTokenResponseDto.getAccessToken();
     }
 
-    public KakaoLoginDto.KakaoUserInfoResponseDto getUserInfo(String accessToken) {
+    private KakaoLoginDto.KakaoUserInfoResponseDto getUserInfo(String accessToken) {
 
         KakaoLoginDto.KakaoUserInfoResponseDto userInfo = WebClient.create(KAUTH_USER_URL_HOST).get()
                 .uri(uriBuilder -> uriBuilder

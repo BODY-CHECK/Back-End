@@ -59,4 +59,9 @@ public class MemberQueryServiceImpl implements MemberQueryService {
     public List<FcmToken> findFirebaseTokenList(Long memberId) {
         return fcmTokenRepository.findByMember_Id(memberId);
     }
+
+    @Override
+    public boolean isNormalUser(Member member) {
+        return member.getPw() != null && !member.getPw().isEmpty();
+    }
 }

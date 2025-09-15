@@ -61,28 +61,16 @@ public class Oauth2Controller {
             @Parameter(name = "code", description = "카카오 API에 대한 response code, query parameter 입니다!")
     })
     public ApiResponse<?> kakaoLogin(@RequestParam("code") String code) {
-        String accessToken = kakaoLoginService.getAccessTokenFromKakao(code);
+        // 1. 외부 API 호출
+        KakaoLoginDto.KakaoUserInfoResponseDto userInfo = kakaoLoginService.loginWithKakao(code);
 
-        KakaoLoginDto.KakaoUserInfoResponseDto userInfo = kakaoLoginService.getUserInfo(accessToken);
+        // 2. 회원 처리
+        MemberResponseDTO.SocialLoginResponseDTO socialLoginResponseDTO = memberCommandService.handleSocialLogin(
+                userInfo.getKakaoAccount().getEmail(),
+                userInfo.getKakaoAccount().getProfile().getNickName()
+                );
 
-        String nickname = userInfo.getKakaoAccount().getProfile().getNickName();
-        String email = userInfo.getKakaoAccount().getEmail();
-
-        boolean isUser = memberCommandService.isUser(email);
-
-        JwtTokenDTO jwtTokenDTO;
-
-        if (isUser) {
-            if (memberCommandService.isNormalUser(email)) {
-                return ApiResponse.onFailure("400", "이미 회원가입이 완료된 이메일입니다.", "이미 회원가입이 완료된 이메일입니다.");
-            }
-            else jwtTokenDTO = memberCommandService.socialLogin(email);
-        }
-        else {
-            jwtTokenDTO = null;
-        }
-
-        return ApiResponse.onSuccess(MemberConverter.toSocialLoginResponseDTO(isUser, email, nickname, jwtTokenDTO));
+        return ApiResponse.onSuccess(socialLoginResponseDTO);
     }
 
     @GetMapping("/code/google")
@@ -91,27 +79,15 @@ public class Oauth2Controller {
             @Parameter(name = "code", description = "구글 API에 대한 response code, query parameter 입니다!")
     })
     public ApiResponse<?> googleLogin(@RequestParam("code") String code) {
-        String accessToken = googleLoginService.getAccessTokenFromGoogle(code);
+        // 1. 외부 API 호출
+        GoogleLoginDto.GoogleUserInfoResponseDto userInfo = googleLoginService.loginWithGoogle(code);
 
-        GoogleLoginDto.GoogleUserInfoResponseDto userInfo = googleLoginService.getUserInfo(accessToken);
+        // 2. 회원 처리
+        MemberResponseDTO.SocialLoginResponseDTO socialLoginResponseDTO = memberCommandService.handleSocialLogin(
+                userInfo.getEmail(),
+                userInfo.getNickName()
+                );
 
-        String nickname = userInfo.getNickName();
-        String email = userInfo.getEmail();
-
-        boolean isUser = memberCommandService.isUser(email);
-
-        JwtTokenDTO jwtTokenDTO;
-
-        if (isUser) {
-            if (memberCommandService.isNormalUser(email)) {
-                return ApiResponse.onFailure("400", "이미 회원가입이 완료된 이메일입니다.", "이미 회원가입이 완료된 이메일입니다.");
-            }
-            else jwtTokenDTO = memberCommandService.socialLogin(email);
-        }
-        else {
-            jwtTokenDTO = null;
-        }
-
-        return ApiResponse.onSuccess(MemberConverter.toSocialLoginResponseDTO(isUser, email, nickname, jwtTokenDTO));
+        return ApiResponse.onSuccess(socialLoginResponseDTO);
     }
 }

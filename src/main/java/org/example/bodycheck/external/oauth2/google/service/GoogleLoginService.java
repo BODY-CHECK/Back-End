@@ -13,15 +13,14 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
 public class GoogleLoginService {
 
-    private String clientId;
-    private String clientSecret;
-    private String redirectUri;
-    private final String GAUTH_TOKEN_URL_HOST ;
-    private final String GAUTH_USER_URL_HOST;
+    private static final String GAUTH_TOKEN_URL_HOST = "https://oauth2.googleapis.com";
+    private static final String GAUTH_USER_URL_HOST = "https://www.googleapis.com";
+    private final String clientId;
+    private final String clientSecret;
+    private final String redirectUri;
 
     @Autowired
     public GoogleLoginService(@Value("${spring.google.client_id}") String clientId,
@@ -30,11 +29,14 @@ public class GoogleLoginService {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.redirectUri = redirectUri;
-        GAUTH_TOKEN_URL_HOST = "https://oauth2.googleapis.com";
-        GAUTH_USER_URL_HOST = "https://www.googleapis.com";
     }
 
-    public String getAccessTokenFromGoogle(String code) {
+    public GoogleLoginDto.GoogleUserInfoResponseDto loginWithGoogle(String code) {
+        String accessToken = getAccessTokenFromGoogle(code);
+        return getUserInfo(accessToken);
+    }
+
+    private String getAccessTokenFromGoogle(String code) {
 
         GoogleLoginDto.GoogleTokenResponseDto googleTokenResponseDto = WebClient.create(GAUTH_TOKEN_URL_HOST).post()
                 .uri(uriBuilder -> uriBuilder
@@ -61,7 +63,7 @@ public class GoogleLoginService {
         return googleTokenResponseDto.getAccessToken();
     }
 
-    public GoogleLoginDto.GoogleUserInfoResponseDto getUserInfo(String accessToken) {
+    private GoogleLoginDto.GoogleUserInfoResponseDto getUserInfo(String accessToken) {
 
         GoogleLoginDto.GoogleUserInfoResponseDto userInfo = WebClient.create(GAUTH_USER_URL_HOST).get()
                 .uri(uriBuilder -> uriBuilder
