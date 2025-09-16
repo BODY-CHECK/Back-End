@@ -103,9 +103,9 @@ public class MemberCommandServiceImpl implements MemberCommandService {
             throw new GeneralHandler(ErrorStatus.MEMBER_DEACTIVATED);
         }
 
-        if (member.getLoginType() != request.getLoginType()) {
-            throw new GeneralHandler(ErrorStatus.SOCIAL_ACCOUNT_ALREADY_REGISTERED);
-        }
+//        if (member.getLoginType() != request.getLoginType()) {
+//            throw new GeneralHandler(ErrorStatus.SOCIAL_ACCOUNT_ALREADY_REGISTERED);
+//        }
 
         if (!passwordEncoder.matches(clientPw, member.getPw())) {
             throw new GeneralHandler(ErrorStatus.LOGIN_UNAUTHORIZED);
