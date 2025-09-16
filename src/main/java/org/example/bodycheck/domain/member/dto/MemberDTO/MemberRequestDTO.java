@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import org.example.bodycheck.domain.enums.ExerciseType;
 import org.example.bodycheck.domain.enums.Gender;
+import org.example.bodycheck.domain.enums.LoginType;
 
 public class MemberRequestDTO {
 
@@ -21,6 +22,7 @@ public class MemberRequestDTO {
                 //message = "비밀번호는 영문, 숫자, 특수문자 '!,@,$,%,^,&,*' 를 포함해야 하며, 최소 8자 이상이어야 합니다.")
         private String pw;
         private ExerciseType exerciseType;
+        private LoginType loginType;
     }
 
     @Getter
@@ -39,6 +41,11 @@ public class MemberRequestDTO {
     @Getter
     public static class PasswordDTO {
         private String pw;
+    }
+
+    @Getter
+    public static class accessTokenDTO {
+        private String accessToken;
     }
 
     @Getter

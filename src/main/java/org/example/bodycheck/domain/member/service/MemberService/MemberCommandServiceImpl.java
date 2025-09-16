@@ -5,6 +5,7 @@ import org.example.bodycheck.common.jwt.JwtTokenDTO;
 import org.example.bodycheck.common.jwt.JwtTokenProvider;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
+import org.example.bodycheck.domain.enums.LoginType;
 import org.example.bodycheck.domain.member.dto.MemberDTO.MemberResponseDTO;
 import org.example.bodycheck.external.redis.service.RedisService;
 import org.example.bodycheck.domain.member.converter.MemberConverter;
@@ -128,21 +129,20 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
     @Override
     @Transactional
-    public MemberResponseDTO.SocialLoginResponseDTO handleSocialLogin(String clientEmail, String nickname) {
+    public MemberResponseDTO.SocialLoginResponseDTO handleSocialLogin(String clientEmail, LoginType loginType) {
         Optional<Member> optionalMember = memberRepository.findByEmail(clientEmail);
 
         if (optionalMember.isEmpty()) {
             return MemberResponseDTO.SocialLoginResponseDTO.builder()
                     .isUser(false)
                     .email(clientEmail)
-                    .nickname(nickname)
                     .accessToken(null)
                     .refreshToken(null)
                     .build();
         }
 
         Member member = optionalMember.get();
-        if (memberQueryService.isNormalUser(member)) {
+        if (memberQueryService.isRegisteredWithEmail(member) || !memberQueryService.isRegisteredWithSocial(member, loginType)) {
             throw new GeneralHandler(ErrorStatus.EMAIL_ALREADY_EXISTS);
         }
 
@@ -159,7 +159,6 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         return MemberResponseDTO.SocialLoginResponseDTO.builder()
                 .isUser(true)
                 .email(clientEmail)
-                .nickname(nickname)
                 .accessToken(jwtTokenDTO.getAccessToken())
                 .refreshToken(jwtTokenDTO.getRefreshToken())
                 .build();

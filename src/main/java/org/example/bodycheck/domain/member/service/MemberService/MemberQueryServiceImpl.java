@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.jwt.JwtTokenProvider;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
+import org.example.bodycheck.domain.enums.LoginType;
 import org.example.bodycheck.domain.member.entity.Member;
 import org.example.bodycheck.domain.member.repository.MemberRepository;
 import org.springframework.security.core.Authentication;
@@ -59,7 +60,12 @@ public class MemberQueryServiceImpl implements MemberQueryService {
 //    }
 
     @Override
-    public boolean isNormalUser(Member member) {
+    public boolean isRegisteredWithEmail(Member member) {
         return member.getPw() != null && !member.getPw().isEmpty();
+    }
+
+    @Override
+    public boolean isRegisteredWithSocial(Member member, LoginType loginType) {
+        return member.getLoginType() == loginType;
     }
 }

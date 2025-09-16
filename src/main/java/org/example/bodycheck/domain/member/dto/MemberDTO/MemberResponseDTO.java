@@ -42,7 +42,6 @@ public class MemberResponseDTO {
         private boolean isUser;
         @Email
         private String email;
-        private String nickname;
         private String accessToken;
         private String refreshToken;
     }

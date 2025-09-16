@@ -7,6 +7,7 @@ import org.example.bodycheck.common.entity.BaseEntity;
 import org.example.bodycheck.domain.attendance.entity.Attendance;
 import org.example.bodycheck.domain.enums.ExerciseType;
 import org.example.bodycheck.domain.enums.Gender;
+import org.example.bodycheck.domain.enums.LoginType;
 import org.example.bodycheck.external.kakao_pay.entity.KakaoPay;
 import org.example.bodycheck.domain.routine.entity.Routine;
 import org.example.bodycheck.domain.solution.entity.Solution;
@@ -44,6 +45,9 @@ public class Member extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private ExerciseType exerciseType;
+
+    @Enumerated(EnumType.STRING)
+    private LoginType loginType;
 
     private LocalDate inactiveDate;
 
