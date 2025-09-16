@@ -5,7 +5,6 @@ import org.example.bodycheck.common.jwt.JwtTokenProvider;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
 import org.example.bodycheck.domain.member.entity.Member;
-import org.example.bodycheck.domain.member.repository.FcmTokenRepository;
 import org.example.bodycheck.domain.member.repository.MemberRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,7 +20,7 @@ import java.util.Optional;
 public class MemberQueryServiceImpl implements MemberQueryService {
 
     private final MemberRepository memberRepository;
-    private final FcmTokenRepository fcmTokenRepository;
+    // private final FcmTokenRepository fcmTokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
