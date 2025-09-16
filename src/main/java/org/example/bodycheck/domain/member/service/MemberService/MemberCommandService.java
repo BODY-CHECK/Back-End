@@ -1,7 +1,7 @@
 package org.example.bodycheck.domain.member.service.MemberService;
 
 import org.example.bodycheck.common.jwt.JwtTokenDTO;
-import org.example.bodycheck.domain.kakao_pay.dto.KakaoPayDTO;
+import org.example.bodycheck.domain.member.dto.MemberDTO.MemberResponseDTO;
 import org.example.bodycheck.domain.member.entity.Member;
 import org.example.bodycheck.domain.member.dto.MemberDTO.MemberRequestDTO;
 
@@ -11,9 +11,7 @@ public interface MemberCommandService {
     void deactivate(Member member, String accessToken);
     JwtTokenDTO directLogin(Member member);
     JwtTokenDTO signIn(MemberRequestDTO.SignInDTO request);
-    JwtTokenDTO socialLogin(String clientEmail);
-    boolean isUser(String clientEmail);
-    boolean isNormalUser(String clientEmail);
+    MemberResponseDTO.SocialLoginResponseDTO handleSocialLogin(String clientEmail, String nickname);
     void logout(String clientEmail, String accessToken);
     JwtTokenDTO refreshToken(MemberRequestDTO.refreshTokenDTO request);
     boolean verifyPassword(Long memberId, MemberRequestDTO.PasswordDTO request);

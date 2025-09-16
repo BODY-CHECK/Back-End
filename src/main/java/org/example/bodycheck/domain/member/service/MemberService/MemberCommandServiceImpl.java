@@ -5,14 +5,12 @@ import org.example.bodycheck.common.jwt.JwtTokenDTO;
 import org.example.bodycheck.common.jwt.JwtTokenProvider;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
-import org.example.bodycheck.common.redis.RedisService;
+import org.example.bodycheck.domain.member.dto.MemberDTO.MemberResponseDTO;
+import org.example.bodycheck.external.redis.service.RedisService;
 import org.example.bodycheck.domain.member.converter.MemberConverter;
-import org.example.bodycheck.domain.member.converter.RefreshTokenConverter;
 import org.example.bodycheck.domain.member.entity.Member;
-import org.example.bodycheck.domain.member.entity.RefreshToken;
 import org.example.bodycheck.domain.member.repository.MemberRepository;
 import org.example.bodycheck.domain.member.dto.MemberDTO.MemberRequestDTO;
-import org.example.bodycheck.domain.member.repository.RefreshRepository;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +27,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
     private final MemberRepository memberRepository;
 //    private final RefreshRepository refreshRepository;
+    private final MemberQueryService memberQueryService;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisService redisService;
@@ -128,9 +128,23 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
     @Override
     @Transactional
-    public JwtTokenDTO socialLogin(String clientEmail) {
+    public MemberResponseDTO.SocialLoginResponseDTO handleSocialLogin(String clientEmail, String nickname) {
+        Optional<Member> optionalMember = memberRepository.findByEmail(clientEmail);
 
-        Member member = memberRepository.findByEmail(clientEmail).orElseThrow(() -> new GeneralHandler(ErrorStatus.LOGIN_UNAUTHORIZED));
+        if (optionalMember.isEmpty()) {
+            return MemberResponseDTO.SocialLoginResponseDTO.builder()
+                    .isUser(false)
+                    .email(clientEmail)
+                    .nickname(nickname)
+                    .accessToken(null)
+                    .refreshToken(null)
+                    .build();
+        }
+
+        Member member = optionalMember.get();
+        if (memberQueryService.isNormalUser(member)) {
+            throw new GeneralHandler(ErrorStatus.EMAIL_ALREADY_EXISTS);
+        }
 
         if (member.getInactiveDate() != null) {
             throw new GeneralHandler(ErrorStatus.MEMBER_DEACTIVATED);
@@ -142,39 +156,13 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         redisService.saveKeyValueWithTTL("refresh:" + clientEmail, jwtTokenDTO.getRefreshToken(), JwtTokenProvider.REFRESH_TOKEN_EXPIRE_TIME);
 
-//        // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
-//        RefreshToken refreshToken;
-//        if (refreshRepository.existsByMember_Id(member.getId())) {
-//            refreshToken = refreshRepository.findByMember_Id(member.getId()).orElseThrow(() -> new GeneralHandler(ErrorStatus.TOKEN_UNSUPPORTED));
-//            refreshToken.setRefreshToken(jwtTokenDTO.getRefreshToken());
-//        }
-//        else {
-//            refreshToken = RefreshTokenConverter.toRefreshToken(jwtTokenDTO.getRefreshToken(), member);
-//        }
-//        refreshRepository.save(refreshToken);
-
-        return jwtTokenDTO;
-    }
-
-    @Override
-    @Transactional
-    public boolean isUser(String clientEmail) {
-
-        return memberRepository.existsByEmail(clientEmail);
-    }
-
-    @Override
-    @Transactional
-    public boolean isNormalUser(String clientEmail) {
-
-        Member member = memberRepository.findByEmail(clientEmail).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
-
-        if (member.getPw() == null || member.getPw().isEmpty()) {
-            return false;
-        }
-        else {
-            return true;
-        }
+        return MemberResponseDTO.SocialLoginResponseDTO.builder()
+                .isUser(true)
+                .email(clientEmail)
+                .nickname(nickname)
+                .accessToken(jwtTokenDTO.getAccessToken())
+                .refreshToken(jwtTokenDTO.getRefreshToken())
+                .build();
     }
 
     @Override

@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.ApiResponse;
-import org.example.bodycheck.common.openai.OpenAIService;
+import org.example.bodycheck.external.openai.service.OpenAIService;
 import org.example.bodycheck.common.validation.annotation.ExistExercise;
 import org.example.bodycheck.common.validation.annotation.ExistSolution;
 import org.example.bodycheck.domain.mapping.entity.SolutionCriteria;

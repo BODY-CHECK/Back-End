@@ -5,7 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.jwt.JwtTokenDTO;
 import org.example.bodycheck.common.apiPayload.ApiResponse;
-import org.example.bodycheck.domain.kakao_pay.service.KakaoPayService;
+import org.example.bodycheck.external.kakao_pay.service.KakaoPayService;
 import org.example.bodycheck.domain.member.annotation.AuthUser;
 import org.example.bodycheck.domain.member.converter.MemberConverter;
 import org.example.bodycheck.domain.member.dto.MemberDTO.MemberProfileSettingDTO;
