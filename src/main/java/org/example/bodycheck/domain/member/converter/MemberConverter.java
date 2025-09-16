@@ -16,6 +16,7 @@ public class MemberConverter {
                 .email(request.getEmail())
                 .pw(encodedPw)
                 .exerciseType(request.getExerciseType())
+                .loginType(request.getLoginType())
                 .build();
     }
 
@@ -53,7 +54,6 @@ public class MemberConverter {
         return MemberResponseDTO.SocialLoginResponseDTO.builder()
                 .isUser(isUser)
                 .email(email)
-                .nickname(nickname)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();

@@ -7,8 +7,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.bodycheck.common.apiPayload.ApiResponse;
 import org.example.bodycheck.common.jwt.JwtTokenDTO;
+import org.example.bodycheck.domain.enums.LoginType;
 import org.example.bodycheck.domain.member.converter.MemberConverter;
+import org.example.bodycheck.domain.member.dto.MemberDTO.MemberRequestDTO;
 import org.example.bodycheck.domain.member.dto.MemberDTO.MemberResponseDTO;
+import org.example.bodycheck.external.oauth2.apple.dto.AppleLoginDto;
+import org.example.bodycheck.external.oauth2.apple.service.AppleLoginService;
 import org.example.bodycheck.external.oauth2.google.dto.GoogleLoginDto;
 import org.example.bodycheck.external.oauth2.kakao.dto.KakaoLoginDto;
 import org.example.bodycheck.domain.member.service.MemberService.MemberCommandService;
@@ -16,10 +20,7 @@ import org.example.bodycheck.external.oauth2.google.service.GoogleLoginService;
 import org.example.bodycheck.external.oauth2.kakao.service.KakaoLoginService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -31,6 +32,7 @@ public class Oauth2Controller {
     private final KakaoLoginService kakaoLoginService;
     private final GoogleLoginService googleLoginService;
     private final MemberCommandService memberCommandService;
+    private final AppleLoginService appleLoginService;
 
     @Value("${spring.kakao.client_id}")
     private String client_id_kakao;
@@ -67,8 +69,8 @@ public class Oauth2Controller {
         // 2. 회원 처리
         MemberResponseDTO.SocialLoginResponseDTO socialLoginResponseDTO = memberCommandService.handleSocialLogin(
                 userInfo.getKakaoAccount().getEmail(),
-                userInfo.getKakaoAccount().getProfile().getNickName()
-                );
+                LoginType.KAKAO
+        );
 
         return ApiResponse.onSuccess(socialLoginResponseDTO);
     }
@@ -85,8 +87,23 @@ public class Oauth2Controller {
         // 2. 회원 처리
         MemberResponseDTO.SocialLoginResponseDTO socialLoginResponseDTO = memberCommandService.handleSocialLogin(
                 userInfo.getEmail(),
-                userInfo.getNickName()
-                );
+                LoginType.GOOGLE
+        );
+
+        return ApiResponse.onSuccess(socialLoginResponseDTO);
+    }
+
+    @PostMapping("/apple")
+    @Operation(summary = "애플 로그인 API", description = "애플 로그인 API입니다.")
+    public ApiResponse<?> appleLogin(@RequestBody MemberRequestDTO.accessTokenDTO request) {
+        // 1. 외부 API 호출
+        AppleLoginDto.AppleUserInfoResponseDto userInfo = appleLoginService.loginWithApple(request.getAccessToken());
+
+        // 2. 회원 처리
+        MemberResponseDTO.SocialLoginResponseDTO socialLoginResponseDTO = memberCommandService.handleSocialLogin(
+                userInfo.getEmail(),
+                LoginType.APPLE
+        );
 
         return ApiResponse.onSuccess(socialLoginResponseDTO);
     }
