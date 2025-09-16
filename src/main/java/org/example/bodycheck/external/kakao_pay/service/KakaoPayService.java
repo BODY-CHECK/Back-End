@@ -1,6 +1,5 @@
 package org.example.bodycheck.external.kakao_pay.service;
 
-import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
 import org.example.bodycheck.external.kakao_pay.converter.KakaoPayConverter;
@@ -9,6 +8,7 @@ import org.example.bodycheck.external.kakao_pay.entity.KakaoPay;
 import org.example.bodycheck.external.kakao_pay.repository.KakaoPayRepository;
 import org.example.bodycheck.domain.member.entity.Member;
 import org.example.bodycheck.domain.member.repository.MemberRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -26,24 +26,145 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
-@Transactional
 @EnableScheduling
 public class KakaoPayService {
 
-    private RestTemplate restTemplate = new RestTemplate();
-    private KakaoPayDto.KakaoReadyResponse kakaoReadyResponse;
+    public static final String BASE_URL = "https://open-api.kakaopay.com/online/v1/payment";
+    public static final String READY_URL = BASE_URL + "/ready";
+    public static final String APPROVE_URL = BASE_URL + "/approve";
+    public static final String CANCEL_URL = BASE_URL + "/cancel";
+    public static final String SUBSCRIBE_URL = BASE_URL + "/subscription";
+    public static final String SUBSCRIBE_STATUS_URL = BASE_URL + "/manage/subscription/status";
+    public static final String SUBSCRIBE_CANCEL_URL = BASE_URL + "/manage/subscription/inactive";
+
+    private final RestTemplate restTemplate;
     private final KakaoPayRepository kakaoPayRepository;
     private final MemberRepository memberRepository;
 
-    @Value("${spring.kakaopay.secret_key}")
-    private String secretKey;
+    private final String secretKey;
+    private final String cid;
+    private final String domain;
 
-    @Value("${spring.kakaopay.cid}")
-    private String cid;
+    private KakaoPayDto.KakaoReadyResponse kakaoReadyResponse;
 
-    @Value("${spring.kakaopay.domain}")
-    private String domain;
+    @Autowired
+    public KakaoPayService(
+            KakaoPayRepository kakaoPayRepository,
+            MemberRepository memberRepository,
+            @Value("${spring.kakaopay.secret_key}") String secretKey,
+            @Value("${spring.kakaopay.cid}") String cid,
+            @Value("${spring.kakaopay.domain}") String domain) {
+        this.restTemplate = new RestTemplate();
+        this.kakaoPayRepository = kakaoPayRepository;
+        this.memberRepository = memberRepository;
+        this.secretKey = secretKey;
+        this.cid = cid;
+        this.domain = domain;
+    }
+
+    @Transactional
+    public KakaoPayDto.KakaoReadyResponse readyToKakaoPay(Long memberId) {
+        KakaoPayDto.KakaoReadyResponse response = kakaoPayReady(memberId);
+
+        saveTid(memberId, response.getTid());
+
+        return response;
+    }
+
+    @Transactional
+    public void approvePayment(Long memberId, String pgToken, String tid) {
+        KakaoPayDto.KakaoApproveResponse kakaoApproveResponse = approveResponse(memberId, pgToken, tid);
+
+        saveSid(kakaoApproveResponse.getTid(), kakaoApproveResponse.getSid());
+    }
+
+    @Transactional
+    public void refund(Long memberId) {
+        KakaoPay kakaoPay = getKakaoPayInfo(memberId);
+
+        KakaoPayDto.KakaoCancelResponse kakaoCancelResponse = cancelResponse(kakaoPay.getTid());
+
+        cancelPay(kakaoCancelResponse.getTid());
+    }
+
+    @Transactional
+    public KakaoPayDto.KakaoApproveResponse subscribeKakaoPay(Long memberId) {
+        KakaoPay kakaoPay = getKakaoPayInfo(memberId);
+
+        KakaoPayDto.KakaoApproveResponse kakaoApproveResponse = approveSubscribeResponse(kakaoPay.getSid());
+
+        savePayInfo(memberId, kakaoApproveResponse);
+
+        return kakaoApproveResponse;
+    }
+
+    public KakaoPayDto.KakaoSubscribeCancelResponse subscribeKakaoPayCancel(Long memberId) {
+        KakaoPay kakaoPay = getKakaoPayInfo(memberId);
+
+        KakaoPayDto.KakaoSubscribeCancelResponse kakaoSubscribeCancelResponse = subscribeCancelResponse(kakaoPay.getSid());
+
+        return kakaoSubscribeCancelResponse;
+    }
+
+    public KakaoPayDto.KakaoPayStatus subcribeKakaoPayStatus(Long memberId) {
+        boolean isLogExist = false;
+        KakaoPayDto.KakaoSubscribeStatusResponse kakaoSubscribeStatusResponse = new KakaoPayDto.KakaoSubscribeStatusResponse();
+
+        if (existsKakaoPayByMemberId(memberId)) {
+            KakaoPay kakaoPay = getKakaoPayInfo(memberId);
+
+            String sid = kakaoPay.getSid();
+            if (sid != null && !sid.isEmpty()) {
+                isLogExist = true;
+                kakaoSubscribeStatusResponse = subscribeStatusResponse(sid);
+            }
+        }
+
+        String lastApprovedAt = getLastApprovedAt(
+                kakaoSubscribeStatusResponse.getCreated_at(),
+                kakaoSubscribeStatusResponse.getLast_approved_at()
+        );
+
+        return KakaoPayDto.KakaoPayStatus.builder()
+                .isLogExist(isLogExist)
+                .status(kakaoSubscribeStatusResponse.getStatus())
+                .last_approved_at(lastApprovedAt)
+                .build();
+    }
+
+    public boolean getPremiumState(Long memberId) {
+        boolean isPremium = false;
+
+        if (kakaoPayRepository.existsByMember_Id(memberId)) {
+            KakaoPay kakaoPay = getKakaoPayInfo(memberId);
+
+            String sid = kakaoPay.getSid();
+            if (sid != null && !sid.isEmpty()) {
+                KakaoPayDto.KakaoSubscribeStatusResponse kakaoSubscribeStatusResponse = subscribeStatusResponse(sid);
+
+                if (kakaoSubscribeStatusResponse.getStatus().equals("ACTIVE")) {
+                    isPremium = true;
+                }
+                else {
+                    String lastApprovedAt = getLastApprovedAt(
+                            kakaoSubscribeStatusResponse.getCreated_at(),
+                            kakaoSubscribeStatusResponse.getLast_approved_at()
+                    );
+
+                    DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
+                    LocalDateTime oneMonthLater = LocalDateTime.parse(lastApprovedAt, formatter)
+                            .plusMonths(1).withHour(14).withMinute(0).withSecond(0);
+
+                    if (LocalDateTime.now().isBefore(oneMonthLater)) {
+                        isPremium = true;
+                    }
+                }
+            }
+        }
+
+        return isPremium;
+    }
 
     private HttpHeaders getHeaders() {
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -53,49 +174,47 @@ public class KakaoPayService {
         return httpHeaders;
     }
 
-    public KakaoPayDto.KakaoReadyResponse kakaoPayReady() {
+    private KakaoPayDto.KakaoReadyResponse kakaoPayReady(Long memberId) {
         Map<String, Object> parameters = new HashMap<>();
 
         parameters.put("cid", cid);
         parameters.put("partner_order_id", "ORDER_ID");
-        parameters.put("partner_user_id", "USER_ID");
+        parameters.put("partner_user_id", String.valueOf(memberId));
         parameters.put("item_name", "BodyCheck 구독");
         parameters.put("quantity", "1");
         parameters.put("total_amount", "4900");
         parameters.put("vat_amount", "200");
         parameters.put("tax_free_amount", "0");
-        parameters.put("approval_url", domain + "/payment/success"); // http://localhost:8080/payment/success
-        parameters.put("fail_url", domain + "/payment/fail"); // http://localhost:8080/payment/fail
-        parameters.put("cancel_url", domain + "/payment/cancel"); // http://localhost:8080/payment/cancel
+        parameters.put("approval_url", domain + "/payments/approve/callback"); // http://localhost:8080/payments/approve/callback
+        parameters.put("fail_url", domain + "/payments/fail/callback"); // http://localhost:8080/payments/fail/callback
+        parameters.put("cancel_url", domain + "/payments/cancel/callback"); // http://localhost:8080/payments/cancel/callback
 
 
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(parameters, this.getHeaders());
 
-        kakaoReadyResponse = restTemplate.postForObject(
-                "https://open-api.kakaopay.com/online/v1/payment/ready",
+        return restTemplate.postForObject(
+                READY_URL,
                 requestEntity,
                 KakaoPayDto.KakaoReadyResponse.class);
-        return kakaoReadyResponse;
     }
 
-    public KakaoPayDto.KakaoApproveResponse approveResponse(String pgToken) {
+    private KakaoPayDto.KakaoApproveResponse approveResponse(Long memberId, String pgToken, String tid) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("cid", cid);
-        parameters.put("tid", kakaoReadyResponse.getTid());
+        parameters.put("tid", tid);
         parameters.put("partner_order_id", "ORDER_ID");
-        parameters.put("partner_user_id", "USER_ID");
+        parameters.put("partner_user_id", String.valueOf(memberId));
         parameters.put("pg_token", pgToken);
 
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(parameters, this.getHeaders());
 
-        KakaoPayDto.KakaoApproveResponse kakaoApproveResponse = restTemplate.postForObject(
-                "https://open-api.kakaopay.com/online/v1/payment/approve",
+        return restTemplate.postForObject(
+                APPROVE_URL,
                 requestEntity,
                 KakaoPayDto.KakaoApproveResponse.class);
-        return kakaoApproveResponse;
     }
 
-    public KakaoPayDto.KakaoCancelResponse cancelResponse(String tid) {
+    private KakaoPayDto.KakaoCancelResponse cancelResponse(String tid) {
         if (tid == null || tid.isEmpty()) {
             throw new GeneralHandler(ErrorStatus.TID_NOT_EXIST);
         }
@@ -109,71 +228,13 @@ public class KakaoPayService {
 
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(parameters, this.getHeaders());
 
-        KakaoPayDto.KakaoCancelResponse kakaoCancelResponse = restTemplate.postForObject(
-                "https://open-api.kakaopay.com/online/v1/payment/cancel",
+        return restTemplate.postForObject(
+                CANCEL_URL,
                 requestEntity,
                 KakaoPayDto.KakaoCancelResponse.class);
-        return kakaoCancelResponse;
     }
 
-    public KakaoPay getKakaoPayInfo(Long memberId) {
-        KakaoPay kakaoPay =  kakaoPayRepository.findByMember_Id(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_NOT_EXIST));
-
-        return kakaoPay;
-    }
-
-    public boolean getKakaoPayLog(Long memberId) {
-        return kakaoPayRepository.existsByMember_Id(memberId);
-    }
-
-    public boolean getPremiumState(Long memberId) {
-        boolean isPremium = false;
-
-        if (kakaoPayRepository.existsByMember_Id(memberId)) {
-            KakaoPay kakaoPay =  kakaoPayRepository.findByMember_Id(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_NOT_EXIST));
-
-            if (kakaoPay.getSid() == null || kakaoPay.getSid().isEmpty()) {}
-            else {
-                Map<String, Object> parameters = new HashMap<>();
-                parameters.put("cid", cid);
-                parameters.put("sid", kakaoPay.getSid());
-
-                HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(parameters, this.getHeaders());
-
-                KakaoPayDto.KakaoSubscribeStatusResponse kakaoSubscribeStatusResponse = restTemplate.postForObject(
-                        "https://open-api.kakaopay.com/online/v1/payment/manage/subscription/status",
-                        requestEntity,
-                        KakaoPayDto.KakaoSubscribeStatusResponse.class);
-
-                if (kakaoSubscribeStatusResponse.getStatus().equals("ACTIVE")) {
-                    isPremium = true;
-                }
-                else {
-                    String last_approved_at;
-                    if(kakaoSubscribeStatusResponse.getLast_approved_at() == null || kakaoSubscribeStatusResponse.getLast_approved_at().isEmpty()) {
-                        last_approved_at = kakaoSubscribeStatusResponse.getCreated_at();
-                    }
-                    else last_approved_at = kakaoSubscribeStatusResponse.getLast_approved_at();
-
-                    DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-                    LocalDateTime lastApprovedAt = LocalDateTime.parse(last_approved_at, formatter);
-
-                    LocalDateTime oneMonthLater = lastApprovedAt.plusMonths(1).withHour(14).withMinute(0).withSecond(0);
-
-                    LocalDateTime now = LocalDateTime.now();
-
-                    if (now.isBefore(oneMonthLater)) {
-                        isPremium = true;
-                    }
-                }
-            }
-
-        }
-
-        return isPremium;
-    }
-
-    public KakaoPayDto.KakaoApproveResponse approveSubscribeResponse(String sid) {
+    private KakaoPayDto.KakaoApproveResponse approveSubscribeResponse(String sid) {
         if (sid == null || sid.isEmpty()) {
             throw new GeneralHandler(ErrorStatus.SID_NOT_EXIST);
         }
@@ -191,14 +252,13 @@ public class KakaoPayService {
 
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(parameters, this.getHeaders());
 
-        KakaoPayDto.KakaoApproveResponse kakaoApproveResponse = restTemplate.postForObject(
-                "https://open-api.kakaopay.com/online/v1/payment/subscription",
+        return restTemplate.postForObject(
+                SUBSCRIBE_URL,
                 requestEntity,
                 KakaoPayDto.KakaoApproveResponse.class);
-        return kakaoApproveResponse;
     }
 
-    public KakaoPayDto.KakaoSubscribeCancelResponse subscribeCancelResponse(String sid) {
+    private KakaoPayDto.KakaoSubscribeCancelResponse subscribeCancelResponse(String sid) {
         if (sid == null || sid.isEmpty()) {
             throw new GeneralHandler(ErrorStatus.SID_NOT_EXIST);
         }
@@ -209,14 +269,13 @@ public class KakaoPayService {
 
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(parameters, this.getHeaders());
 
-        KakaoPayDto.KakaoSubscribeCancelResponse kakaoSubscribeCancelResponse = restTemplate.postForObject(
-                "https://open-api.kakaopay.com/online/v1/payment/manage/subscription/inactive",
+        return restTemplate.postForObject(
+                SUBSCRIBE_CANCEL_URL,
                 requestEntity,
                 KakaoPayDto.KakaoSubscribeCancelResponse.class);
-        return kakaoSubscribeCancelResponse;
     }
 
-    public KakaoPayDto.KakaoSubscribeStatusResponse subscribeStatusResponse(String sid) {
+    private KakaoPayDto.KakaoSubscribeStatusResponse subscribeStatusResponse(String sid) {
         if (sid == null || sid.isEmpty()) {
             throw new GeneralHandler(ErrorStatus.SID_NOT_EXIST);
         }
@@ -227,14 +286,34 @@ public class KakaoPayService {
 
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(parameters, this.getHeaders());
 
-        KakaoPayDto.KakaoSubscribeStatusResponse kakaoSubscribeStatusResponse = restTemplate.postForObject(
-                "https://open-api.kakaopay.com/online/v1/payment/manage/subscription/status",
+        return restTemplate.postForObject(
+                SUBSCRIBE_STATUS_URL,
                 requestEntity,
                 KakaoPayDto.KakaoSubscribeStatusResponse.class);
-        return kakaoSubscribeStatusResponse;
     }
 
-    public void saveTid(Long memberId, String tid) {
+    private KakaoPay getKakaoPayInfo(Long memberId) {
+        return kakaoPayRepository.findByMember_Id(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_NOT_EXIST));
+    }
+
+    private KakaoPay getKakaoPayInfoByTid(String tid) {
+        return kakaoPayRepository.findByTid(tid).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_NOT_EXIST));
+    }
+
+    private boolean existsKakaoPayByMemberId(Long memberId) {
+        return kakaoPayRepository.existsByMember_Id(memberId);
+    }
+
+    private String getLastApprovedAt(String subscribeCreatedAt, String subscribeLastApprovedAt) {
+        if(subscribeLastApprovedAt == null || subscribeLastApprovedAt.isEmpty()) {
+            return subscribeCreatedAt;
+        }
+        else {
+            return subscribeLastApprovedAt;
+        }
+    }
+
+    private void saveTid(Long memberId, String tid) {
         KakaoPay kakaoPay;
         if (kakaoPayRepository.existsByMember_Id(memberId)) {
             kakaoPay = kakaoPayRepository.findByMember_Id(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_SID_UNSUPPORTED));
@@ -247,16 +326,14 @@ public class KakaoPayService {
         kakaoPayRepository.save(kakaoPay);
     }
 
-    public void saveSid(KakaoPayDto.KakaoApproveResponse kakaoApproveResponse) {
-
-        KakaoPay kakaoPay = kakaoPayRepository.findByTid(kakaoApproveResponse.getTid()).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_NOT_EXIST));
-
-        kakaoPay.updateSid(kakaoApproveResponse.getSid());
+    private void saveSid(String tid, String sid) {
+        KakaoPay kakaoPay = getKakaoPayInfoByTid(tid);
+        kakaoPay.updateSid(sid);
 
         kakaoPayRepository.save(kakaoPay);
     }
 
-    public void savePayInfo(Long memberId, KakaoPayDto.KakaoApproveResponse kakaoApproveResponse) {
+    private void savePayInfo(Long memberId, KakaoPayDto.KakaoApproveResponse kakaoApproveResponse) {
         KakaoPay kakaoPay;
         if (kakaoPayRepository.existsByMember_Id(memberId)) {
             kakaoPay = kakaoPayRepository.findByMember_Id(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_SID_UNSUPPORTED));
@@ -269,8 +346,8 @@ public class KakaoPayService {
         kakaoPayRepository.save(kakaoPay);
     }
 
-    public void cancelPay(Long memberId) {
-        KakaoPay kakaoPay = kakaoPayRepository.findByMember_Id(memberId).orElseThrow(() -> new GeneralHandler(ErrorStatus.TID_NOT_EXIST));
+    private void cancelPay(String tid) {
+        KakaoPay kakaoPay = getKakaoPayInfoByTid(tid);
 
         kakaoPayRepository.delete(kakaoPay);
     }
@@ -286,10 +363,10 @@ public class KakaoPayService {
 
                         // "ACTIVE" 상태인지 확인
                         if (kakaoSubscribeStatusResponse.getStatus().equals("ACTIVE")) {
-                            String lastApprovedAtStr = kakaoSubscribeStatusResponse.getLast_approved_at();
-                            if (lastApprovedAtStr == null || lastApprovedAtStr.isEmpty()) {
-                                lastApprovedAtStr = kakaoSubscribeStatusResponse.getCreated_at();
-                            }
+                            String lastApprovedAtStr = getLastApprovedAt(
+                                    kakaoSubscribeStatusResponse.getCreated_at(),
+                                    kakaoSubscribeStatusResponse.getLast_approved_at()
+                            );
 
                             // last_approved_at을 LocalDate로 변환
                             DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
@@ -300,7 +377,6 @@ public class KakaoPayService {
                             // 결제일과 오늘의 일(day)이 같고, 마지막 결제일이 이번 달이 아닌 경우에만 결제 수행
                             if (today.getDayOfMonth() == lastApprovedAt.getDayOfMonth() &&
                                     (today.getYear() != lastApprovedAt.getYear() || today.getMonthValue() != lastApprovedAt.getMonthValue())) {
-
                                 KakaoPayDto.KakaoApproveResponse approveResponse = approveSubscribeResponse(kakaoPay.getSid());
 
                                 savePayInfo(kakaoPay.getMember().getId(), approveResponse);

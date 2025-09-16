@@ -28,6 +28,12 @@ public class KakaoPayDto {
     }
 
     @Getter
+    public static class KakaoApproveRequest {
+        private String tid;
+        private String pgToken;
+    }
+
+    @Getter
     @Setter
     @ToString
     public static class KakaoApproveResponse {

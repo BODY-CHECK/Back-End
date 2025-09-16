@@ -12,8 +12,10 @@ import org.example.bodycheck.domain.member.entity.Member;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.Map;
+
 @RestController
-@RequestMapping("/payment")
+@RequestMapping("/payments")
 @RequiredArgsConstructor
 public class KakaoPayController {
 
@@ -22,55 +24,57 @@ public class KakaoPayController {
     @PostMapping("/ready")
     @Operation(summary = "카카오페이 URL 생성 API", description = "카카오페이 URL을 생성하는 API 입니다.")
     public ApiResponse<KakaoPayDto.KakaoReadyResponse> readyToKakaoPay(@AuthUser Member member) {
-        KakaoPayDto.KakaoReadyResponse kakaoReadyResponse = kakaoPayService.kakaoPayReady();
-
-        Long memberId = member.getId();
-
-        kakaoPayService.saveTid(memberId, kakaoReadyResponse.getTid());
+        KakaoPayDto.KakaoReadyResponse kakaoReadyResponse = kakaoPayService.readyToKakaoPay(member.getId());
 
         return ApiResponse.onSuccess(kakaoReadyResponse);
     }
 
-    @GetMapping("/success")
-    public ModelAndView afterPayRequest(@RequestParam("pg_token") String pgToken) {
-        KakaoPayDto.KakaoApproveResponse kakaoApproveResponse = kakaoPayService.approveResponse(pgToken);
-
-        ModelAndView modelAndView = new ModelAndView("success"); // "success"는 템플릿 파일 이름
-        modelAndView.addObject("paymentInfo", kakaoApproveResponse);
-
-        kakaoPayService.saveSid(kakaoApproveResponse);
-
-        return modelAndView;
+    @GetMapping("/approve/callback")
+    public ApiResponse<String> getPgToken(@RequestParam("pg_token") String pgToken) {
+        return ApiResponse.onSuccess(pgToken);
     }
 
-    @GetMapping("/fail")
+    @PostMapping("/approve")
+    @Operation(summary = "카카오페이 결제 승인", description = "카카오페이 결제를 승인하는 API 입니다.")
+    public ApiResponse<String> approvePayment(@AuthUser Member member, @RequestBody KakaoPayDto.KakaoApproveRequest request) {
+        kakaoPayService.approvePayment(member.getId(), request.getPgToken(), request.getTid());
+
+        return ApiResponse.onSuccess("OK");
+    }
+
+//    @GetMapping("/approve")
+//    public ModelAndView afterPayRequest(@RequestParam("pg_token") String pgToken) {
+//        KakaoPayDto.KakaoApproveResponse kakaoApproveResponse = kakaoPayService.approveResponse(pgToken);
+//
+//        ModelAndView modelAndView = new ModelAndView("success"); // "success"는 템플릿 파일 이름
+//        modelAndView.addObject("paymentInfo", kakaoApproveResponse);
+//
+//        kakaoPayService.saveSid(kakaoApproveResponse);
+//
+//        return modelAndView;
+//    }
+
+    @GetMapping("/fail/callback")
     public String fail() {
         return "fail";
     }
 
-    @GetMapping("/cancel")
-    public ApiResponse<KakaoPayDto.KakaoCancelResponse> refund(@AuthUser Member member) {
+    @GetMapping("/cancel/callback")
+    public String cancel() {
+        return "cancel";
+    }
 
-        Long memberId = member.getId();
+    @DeleteMapping("/cancel")
+    public ApiResponse<String> refund(@AuthUser Member member) {
+        kakaoPayService.refund(member.getId());
 
-        KakaoPay kakaoPay = kakaoPayService.getKakaoPayInfo(memberId);
-
-        KakaoPayDto.KakaoCancelResponse kakaoCancelResponse = kakaoPayService.cancelResponse(kakaoPay.getTid());
-
-        kakaoPayService.cancelPay(memberId);
-
-        return ApiResponse.onSuccess(kakaoCancelResponse);
+        return ApiResponse.onSuccess("OK");
     }
 
     @PostMapping("/subscribe")
+    @Operation(summary = "카카오페이 구독 API", description = "카카오페이를 구독하는 API 입니다.")
     public ApiResponse<KakaoPayDto.KakaoApproveResponse> subscribePayRequest(@AuthUser Member member) {
-        Long memberId = member.getId();
-
-        KakaoPay kakaoPay = kakaoPayService.getKakaoPayInfo(memberId);
-
-        KakaoPayDto.KakaoApproveResponse kakaoApproveResponse = kakaoPayService.approveSubscribeResponse(kakaoPay.getSid());
-
-        kakaoPayService.savePayInfo(memberId, kakaoApproveResponse);
+        KakaoPayDto.KakaoApproveResponse kakaoApproveResponse = kakaoPayService.subscribeKakaoPay(member.getId());
 
         return ApiResponse.onSuccess(kakaoApproveResponse);
     }
@@ -78,11 +82,7 @@ public class KakaoPayController {
     @PostMapping("/subscribe/cancel")
     @Operation(summary = "카카오페이 구독 취소 API", description = "카카오페이 구독을 취소하는 API 입니다.")
     public ApiResponse<KakaoPayDto.KakaoSubscribeCancelResponse> subscribeCancelRequest(@AuthUser Member member) {
-        Long memberId = member.getId();
-
-        KakaoPay kakaoPay = kakaoPayService.getKakaoPayInfo(memberId);
-
-        KakaoPayDto.KakaoSubscribeCancelResponse kakaoSubscribeCancelResponse = kakaoPayService.subscribeCancelResponse(kakaoPay.getSid());
+        KakaoPayDto.KakaoSubscribeCancelResponse kakaoSubscribeCancelResponse = kakaoPayService.subscribeKakaoPayCancel(member.getId());
 
         return ApiResponse.onSuccess(kakaoSubscribeCancelResponse);
     }
@@ -90,22 +90,8 @@ public class KakaoPayController {
     @GetMapping("/subscribe/status")
     @Operation(summary = "카카오페이 구독 상태 확인 API", description = "카카오페이 구독 상태를 확인하는 API 입니다.")
     public ApiResponse<KakaoPayDto.KakaoPayStatus> subscribeStatusRequest(@AuthUser Member member) {
-        Long memberId = member.getId();
+        KakaoPayDto.KakaoPayStatus kakaoPayStatus = kakaoPayService.subcribeKakaoPayStatus(member.getId());
 
-        KakaoPayDto.KakaoSubscribeStatusResponse kakaoSubscribeStatusResponse = new KakaoPayDto.KakaoSubscribeStatusResponse();
-
-        boolean isLogExist = false;
-        if (kakaoPayService.getKakaoPayLog(memberId)) {
-            KakaoPay kakaoPay = kakaoPayService.getKakaoPayInfo(memberId);
-
-            if (kakaoPay.getSid() == null || kakaoPay.getSid().isEmpty()) {}
-            else {
-                isLogExist = true;
-
-                kakaoSubscribeStatusResponse = kakaoPayService.subscribeStatusResponse(kakaoPay.getSid());
-            }
-        }
-
-        return ApiResponse.onSuccess(KakaoPayConverter.toKakaoPayStatus(isLogExist, kakaoSubscribeStatusResponse));
+        return ApiResponse.onSuccess(kakaoPayStatus);
     }
 }
