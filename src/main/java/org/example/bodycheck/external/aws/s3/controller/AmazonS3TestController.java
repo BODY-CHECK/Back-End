@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Deprecated
 @RestController
 @RequiredArgsConstructor
-public class AmazonS3Controller { // 테스트 용
+public class AmazonS3TestController { // 테스트 용
 
     private final AmazonS3Service amazonS3Service;
 
