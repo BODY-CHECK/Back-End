@@ -37,7 +37,6 @@ public class GoogleLoginService {
     }
 
     private String getAccessTokenFromGoogle(String code) {
-
         GoogleLoginDto.GoogleTokenResponseDto googleTokenResponseDto = WebClient.create(GAUTH_TOKEN_URL_HOST).post()
                 .uri(uriBuilder -> uriBuilder
                         .path("/token")
@@ -64,7 +63,6 @@ public class GoogleLoginService {
     }
 
     private GoogleLoginDto.GoogleUserInfoResponseDto getUserInfo(String accessToken) {
-
         GoogleLoginDto.GoogleUserInfoResponseDto userInfo = WebClient.create(GAUTH_USER_URL_HOST).get()
                 .uri(uriBuilder -> uriBuilder
                         .scheme("https")

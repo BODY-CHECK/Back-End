@@ -32,7 +32,6 @@ public class KakaoLoginService {
     }
 
     private String getAccessTokenFromKakao(String code) {
-
         KakaoLoginDto.KakaoTokenResponseDto kakaoTokenResponseDto = WebClient.create(KAUTH_TOKEN_URL_HOST).post()
                 .uri(uriBuilder -> uriBuilder
                         .scheme("https")
@@ -60,7 +59,6 @@ public class KakaoLoginService {
     }
 
     private KakaoLoginDto.KakaoUserInfoResponseDto getUserInfo(String accessToken) {
-
         KakaoLoginDto.KakaoUserInfoResponseDto userInfo = WebClient.create(KAUTH_USER_URL_HOST).get()
                 .uri(uriBuilder -> uriBuilder
                         .scheme("https")
