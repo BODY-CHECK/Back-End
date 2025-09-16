@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.jwt.JwtTokenProvider;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
-import org.example.bodycheck.domain.member.entity.FcmToken;
 import org.example.bodycheck.domain.member.entity.Member;
 import org.example.bodycheck.domain.member.repository.FcmTokenRepository;
 import org.example.bodycheck.domain.member.repository.MemberRepository;
@@ -55,10 +54,10 @@ public class MemberQueryServiceImpl implements MemberQueryService {
                 .orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
     }
 
-    @Override
-    public List<FcmToken> findFirebaseTokenList(Long memberId) {
-        return fcmTokenRepository.findByMember_Id(memberId);
-    }
+//    @Override
+//    public List<FcmToken> findFirebaseTokenList(Long memberId) {
+//        return fcmTokenRepository.findByMember_Id(memberId);
+//    }
 
     @Override
     public boolean isNormalUser(Member member) {
