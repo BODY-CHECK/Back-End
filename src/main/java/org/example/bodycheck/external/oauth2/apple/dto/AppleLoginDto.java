@@ -19,7 +19,9 @@ public class AppleLoginDto {
         private String c_hash;
         private String email;
         private Boolean email_verified;
+        private Boolean is_private_email;
         private Long auth_time;
         private Boolean nonce_supported;
+        private Integer real_user_status;
     }
 }
