@@ -3,6 +3,7 @@ package org.example.bodycheck.external.fcm.service;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.Notification;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
@@ -30,9 +31,11 @@ public class FcmService {
 
         for (Device token : firebaseTokenList) {
             Message message = Message.builder()
-                    .putData("title", request.getTitle())
-                    .putData("content", request.getBody())
                     .setToken(token.getFcmToken())
+                    .setNotification(Notification.builder()
+                            .setTitle(request.getTitle())
+                            .setBody(request.getBody())
+                            .build())
                     .build();
 
             try {
