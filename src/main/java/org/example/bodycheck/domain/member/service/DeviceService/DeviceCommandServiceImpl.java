@@ -17,7 +17,7 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
 
     @Override
     public void updateDevice(DeviceRequestDTO.DeviceDTO request) {
-        Device device = deviceRepository.findByDevice_Id(request.getDeviceId()).orElseGet(() -> DeviceConverter.toDevice(request));
+        Device device = deviceRepository.findByDeviceId(request.getDeviceId()).orElseGet(() -> DeviceConverter.toDevice(request));
 
         device.updateFcmToken(request.getFcmToken());
 

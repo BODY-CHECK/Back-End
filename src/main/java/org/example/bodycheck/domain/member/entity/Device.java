@@ -3,6 +3,7 @@ package org.example.bodycheck.domain.member.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.bodycheck.common.entity.BaseEntity;
+import org.example.bodycheck.domain.enums.DeviceOSType;
 
 @Entity
 @Getter
@@ -17,9 +18,10 @@ public class Device extends BaseEntity {
 
     private String fcmToken;
 
-    private String deviceName;
+    @Enumerated(EnumType.STRING)
+    private DeviceOSType deviceOS;
 
-    private String deviceOS;
+    private String deviceName;
 
     private String deviceId;
 
