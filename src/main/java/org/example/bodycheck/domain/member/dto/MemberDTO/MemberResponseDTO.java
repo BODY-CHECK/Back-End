@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.example.bodycheck.domain.enums.ExerciseType;
 import org.example.bodycheck.domain.enums.Gender;
+import org.example.bodycheck.domain.enums.LoginType;
 
 public class MemberResponseDTO {
 
@@ -52,17 +53,12 @@ public class MemberResponseDTO {
     @NoArgsConstructor
     public static class MyPageResponseDTO {
         private String email;
-
         private String nickname;
-
         private Gender gender;
-
         private Float height;
-
         private Float weight;
-
         private ExerciseType exerciseType;
-
+        private LoginType loginType;
         private boolean premium;
     }
 }
