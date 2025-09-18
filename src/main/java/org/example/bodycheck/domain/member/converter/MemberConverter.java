@@ -67,6 +67,7 @@ public class MemberConverter {
                 .height(member.getHeight())
                 .weight(member.getWeight())
                 .exerciseType(member.getExerciseType())
+                .loginType(member.getLoginType())
                 .premium(isPremium)
                 .build();
     }

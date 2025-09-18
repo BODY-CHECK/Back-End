@@ -1,0 +1,51 @@
+package org.example.bodycheck.external.fcm.service;
+
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.firebase.messaging.Message;
+import lombok.RequiredArgsConstructor;
+import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
+import org.example.bodycheck.common.exception.handler.GeneralHandler;
+import org.example.bodycheck.domain.member.entity.Device;
+import org.example.bodycheck.domain.member.service.DeviceService.DeviceQueryService;
+import org.example.bodycheck.external.fcm.dto.FcmRequestDto;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class FcmService {
+
+    private final DeviceQueryService deviceQueryService;
+
+    public String sendMessage(Long memberId, FcmRequestDto request) {
+        List<Device> firebaseTokenList = deviceQueryService.getDeviceList(memberId);
+
+        if (firebaseTokenList.isEmpty()) {
+            throw new GeneralHandler(ErrorStatus.TOKEN_NOT_EXIST);
+        }
+
+        StringBuilder result = new StringBuilder();
+
+        for (Device token : firebaseTokenList) {
+            Message message = Message.builder()
+                    .putData("title", request.getTitle())
+                    .putData("content", request.getBody())
+                    .setToken(token.getFcmToken())
+                    .build();
+
+            try {
+                String response = FirebaseMessaging.getInstance().send(message);
+                result.append("Message sent to token ").append(token.getFcmToken())
+                        .append(": ").append(response).append("\n");
+            } catch (FirebaseMessagingException e) {
+                e.printStackTrace();
+                result.append("Failed to send message to token ").append(token.getFcmToken()).append("\n");
+            }
+        }
+
+        return result.toString();
+
+    }
+}

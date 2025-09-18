@@ -6,8 +6,8 @@ import org.example.bodycheck.common.jwt.JwtParser;
 import org.example.bodycheck.external.oauth2.apple.dto.AppleLoginDto;
 import org.springframework.stereotype.Service;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class AppleLoginService {
 
     private final AppleTokenDecoder appleTokenDecoder;

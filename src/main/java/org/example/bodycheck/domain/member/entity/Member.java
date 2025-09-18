@@ -55,8 +55,8 @@ public class Member extends BaseEntity {
 //    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
 //    private List<RefreshToken> refreshToken = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-//    private List<FcmToken> fcmTokenList = new ArrayList<>();
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Device> deviceList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Attendance> attendanceList = new ArrayList<>();

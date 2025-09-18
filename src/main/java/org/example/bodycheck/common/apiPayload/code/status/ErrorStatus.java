@@ -23,6 +23,9 @@ public enum ErrorStatus implements BaseErrorCode {
     PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST, "Password mismatch", "비밀번호가 일치하지 않습니다."),
     VERIFICATION_CODE_NOT_EXIST(HttpStatus.BAD_REQUEST, "code not exist", "인증코드가 존재하지 않습니다."),
 
+    // 기기 관련
+    DEVICE_NOT_FOUND(HttpStatus.BAD_REQUEST, "device not found", "디바이스가 존재하지 않습니다."),
+
     // Member Error
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "MEMBER4001", "사용자가 없습니다."),
     NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4002", "닉네임은 필수 입니다."),
