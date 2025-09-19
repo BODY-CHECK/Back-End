@@ -7,7 +7,7 @@ import org.example.bodycheck.domain.criteria.entity.Criteria;
 import org.example.bodycheck.domain.enums.ExerciseType;
 import org.example.bodycheck.domain.routine.entity.Routine;
 import org.example.bodycheck.domain.solution.entity.Solution;
-import org.example.bodycheck.external.google_tts.entity.Tts;
+import org.example.bodycheck.external.google.tts.entity.Tts;
 
 import java.util.ArrayList;
 import java.util.List;

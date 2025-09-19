@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
 import org.example.bodycheck.domain.member.entity.Device;
-import org.example.bodycheck.domain.member.service.DeviceService.DeviceQueryService;
+import org.example.bodycheck.domain.member.service.deviceservice.DeviceQueryService;
 import org.example.bodycheck.external.fcm.dto.FcmRequestDto;
 import org.springframework.stereotype.Service;
 

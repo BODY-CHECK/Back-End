@@ -4,9 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.example.bodycheck.common.entity.BaseEntity;
 import org.example.bodycheck.domain.exercise.entity.Exercise;
-import org.example.bodycheck.domain.mapping.entity.SolutionCriteria;
+import org.example.bodycheck.domain.solutioncriteria.entity.SolutionCriteria;
 import org.example.bodycheck.domain.member.entity.Member;
-import org.example.bodycheck.domain.solutionVideo.entity.SolutionVideo;
+import org.example.bodycheck.domain.solutionvideo.entity.SolutionVideo;
 
 import java.util.ArrayList;
 import java.util.List;

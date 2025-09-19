@@ -8,7 +8,7 @@ import org.example.bodycheck.domain.attendance.entity.Attendance;
 import org.example.bodycheck.domain.enums.ExerciseType;
 import org.example.bodycheck.domain.enums.Gender;
 import org.example.bodycheck.domain.enums.LoginType;
-import org.example.bodycheck.external.kakao_pay.entity.KakaoPay;
+import org.example.bodycheck.external.kakao.pay.entity.KakaoPay;
 import org.example.bodycheck.domain.routine.entity.Routine;
 import org.example.bodycheck.domain.solution.entity.Solution;
 
