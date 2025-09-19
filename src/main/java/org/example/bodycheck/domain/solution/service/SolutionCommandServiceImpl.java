@@ -3,14 +3,14 @@ package org.example.bodycheck.domain.solution.service;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
-import org.example.bodycheck.domain.criteria.dto.CriteriaRequestDTO;
+import org.example.bodycheck.domain.criteria.dto.CriteriaRequestDto;
 import org.example.bodycheck.domain.criteria.entity.Criteria;
 import org.example.bodycheck.domain.criteria.repository.CriteriaRepository;
 import org.example.bodycheck.domain.exercise.entity.Exercise;
 import org.example.bodycheck.domain.exercise.repository.ExerciseRepository;
 import org.example.bodycheck.domain.member.repository.MemberRepository;
 import org.example.bodycheck.domain.solution.converter.SolutionConverter;
-import org.example.bodycheck.domain.solution.dto.SolutionRequestDTO;
+import org.example.bodycheck.domain.solution.dto.SolutionRequestDto;
 import org.example.bodycheck.domain.solution.entity.Solution;
 import org.example.bodycheck.domain.solution.repository.SolutionRepository;
 import org.springframework.stereotype.Service;
@@ -32,13 +32,13 @@ public class SolutionCommandServiceImpl implements SolutionCommandService {
 
     @Override
     @Transactional
-    public String generateSolution(Long memberId, Long exerciseId, SolutionRequestDTO.PromptDTO request) {
+    public String generateSolution(Long memberId, Long exerciseId, SolutionRequestDto.PromptDto request) {
         List<Criteria> criterias = criteriaRepository.findByExercise_Id(exerciseId);
 
         String criteriaText = IntStream.range(0, criterias.size())
                 .mapToObj(i -> {
                     Criteria criteria = criterias.get(i);
-                    CriteriaRequestDTO.CriteriaDTO criteriaDTO = request.getCriteria().get(i);
+                    CriteriaRequestDto.CriteriaDto criteriaDTO = request.getCriteria().get(i);
                     return criteria.getCriteriaIdx() + ". " + criteria.getCriteriaName() + " / " + criteriaDTO.getScore() + "\n";
                 })
                 .collect(Collectors.joining());
@@ -63,7 +63,7 @@ public class SolutionCommandServiceImpl implements SolutionCommandService {
 
     @Override
     @Transactional
-    public Solution saveSolution(Long memberId, Long exerciseId, SolutionRequestDTO.SaveDTO request) {
+    public Solution saveSolution(Long memberId, Long exerciseId, SolutionRequestDto.SaveDto request) {
         Solution solution = SolutionConverter.toSolution(request);
         solution.mappingMemberAndExercise(memberRepository.findById(memberId).get(), exerciseRepository.findById(exerciseId).get());
 

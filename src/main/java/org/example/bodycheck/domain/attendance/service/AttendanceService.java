@@ -3,25 +3,22 @@ package org.example.bodycheck.domain.attendance.service;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
-import org.example.bodycheck.domain.attendance.dto.AttendanceCheckDTO;
-import org.example.bodycheck.domain.attendance.dto.AttendanceDTO;
+import org.example.bodycheck.domain.attendance.dto.AttendanceCheckDto;
+import org.example.bodycheck.domain.attendance.dto.AttendanceDto;
 import org.example.bodycheck.domain.attendance.entity.Attendance;
 import org.example.bodycheck.domain.attendance.repository.AttendanceRepository;
 import org.example.bodycheck.domain.member.entity.Member;
 import org.example.bodycheck.domain.routine.entity.Routine;
 import org.example.bodycheck.domain.routine.repository.RoutineRepository;
-import org.example.bodycheck.domain.solution.dto.SolutionRequestDTO;
+import org.example.bodycheck.domain.solution.dto.SolutionRequestDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +31,7 @@ public class AttendanceService {
     private final RoutineRepository routineRepository;
 
     @Transactional
-    public AttendanceCheckDTO check(Member member, Long exerciseId, SolutionRequestDTO.PromptDTO request) {
+    public AttendanceCheckDto check(Member member, Long exerciseId, SolutionRequestDto.PromptDto request) {
         LocalDate today = LocalDate.now();
         DayOfWeek dayOfWeek = today.getDayOfWeek();
 
@@ -78,7 +75,7 @@ public class AttendanceService {
                     .build();
             attendanceRepository.save(attendance);
 
-            return AttendanceCheckDTO.builder()
+            return AttendanceCheckDto.builder()
                     .checked(true)
                     .grade(grade)
                     .message("출석이 완료되었습니다.")
@@ -92,7 +89,7 @@ public class AttendanceService {
             attendanceRepository.save(attendance);
         }
 
-        return AttendanceCheckDTO.builder()
+        return AttendanceCheckDto.builder()
                 .checked(true)
                 .grade(grade)
                 .message("출석이 완료되었습니다.")
@@ -100,7 +97,7 @@ public class AttendanceService {
     }
 
     @Transactional
-    public List<AttendanceDTO> getAttendance(Member member, String yearMonth) {
+    public List<AttendanceDto> getAttendance(Member member, String yearMonth) {
 
         YearMonth targetYearMonth;
 
@@ -116,7 +113,7 @@ public class AttendanceService {
         List<Attendance> attendanceList = attendanceRepository.findAllByMemberAndDateBetween(member, startOfMonth, endOfMonth);
 
         return attendanceList.stream()
-                .map(attendance -> AttendanceDTO.builder()
+                .map(attendance -> AttendanceDto.builder()
                         .grade(attendance.getGrade())
                         .date(attendance.getDate().toString()) // "yyyy.MM.dd" 형식으로 반환
                         .build())

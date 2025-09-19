@@ -35,7 +35,7 @@ public class JwtTokenProvider {
     }
 
 
-    public JwtTokenDTO generateTokenDTO(Authentication authentication) {
+    public JwtTokenDto generateTokenDTO(Authentication authentication) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
@@ -56,7 +56,7 @@ public class JwtTokenProvider {
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
 
-        return JwtTokenDTO.builder()
+        return JwtTokenDto.builder()
                 .grantType("Bearer")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)

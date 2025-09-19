@@ -1,13 +1,13 @@
 package org.example.bodycheck.domain.member.converter;
 
-import org.example.bodycheck.common.jwt.JwtTokenDTO;
+import org.example.bodycheck.common.jwt.JwtTokenDto;
+import org.example.bodycheck.domain.member.dto.memberdto.MemberResponseDto;
 import org.example.bodycheck.domain.member.entity.Member;
-import org.example.bodycheck.domain.member.dto.MemberDTO.MemberRequestDTO;
-import org.example.bodycheck.domain.member.dto.MemberDTO.MemberResponseDTO;
+import org.example.bodycheck.domain.member.dto.memberdto.MemberRequestDto;
 
 public class MemberConverter {
 
-    public static Member toMember(MemberRequestDTO.SignUpDTO request, String encodedPw) {
+    public static Member toMember(MemberRequestDto.SignUpDto request, String encodedPw) {
         return Member.builder()
                 .nickname(request.getNickname())
                 .height(request.getHeight())
@@ -20,27 +20,27 @@ public class MemberConverter {
                 .build();
     }
 
-    public static MemberResponseDTO.SignUpResponseDTO toSignUpResponseDTO(Member member) {
-        return MemberResponseDTO.SignUpResponseDTO.builder()
+    public static MemberResponseDto.SignUpResponseDto toSignUpResponseDTO(Member member) {
+        return MemberResponseDto.SignUpResponseDto.builder()
                 .email(member.getEmail())
                 .build();
     }
 
-    public static MemberResponseDTO.AccessTokenResponseDTO toAccessTokenResponseDTO(JwtTokenDTO jwtTokenDTO) {
-        return MemberResponseDTO.AccessTokenResponseDTO.builder()
+    public static MemberResponseDto.AccessTokenResponseDto toAccessTokenResponseDTO(JwtTokenDto jwtTokenDTO) {
+        return MemberResponseDto.AccessTokenResponseDto.builder()
                 .accessToken(jwtTokenDTO.getAccessToken())
                 .refreshToken(jwtTokenDTO.getRefreshToken())
                 .build();
     }
 
-    public static MemberResponseDTO.SocialLoginLocationResponseDTO toSocialLoginLocationResponseDTO(String locationKakao, String locationGoogle) {
-        return MemberResponseDTO.SocialLoginLocationResponseDTO.builder()
+    public static MemberResponseDto.SocialLoginLocationResponseDto toSocialLoginLocationResponseDTO(String locationKakao, String locationGoogle) {
+        return MemberResponseDto.SocialLoginLocationResponseDto.builder()
                 .locationKakao(locationKakao)
                 .locationGoogle(locationGoogle)
                 .build();
     }
 
-    public static MemberResponseDTO.SocialLoginResponseDTO toSocialLoginResponseDTO(boolean isUser, String email, String nickname, JwtTokenDTO jwtTokenDTO) {
+    public static MemberResponseDto.SocialLoginResponseDto toSocialLoginResponseDTO(boolean isUser, String email, String nickname, JwtTokenDto jwtTokenDTO) {
         String accessToken;
         String refreshToken;
         if (jwtTokenDTO == null) {
@@ -51,7 +51,7 @@ public class MemberConverter {
             accessToken = jwtTokenDTO.getAccessToken();
             refreshToken = jwtTokenDTO.getRefreshToken();
         }
-        return MemberResponseDTO.SocialLoginResponseDTO.builder()
+        return MemberResponseDto.SocialLoginResponseDto.builder()
                 .isUser(isUser)
                 .email(email)
                 .accessToken(accessToken)
@@ -59,8 +59,8 @@ public class MemberConverter {
                 .build();
     }
 
-    public static MemberResponseDTO.MyPageResponseDTO toMyPageResponseDTO(Member member, boolean isPremium) {
-        return MemberResponseDTO.MyPageResponseDTO.builder()
+    public static MemberResponseDto.MyPageResponseDto toMyPageResponseDTO(Member member, boolean isPremium) {
+        return MemberResponseDto.MyPageResponseDto.builder()
                 .email(member.getEmail())
                 .nickname(member.getNickname())
                 .gender(member.getGender())

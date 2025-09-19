@@ -3,7 +3,7 @@ package org.example.bodycheck.common.apiPayload.code.status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.example.bodycheck.common.apiPayload.code.BaseErrorCode;
-import org.example.bodycheck.common.apiPayload.code.ErrorReasonDTO;
+import org.example.bodycheck.common.apiPayload.code.ErrorReasonDto;
 import org.springframework.http.HttpStatus;
 
 @Getter
@@ -69,8 +69,8 @@ public enum ErrorStatus implements BaseErrorCode {
     private final String message;
 
     @Override
-    public ErrorReasonDTO getReason() {
-        return ErrorReasonDTO.builder()
+    public ErrorReasonDto getReason() {
+        return ErrorReasonDto.builder()
                 .message(message)
                 .code(code)
                 .isSuccess(false)
@@ -78,8 +78,8 @@ public enum ErrorStatus implements BaseErrorCode {
     }
 
     @Override
-    public ErrorReasonDTO getReasonHttpStatus() {
-        return ErrorReasonDTO.builder()
+    public ErrorReasonDto getReasonHttpStatus() {
+        return ErrorReasonDto.builder()
                 .message(message)
                 .code(code)
                 .isSuccess(false)

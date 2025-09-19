@@ -27,38 +27,38 @@ public class RoutineController {
 
 //    @Operation(summary = "루틴 생성 API")
 //    @PostMapping("/setting")
-//    public ApiResponse<List<RoutineRequestDTO.RoutineDTO>> setting(@AuthUser Member member) {
+//    public ApiResponse<List<RoutineRequestDto.RoutineDTO>> setting(@AuthUser Member member) {
 //        return ApiResponse.onSuccess(routineService.setRoutine(member));
 //    }
 
     @Operation(summary = "루틴 조회 API")
     @GetMapping("/list/{weekId}")
-    public ApiResponse<List<WeekRoutineDTO>> getRoutineList(@PathVariable("weekId") Integer weekId, @AuthUser Member member) {
+    public ApiResponse<List<WeekRoutineDto>> getRoutineList(@PathVariable("weekId") Integer weekId, @AuthUser Member member) {
         return ApiResponse.onSuccess(routineService.getWeekRoutine(weekId, member));
     }
 
     @Operation(summary = "루틴 수정 API")
     @PostMapping("/update")
-    public ApiResponse<List<RoutineUpdateRequestDTO.RoutineUpdateDTO>> updateRoutine(@AuthUser Member member,
-                                                                                     @Valid @RequestBody RoutineUpdateRequestDTO request) {
+    public ApiResponse<List<RoutineUpdateRequestDto.RoutineUpdateDTO>> updateRoutine(@AuthUser Member member,
+                                                                                     @Valid @RequestBody RoutineUpdateRequestDto request) {
         return ApiResponse.onSuccess(routineService.updateRoutine(member, request));
     }
 
     @Operation(summary = "루틴 운동 체크 API")
     @PostMapping("/check")
-    public ApiResponse<RoutineCheckDTO> updateRoutineCheck(@AuthUser Member member, @RequestBody RoutineCheckDTO request){
+    public ApiResponse<RoutineCheckDto> updateRoutineCheck(@AuthUser Member member, @RequestBody RoutineCheckDto request){
         return ApiResponse.onSuccess(routineService.checkRoutine(member, request));
     }
 
     @Operation(summary = "루틴 운동 체크 해제 API")
     @PostMapping("/resetCheck")
-    public ApiResponse<RoutineResetCheckDTO> resetCheck(@AuthUser Member member){
+    public ApiResponse<RoutineResetCheckDto> resetCheck(@AuthUser Member member){
         return ApiResponse.onSuccess(routineService.resetCheck(member));
     }
 
     @Operation(summary = "루틴 랜덤 4개 출력 API")
     @PostMapping("/random")
-    public ApiResponse<List<RoutineRandomDTO>> randomRoutine(@AuthUser Member member){
+    public ApiResponse<List<RoutineRandomDto>> randomRoutine(@AuthUser Member member){
         return ApiResponse.onSuccess(routineService.randomRoutine(member));
     }
 

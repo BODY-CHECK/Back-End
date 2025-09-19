@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.domain.member.entity.Member;
 import org.example.bodycheck.common.validation.annotation.ExistMember;
-import org.example.bodycheck.domain.member.service.MemberService.MemberQueryService;
+import org.example.bodycheck.domain.member.service.memberservice.MemberQueryService;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;

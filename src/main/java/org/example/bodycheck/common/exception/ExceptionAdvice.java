@@ -2,7 +2,7 @@ package org.example.bodycheck.common.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.bodycheck.common.apiPayload.ApiResponse;
-import org.example.bodycheck.common.apiPayload.code.ErrorReasonDTO;
+import org.example.bodycheck.common.apiPayload.code.ErrorReasonDto;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -62,11 +62,11 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = GeneralException.class)
     public ResponseEntity onThrowException(GeneralException generalException, HttpServletRequest request) {
-        ErrorReasonDTO errorReasonHttpStatus = generalException.getErrorReasonHttpStatus();
+        ErrorReasonDto errorReasonHttpStatus = generalException.getErrorReasonHttpStatus();
         return handleExceptionInternal(generalException,errorReasonHttpStatus,null,request);
     }
 
-    private ResponseEntity<Object> handleExceptionInternal(Exception e, ErrorReasonDTO reason,
+    private ResponseEntity<Object> handleExceptionInternal(Exception e, ErrorReasonDto reason,
                                                            HttpHeaders headers, HttpServletRequest request) {
 
         ApiResponse<Object> body = ApiResponse.onFailure(reason.getCode(),reason.getMessage(),null);
