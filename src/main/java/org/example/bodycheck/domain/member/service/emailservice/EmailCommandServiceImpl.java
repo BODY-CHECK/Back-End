@@ -57,18 +57,19 @@ public class EmailCommandServiceImpl implements EmailCommandService {
     }
 
     @Override
-    @Transactional
-    public boolean verifyCode(EmailRequestDto.VerificationDto request) {
+    public void verifyCode(EmailRequestDto.VerificationDto request) {
         Email mail = emailRepository.findByEmail(request.getEmail()).orElseThrow(() -> new GeneralHandler(ErrorStatus.VERIFICATION_CODE_NOT_EXIST));
-        String storedCode = mail.getCode();
-        boolean verified = false;
+
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime updatedAt = mail.getUpdatedAt();
-        LocalDateTime expiration = updatedAt.plusMinutes(3);
-        if (storedCode.equals(request.getCode()) && now.isBefore(expiration)) {
-            verified = true;
+        LocalDateTime expiration = mail.getUpdatedAt().plusMinutes(3);
+
+        if (!mail.getCode().equals(request.getCode())) {
+            throw new GeneralHandler(ErrorStatus.VERIFICATION_CODE_INVALID);
         }
-        return verified;
+
+        if (now.isAfter(expiration)) {
+            throw new GeneralHandler(ErrorStatus.VERIFICATION_CODE_EXPIRED);
+        }
     }
 
     private String generateVerificationCode() {
@@ -83,7 +84,7 @@ public class EmailCommandServiceImpl implements EmailCommandService {
         Member member = memberRepository.findByEmail(request.getEmail()).orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         if (member.getPw() == null || member.getPw().isEmpty()) {
-            throw new GeneralHandler(ErrorStatus.KAKAO_USER);
+            throw new GeneralHandler(ErrorStatus.SOCIAL_USER);
         }
 
         String newPw = generateNewPw();

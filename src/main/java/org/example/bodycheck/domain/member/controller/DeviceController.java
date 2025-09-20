@@ -19,7 +19,6 @@ public class DeviceController {
     @PostMapping
     public ApiResponse<String> updateDeviceInfo(@RequestBody DeviceRequestDto.DeviceDto request) {
         deviceCommandService.updateDevice(request);
-
         return ApiResponse.onSuccess("OK");
     }
 }

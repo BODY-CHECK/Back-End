@@ -20,36 +20,36 @@ public class MemberConverter {
                 .build();
     }
 
-    public static MemberResponseDto.SignUpResponseDto toSignUpResponseDTO(Member member) {
+    public static MemberResponseDto.SignUpResponseDto toSignUpResponseDto(Member member) {
         return MemberResponseDto.SignUpResponseDto.builder()
                 .email(member.getEmail())
                 .build();
     }
 
-    public static MemberResponseDto.AccessTokenResponseDto toAccessTokenResponseDTO(JwtTokenDto jwtTokenDTO) {
+    public static MemberResponseDto.AccessTokenResponseDto toAccessTokenResponseDto(JwtTokenDto jwtTokenDto) {
         return MemberResponseDto.AccessTokenResponseDto.builder()
-                .accessToken(jwtTokenDTO.getAccessToken())
-                .refreshToken(jwtTokenDTO.getRefreshToken())
+                .accessToken(jwtTokenDto.getAccessToken())
+                .refreshToken(jwtTokenDto.getRefreshToken())
                 .build();
     }
 
-    public static MemberResponseDto.SocialLoginLocationResponseDto toSocialLoginLocationResponseDTO(String locationKakao, String locationGoogle) {
+    public static MemberResponseDto.SocialLoginLocationResponseDto toSocialLoginLocationResponseDto(String locationKakao, String locationGoogle) {
         return MemberResponseDto.SocialLoginLocationResponseDto.builder()
                 .locationKakao(locationKakao)
                 .locationGoogle(locationGoogle)
                 .build();
     }
 
-    public static MemberResponseDto.SocialLoginResponseDto toSocialLoginResponseDTO(boolean isUser, String email, String nickname, JwtTokenDto jwtTokenDTO) {
+    public static MemberResponseDto.SocialLoginResponseDto toSocialLoginResponseDto(boolean isUser, String email, String nickname, JwtTokenDto jwtTokenDto) {
         String accessToken;
         String refreshToken;
-        if (jwtTokenDTO == null) {
+        if (jwtTokenDto == null) {
             accessToken = null;
             refreshToken = null;
         }
         else {
-            accessToken = jwtTokenDTO.getAccessToken();
-            refreshToken = jwtTokenDTO.getRefreshToken();
+            accessToken = jwtTokenDto.getAccessToken();
+            refreshToken = jwtTokenDto.getRefreshToken();
         }
         return MemberResponseDto.SocialLoginResponseDto.builder()
                 .isUser(isUser)
@@ -59,7 +59,7 @@ public class MemberConverter {
                 .build();
     }
 
-    public static MemberResponseDto.MyPageResponseDto toMyPageResponseDTO(Member member, boolean isPremium) {
+    public static MemberResponseDto.MyPageResponseDto toMyPageResponseDto(Member member, boolean isPremium) {
         return MemberResponseDto.MyPageResponseDto.builder()
                 .email(member.getEmail())
                 .nickname(member.getNickname())

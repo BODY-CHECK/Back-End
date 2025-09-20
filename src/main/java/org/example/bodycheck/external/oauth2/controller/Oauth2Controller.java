@@ -53,7 +53,7 @@ public class Oauth2Controller {
         String locationGoogle = "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=" + client_id_google + "&redirect_uri=" + redirect_uri_google + "&scope=email profile";
 
         // 버튼에 해당 location 위치
-        return ApiResponse.onSuccess(MemberConverter.toSocialLoginLocationResponseDTO(locationKakao, locationGoogle));
+        return ApiResponse.onSuccess(MemberConverter.toSocialLoginLocationResponseDto(locationKakao, locationGoogle));
     }
 
     @GetMapping("/code/kakao")

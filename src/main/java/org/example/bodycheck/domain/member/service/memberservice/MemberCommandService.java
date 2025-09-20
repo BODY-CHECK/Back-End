@@ -8,14 +8,13 @@ import org.example.bodycheck.domain.member.entity.Member;
 
 public interface MemberCommandService {
 
-    Member signUp(MemberRequestDto.SignUpDto request);
+    JwtTokenDto signUp(MemberRequestDto.SignUpDto request);
     void deactivate(Member member, String accessToken);
-    JwtTokenDto directLogin(Member member);
     JwtTokenDto signIn(MemberRequestDto.SignInDto request);
     MemberResponseDto.SocialLoginResponseDto handleSocialLogin(String clientEmail, LoginType loginType);
     void logout(String clientEmail, String accessToken);
     JwtTokenDto refreshToken(MemberRequestDto.refreshTokenDto request);
-    boolean verifyPassword(Long memberId, MemberRequestDto.PasswordDto request);
-    String changePassword(Long memberId, MemberRequestDto.PasswordDto request);
+    void verifyPassword(Long memberId, MemberRequestDto.PasswordDto request);
+    void changePassword(Long memberId, MemberRequestDto.PasswordDto request);
     Member findById(Long memberId);
 }
