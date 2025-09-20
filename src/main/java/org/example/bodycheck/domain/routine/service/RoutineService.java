@@ -10,8 +10,11 @@ import org.example.bodycheck.domain.routine.dto.*;
 import org.example.bodycheck.domain.routine.entity.Routine;
 import org.example.bodycheck.domain.routine.repository.RoutineRepository;
 import org.example.bodycheck.domain.member.entity.Member;
+import org.example.bodycheck.external.openai.service.OpenAIService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
@@ -21,8 +24,10 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class RoutineService {
+
     private final RoutineRepository routineRepository;
     private final ExerciseRepository exerciseRepository;
+    private final OpenAIService openAIService;
 
     public void initRoutine(Member member) {
         if (member.getRoutineList() == null) {
@@ -189,7 +194,7 @@ public class RoutineService {
                 .collect(Collectors.toList());
     }
 
-    public String generateRoutine(String request) {
+    public String generateRoutine(String request, MultipartFile image) {
         String prompt1 = "Your task is to create a workout routine based on the input."
                 + "You must reflect the degree of rest that the user wants."
                 + "How many times you want to rest means all day long."
@@ -272,7 +277,18 @@ public class RoutineService {
                 + "Input: ";
         String prompt2 = request;
         String prompt3 = "\nOutput:";
-        return prompt1 + prompt2 + prompt3;
 
+        String prompt = prompt1 + prompt2 + prompt3;
+        if (image == null) {
+            return openAIService.chat(prompt);
+        }
+        else {
+            try {
+                return openAIService.vision(image, prompt);
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Vision API 호출 실패", e);
+            }
+        }
     }
 }
