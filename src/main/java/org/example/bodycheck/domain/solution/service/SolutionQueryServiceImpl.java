@@ -4,6 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.GeneralException;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
+import org.example.bodycheck.domain.solution.converter.SolutionConverter;
+import org.example.bodycheck.domain.solution.dto.SolutionResponseDto;
+import org.example.bodycheck.domain.solutioncriteria.entity.SolutionCriteria;
+import org.example.bodycheck.domain.solutioncriteria.service.SolutionCriteriaQueryService;
+import org.example.bodycheck.domain.solutionvideo.service.SolutionVideoQueryService;
 import org.example.bodycheck.external.redis.service.RedisService;
 import org.example.bodycheck.domain.enums.ExerciseType;
 import org.example.bodycheck.domain.solution.entity.Solution;
@@ -26,6 +31,8 @@ public class SolutionQueryServiceImpl implements SolutionQueryService {
 
     private final SolutionRepository solutionRepository;
     private final RedisService redisService;
+    private final SolutionVideoQueryService solutionVideoQueryService;
+    private final SolutionCriteriaQueryService solutionCriteriaQueryService;
 
     @Override
     public Optional<Solution> findSolution(Long id) {
@@ -110,8 +117,18 @@ public class SolutionQueryServiceImpl implements SolutionQueryService {
     }
 
     @Override
-    public String getSolutionContent(Long solutionId, Long memberId) {
-        Solution solution = solutionRepository.findByIdAndMember_Id(solutionId, memberId).orElseThrow(() -> new GeneralException(ErrorStatus.SOLUTION_NOT_FOUND));
+    public SolutionResponseDto.SolutionDetailDto getSolutionDetail(Long solutionId) {
+        String url = solutionVideoQueryService.getUrl(solutionId);
+
+        List<SolutionCriteria> solutionCriteriaList = solutionCriteriaQueryService.getSolutionCriteriaList(solutionId);
+
+        String content = getSolutionContent(solutionId);
+
+        return SolutionConverter.toSolutionDetailDTO(url, solutionCriteriaList, content);
+    }
+
+    private String getSolutionContent(Long solutionId) {
+        Solution solution = solutionRepository.findById(solutionId).orElseThrow(() -> new GeneralException(ErrorStatus.SOLUTION_NOT_FOUND));
 
         return solution.getContent();
     }

@@ -38,11 +38,7 @@ public class SolutionController {
 
     private final SolutionCommandService solutionCommandService;
     private final SolutionQueryService solutionQueryService;
-    private final SolutionCriteriaCommandService solutionCriteriaCommandService;
-    private final SolutionCriteriaQueryService solutionCriteriaQueryService;
-    private final SolutionVideoCommandService solutionVideoCommandService;
     private final SolutionVideoQueryService solutionVideoQueryService;
-    private final OpenAIService openAIService;
 
 
     @PostMapping("/generation/exercise/{exerciseId}")
@@ -53,12 +49,7 @@ public class SolutionController {
     public ApiResponse<String> generateSolution(@AuthUser Member member,
                                                 @ExistExercise @PathVariable("exerciseId") Long exerciseId,
                                                 @RequestBody SolutionRequestDto.PromptDto request) {
-
-        Long memberId = member.getId();
-
-        String prompt = solutionCommandService.generateSolution(memberId, exerciseId, request);
-
-        String response = openAIService.chat(prompt);
+        String response = solutionCommandService.generateSolution(member.getId(), exerciseId, request);
 
         return ApiResponse.onSuccess(response);
     }
@@ -80,11 +71,7 @@ public class SolutionController {
             return ApiResponse.onFailure("400", "잘못된 JSON 형식입니다.", "잘못된 JSON 형식입니다.");
         }
 
-        Long memberId = member.getId();
-
-        Solution solution = solutionCommandService.saveSolution(memberId, exerciseId, request);
-        solutionCriteriaCommandService.saveSolutionCriteria(solution, exerciseId, request);
-        solutionVideoCommandService.uploadFile(solution, file);
+        Solution solution = solutionCommandService.saveSolution(member, exerciseId, request, file);
 
         return ApiResponse.onSuccess(SolutionConverter.toSolutionResultDTO(solution));
     }
@@ -100,10 +87,7 @@ public class SolutionController {
                                                                             @RequestParam(name = "targetBody", defaultValue = "NULL") String exerciseType,
                                                                             @RequestParam(name = "period", defaultValue = "0") Integer period,
                                                                             @RequestParam(name = "page", defaultValue = "0") Integer page) {
-
-        Long memberId = member.getId();
-
-        List<Solution> solutionList = solutionQueryService.getSolutionList(memberId, exerciseType, period, page);
+        List<Solution> solutionList = solutionQueryService.getSolutionList(member.getId(), exerciseType, period, page);
         return ApiResponse.onSuccess(SolutionConverter.solutionListDTO(solutionList, page));
     }
 
@@ -114,16 +98,8 @@ public class SolutionController {
     })
     public ApiResponse<SolutionResponseDto.SolutionDetailDto> getSolutionDetail(@AuthUser Member member,
                                                                                 @ExistSolution @PathVariable("solutionId") Long solutionId) {
-
-        Long memberId = member.getId();
-
-        String url = solutionVideoQueryService.getUrl(solutionId);
-
-        List<SolutionCriteria> solutionCriteriaList = solutionCriteriaQueryService.getSolutionCriteriaList(solutionId);
-
-        String content = solutionQueryService.getSolutionContent(solutionId, memberId);
-
-        return ApiResponse.onSuccess(SolutionConverter.toSolutionDetailDTO(url, solutionCriteriaList, content));
+        SolutionResponseDto.SolutionDetailDto solutionDetailDto = solutionQueryService.getSolutionDetail(solutionId);
+        return ApiResponse.onSuccess(solutionDetailDto);
     }
 
     @GetMapping("/expert/{solutionId}")
@@ -134,7 +110,6 @@ public class SolutionController {
     public ApiResponse<SolutionResponseDto.ExpertSolutionDto> getExpertExerciseVideoDetail(@AuthUser Member member,
                                                                                            @ExistSolution @PathVariable("solutionId") Long solutionId) {
         String url = solutionVideoQueryService.getUrl(solutionId);
-
         return ApiResponse.onSuccess(SolutionConverter.toExpertSolutionDTO(url));
     }
 }

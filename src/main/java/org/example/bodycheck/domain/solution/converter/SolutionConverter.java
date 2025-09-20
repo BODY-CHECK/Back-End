@@ -1,6 +1,8 @@
 package org.example.bodycheck.domain.solution.converter;
 
 import org.example.bodycheck.domain.criteria.dto.CriteriaResponseDto;
+import org.example.bodycheck.domain.exercise.entity.Exercise;
+import org.example.bodycheck.domain.member.entity.Member;
 import org.example.bodycheck.domain.solutioncriteria.converter.SolutionCriteriaConverter;
 import org.example.bodycheck.domain.solutioncriteria.entity.SolutionCriteria;
 import org.example.bodycheck.domain.solution.dto.SolutionRequestDto;
@@ -14,8 +16,10 @@ import java.util.stream.Collectors;
 
 public class SolutionConverter {
 
-    public static Solution toSolution(SolutionRequestDto.SaveDto request) {
+    public static Solution toSolution(SolutionRequestDto.SaveDto request, Member member, Exercise exercise) {
         return Solution.builder()
+                .member(member)
+                .exercise(exercise)
                 .content(request.getContent())
                 .build();
     }
