@@ -8,13 +8,18 @@ import org.example.bodycheck.domain.criteria.entity.Criteria;
 import org.example.bodycheck.domain.criteria.repository.CriteriaRepository;
 import org.example.bodycheck.domain.exercise.entity.Exercise;
 import org.example.bodycheck.domain.exercise.repository.ExerciseRepository;
+import org.example.bodycheck.domain.member.entity.Member;
 import org.example.bodycheck.domain.member.repository.MemberRepository;
 import org.example.bodycheck.domain.solution.converter.SolutionConverter;
 import org.example.bodycheck.domain.solution.dto.SolutionRequestDto;
 import org.example.bodycheck.domain.solution.entity.Solution;
 import org.example.bodycheck.domain.solution.repository.SolutionRepository;
+import org.example.bodycheck.domain.solutioncriteria.service.SolutionCriteriaCommandService;
+import org.example.bodycheck.domain.solutionvideo.service.SolutionVideoCommandService;
+import org.example.bodycheck.external.openai.service.OpenAIService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +34,9 @@ public class SolutionCommandServiceImpl implements SolutionCommandService {
     private final MemberRepository memberRepository;
     private final ExerciseRepository exerciseRepository;
     private final CriteriaRepository criteriaRepository;
+    private final OpenAIService openAIService;
+    private final SolutionCriteriaCommandService solutionCriteriaCommandService;
+    private final SolutionVideoCommandService solutionVideoCommandService;
 
     @Override
     @Transactional
@@ -58,15 +66,22 @@ public class SolutionCommandServiceImpl implements SolutionCommandService {
                 + "input: \n";
         String prompt2 = "Exercise Name: " + exercise.getName() + "\nCriteria / Score:\n" + criteriaText;
         String prompt3 = "\noutput: ";
-        return prompt1 + prompt2 + prompt3;
+        String prompt =  prompt1 + prompt2 + prompt3;
+
+        return openAIService.chat(prompt);
     }
 
     @Override
     @Transactional
-    public Solution saveSolution(Long memberId, Long exerciseId, SolutionRequestDto.SaveDto request) {
-        Solution solution = SolutionConverter.toSolution(request);
-        solution.mappingMemberAndExercise(memberRepository.findById(memberId).get(), exerciseRepository.findById(exerciseId).get());
+    public Solution saveSolution(Member member, Long exerciseId, SolutionRequestDto.SaveDto request, MultipartFile file) {
+        Exercise exercise = exerciseRepository.findById(exerciseId).orElseThrow(() -> new GeneralHandler(ErrorStatus.EXERCISE_NOT_FOUND));
+        Solution solution = SolutionConverter.toSolution(request, member, exercise);
 
-        return solutionRepository.save(solution);
+        solutionRepository.save(solution);
+
+        solutionCriteriaCommandService.saveSolutionCriteria(solution, exerciseId, request);
+        solutionVideoCommandService.uploadFile(solution, file);
+
+        return solution;
     }
 }

@@ -22,7 +22,6 @@ public class EmailController {
     @PostMapping("/send-verification-code")
     @Operation(summary = "인증코드 API", description = "사용자가 입력한 이메일로 인증코드를 보내는 API 입니다.")
     public ApiResponse<String> sendVerificationEmail(@Valid @RequestBody EmailRequestDto.EmailDto request) {
-
         emailCommandService.sendVerificationEmail(request);
         return ApiResponse.onSuccess("인증 코드가 성공적으로 발급되었습니다.");
     }
@@ -30,19 +29,13 @@ public class EmailController {
     @PostMapping("/verify-code")
     @Operation(summary = "인증코드 검증 API", description = "사용자가 입력한 인증코드가 맞는지 검증하는 API 입니다.")
     public ApiResponse<String> verifyCode(@RequestBody EmailRequestDto.VerificationDto request) {
-        boolean isVerified = emailCommandService.verifyCode(request);
-        if (isVerified) {
-            return ApiResponse.onSuccess("이메일 인증이 완료되었습니다.");
-        }
-        else {
-            return ApiResponse.onFailure("400", "이메일 인증에 실패했습니다.", request.getCode() + ", 인증 코드가 틀렸습니다.");
-        }
+        emailCommandService.verifyCode(request);
+        return ApiResponse.onSuccess("이메일 인증이 완료되었습니다.");
     }
 
     @PostMapping("/send-new-pw")
     @Operation(summary = "비밀번호 찾기(재생성) API", description = "사용자가 비밀번호를 잊었을 때 사용자 이메일로 새로운 비밀번호를 보내는 API 입니다.")
     public ApiResponse<String> sendNewPwEmail(@RequestBody EmailRequestDto.EmailDto request) {
-
         emailCommandService.sendNewPwEmail(request);
         return ApiResponse.onSuccess("임시 비밀번호가 성공적으로 발급되었습니다.");
     }

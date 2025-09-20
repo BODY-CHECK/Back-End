@@ -21,10 +21,12 @@ public enum ErrorStatus implements BaseErrorCode {
     EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "email not found", "이메일이 존재하지 않습니다."),
     LOGIN_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "LOGIN FAIL", "아이디 또는 비밀번호를 확인하세요"),
     PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST, "Password mismatch", "비밀번호가 일치하지 않습니다."),
-    VERIFICATION_CODE_NOT_EXIST(HttpStatus.BAD_REQUEST, "code not exist", "인증코드가 존재하지 않습니다."),
+    VERIFICATION_CODE_NOT_EXIST(HttpStatus.BAD_REQUEST, "VERIFY_CODE4001", "인증코드가 존재하지 않습니다."),
+    VERIFICATION_CODE_INVALID(HttpStatus.BAD_REQUEST, "VERIFY_CODE4002","인증코드가 유효하지 않습니다."),
+    VERIFICATION_CODE_EXPIRED(HttpStatus.UNAUTHORIZED, "VERIFY_CODE4003", "만료된 인증코드입니다."),
 
     // 기기 관련
-    DEVICE_NOT_FOUND(HttpStatus.BAD_REQUEST, "device not found", "디바이스가 존재하지 않습니다."),
+    DEVICE_NOT_FOUND(HttpStatus.BAD_REQUEST, "DEVICE4001", "디바이스가 존재하지 않습니다."),
 
     // Member Error
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "MEMBER4001", "사용자가 없습니다."),
@@ -33,7 +35,7 @@ public enum ErrorStatus implements BaseErrorCode {
     TID_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4004", "tid가 존재하지 않습니다."),
     TID_SID_UNSUPPORTED(HttpStatus.BAD_REQUEST, "MEMBER4005", "지원되지 않는 tid, sid 입니다."),
     SID_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4006", "sid가 존재하지 않습니다."),
-    KAKAO_USER(HttpStatus.BAD_REQUEST, "MEMBER4007", "카카오 유저에게는 지원하지 않는 기능입니다."),
+    SOCIAL_USER(HttpStatus.BAD_REQUEST, "MEMBER4007", "소셜 로그인 유저에게는 지원하지 않는 기능입니다."),
     MEMBER_DEACTIVATED(HttpStatus.BAD_REQUEST, "MEMBER4008", "회원 탈퇴한 사용자입니다."),
     SOCIAL_ACCOUNT_ALREADY_REGISTERED(HttpStatus.BAD_REQUEST, "MEMBER4009", "소셜로 가입한 사용자입니다."),
 

@@ -22,6 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/routine")
 public class RoutineController {
+
     private final RoutineService routineService;
     private final OpenAIService openAIService;
 
@@ -66,18 +67,7 @@ public class RoutineController {
     @Operation(summary = "AI 추천 루틴 제공 API")
     public ApiResponse<String> recommendationRoutine(@AuthUser Member member,
                                                      @RequestPart(value = "image", required = false) MultipartFile image,
-                                                     @RequestPart(value = "prompt") @Valid String request) throws IOException {
-
-        String prompt = routineService.generateRoutine(request);
-
-        String response;
-        if (image == null) {
-            response = openAIService.chat(prompt);
-        }
-        else {
-            response = openAIService.vision(image, prompt);
-        }
-
-        return ApiResponse.onSuccess(response);
+                                                     @RequestPart(value = "prompt") @Valid String request) {
+        return ApiResponse.onSuccess(routineService.generateRoutine(request, image));
     }
 }
