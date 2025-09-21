@@ -8,15 +8,15 @@ public class AttendanceResponseDto {
     @Getter
     @Builder
     public static class AttendanceCheckDto {
-        Boolean checked;
-        int grade;
-        String message;
+        private Boolean checked;
+        private int grade;
+        private String message;
     }
 
     @Getter
     @Builder
     public static class AttendanceDto {
-        int grade;
-        String date;
+        private int grade;
+        private String date;
     }
 }
