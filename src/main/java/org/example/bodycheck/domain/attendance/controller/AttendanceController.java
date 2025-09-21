@@ -7,8 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.ApiResponse;
 import org.example.bodycheck.common.validation.annotation.ExistExercise;
-import org.example.bodycheck.domain.attendance.dto.AttendanceCheckDto;
-import org.example.bodycheck.domain.attendance.dto.AttendanceDto;
+import org.example.bodycheck.domain.attendance.dto.AttendanceResponseDto;
 import org.example.bodycheck.domain.attendance.service.AttendanceService;
 import org.example.bodycheck.domain.member.annotation.AuthUser;
 import org.example.bodycheck.domain.member.entity.Member;
@@ -30,9 +29,9 @@ public class AttendanceController {
     @Parameters({
             @Parameter(name = "exerciseId", description = "어떤 운동인지 판단하는 운동 아이디, path variable 입니다!")
     })
-    public ApiResponse<AttendanceCheckDto> checkAttendance(@AuthUser Member member,
-                                                           @ExistExercise @PathVariable("exerciseId") Long exerciseId,
-                                                           @RequestBody SolutionRequestDto.PromptDto request) {
+    public ApiResponse<AttendanceResponseDto.AttendanceCheckDto> checkAttendance(@AuthUser Member member,
+                                                                                 @ExistExercise @PathVariable("exerciseId") Long exerciseId,
+                                                                                 @RequestBody SolutionRequestDto.PromptDto request) {
         return ApiResponse.onSuccess(attendanceService.check(member, exerciseId, request));
     }
 
@@ -44,7 +43,7 @@ public class AttendanceController {
 
     @Operation(summary = "출석 조회")
     @GetMapping("/list")
-    public ApiResponse<List<AttendanceDto>> checkAttendance(@AuthUser Member member, @RequestParam String yearMonth) {
+    public ApiResponse<List<AttendanceResponseDto.AttendanceDto>> checkAttendance(@AuthUser Member member, @RequestParam String yearMonth) {
         return ApiResponse.onSuccess(attendanceService.getAttendance(member, yearMonth));
     }
 }

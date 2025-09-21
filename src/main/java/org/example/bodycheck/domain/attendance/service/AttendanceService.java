@@ -3,8 +3,7 @@ package org.example.bodycheck.domain.attendance.service;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
-import org.example.bodycheck.domain.attendance.dto.AttendanceCheckDto;
-import org.example.bodycheck.domain.attendance.dto.AttendanceDto;
+import org.example.bodycheck.domain.attendance.dto.AttendanceResponseDto;
 import org.example.bodycheck.domain.attendance.entity.Attendance;
 import org.example.bodycheck.domain.attendance.repository.AttendanceRepository;
 import org.example.bodycheck.domain.member.entity.Member;
@@ -31,7 +30,7 @@ public class AttendanceService {
     private final RoutineRepository routineRepository;
 
     @Transactional
-    public AttendanceCheckDto check(Member member, Long exerciseId, SolutionRequestDto.PromptDto request) {
+    public AttendanceResponseDto.AttendanceCheckDto check(Member member, Long exerciseId, SolutionRequestDto.PromptDto request) {
         LocalDate today = LocalDate.now();
         DayOfWeek dayOfWeek = today.getDayOfWeek();
 
@@ -75,7 +74,7 @@ public class AttendanceService {
                     .build();
             attendanceRepository.save(attendance);
 
-            return AttendanceCheckDto.builder()
+            return AttendanceResponseDto.AttendanceCheckDto.builder()
                     .checked(true)
                     .grade(grade)
                     .message("출석이 완료되었습니다.")
@@ -89,7 +88,7 @@ public class AttendanceService {
             attendanceRepository.save(attendance);
         }
 
-        return AttendanceCheckDto.builder()
+        return AttendanceResponseDto.AttendanceCheckDto.builder()
                 .checked(true)
                 .grade(grade)
                 .message("출석이 완료되었습니다.")
@@ -97,7 +96,7 @@ public class AttendanceService {
     }
 
     @Transactional
-    public List<AttendanceDto> getAttendance(Member member, String yearMonth) {
+    public List<AttendanceResponseDto.AttendanceDto> getAttendance(Member member, String yearMonth) {
 
         YearMonth targetYearMonth;
 
@@ -113,7 +112,7 @@ public class AttendanceService {
         List<Attendance> attendanceList = attendanceRepository.findAllByMemberAndDateBetween(member, startOfMonth, endOfMonth);
 
         return attendanceList.stream()
-                .map(attendance -> AttendanceDto.builder()
+                .map(attendance -> AttendanceResponseDto.AttendanceDto.builder()
                         .grade(attendance.getGrade())
                         .date(attendance.getDate().toString()) // "yyyy.MM.dd" 형식으로 반환
                         .build())
