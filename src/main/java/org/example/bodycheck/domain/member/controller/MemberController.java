@@ -10,12 +10,9 @@ import org.example.bodycheck.domain.member.dto.memberdto.MemberResponseDto;
 import org.example.bodycheck.external.kakao.pay.service.KakaoPayService;
 import org.example.bodycheck.domain.member.annotation.AuthUser;
 import org.example.bodycheck.domain.member.converter.MemberConverter;
-import org.example.bodycheck.domain.member.dto.memberdto.MemberProfileSettingDto;
-import org.example.bodycheck.domain.member.dto.memberdto.MemberSettingDto;
 import org.example.bodycheck.domain.member.entity.Member;
 import org.example.bodycheck.domain.member.service.memberservice.MemberCommandService;
 import org.example.bodycheck.domain.member.service.memberservice.SettingService;
-import org.example.bodycheck.domain.routine.service.RoutineService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -100,10 +97,9 @@ public class MemberController {
         return ApiResponse.onSuccess(MemberConverter.toMyPageResponseDto(member, isPremium));
     }
 
-    @CrossOrigin
     @PostMapping("/setting/profile")
     @Operation(summary = "프로필 변경 API")
-    public ApiResponse<MemberSettingDto> profileSetting(@AuthUser Member member, @RequestBody MemberProfileSettingDto request) {
+    public ApiResponse<MemberResponseDto.MemberSettingDto> profileSetting(@AuthUser Member member, @RequestBody MemberRequestDto.MemberProfileSettingDto request) {
         return ApiResponse.onSuccess(settingService.profileSetting(member, request));
     }
 }

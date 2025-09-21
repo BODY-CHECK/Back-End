@@ -61,4 +61,12 @@ public class MemberResponseDto {
         private LoginType loginType;
         private boolean premium;
     }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MemberSettingDto {
+        private Long memberId;
+    }
 }

@@ -1,7 +1,9 @@
 package org.example.bodycheck.domain.member.dto.memberdto;
 
 import jakarta.validation.constraints.Email;
-import lombok.Getter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 import org.example.bodycheck.domain.enums.ExerciseType;
 import org.example.bodycheck.domain.enums.Gender;
 import org.example.bodycheck.domain.enums.LoginType;
@@ -50,5 +52,14 @@ public class MemberRequestDto {
     @Getter
     public static class refreshTokenDto {
         private String refreshToken;
+    }
+
+    @Getter
+    public static class MemberProfileSettingDto {
+
+        @NotBlank
+        @Size(max = 10, message = "이름은 10자 이내여야 합니다.")
+        private String nickname;
+        private ExerciseType exerciseType;
     }
 }
