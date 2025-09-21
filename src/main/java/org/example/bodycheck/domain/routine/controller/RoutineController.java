@@ -5,8 +5,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.apiPayload.ApiResponse;
-import org.example.bodycheck.external.openai.service.OpenAIService;
-import org.example.bodycheck.domain.routine.dto.*;
+import org.example.bodycheck.domain.routine.dto.RoutineRequestDto;
+import org.example.bodycheck.domain.routine.dto.RoutineResponseDto;
 import org.example.bodycheck.domain.routine.service.RoutineService;
 
 import org.example.bodycheck.domain.member.annotation.AuthUser;
@@ -14,7 +14,6 @@ import org.example.bodycheck.domain.member.entity.Member;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @Tag(name = "루틴 관련 API")
@@ -24,42 +23,41 @@ import java.util.List;
 public class RoutineController {
 
     private final RoutineService routineService;
-    private final OpenAIService openAIService;
 
 //    @Operation(summary = "루틴 생성 API")
 //    @PostMapping("/setting")
-//    public ApiResponse<List<RoutineRequestDto.RoutineDTO>> setting(@AuthUser Member member) {
+//    public ApiResponse<List<RoutineRequestDto.RoutineDto>> setting(@AuthUser Member member) {
 //        return ApiResponse.onSuccess(routineService.setRoutine(member));
 //    }
 
     @Operation(summary = "루틴 조회 API")
     @GetMapping("/list/{weekId}")
-    public ApiResponse<List<WeekRoutineDto>> getRoutineList(@PathVariable("weekId") Integer weekId, @AuthUser Member member) {
+    public ApiResponse<List<RoutineResponseDto.WeekRoutineDto>> getRoutineList(@PathVariable("weekId") Integer weekId, @AuthUser Member member) {
         return ApiResponse.onSuccess(routineService.getWeekRoutine(weekId, member));
     }
 
     @Operation(summary = "루틴 수정 API")
     @PostMapping("/update")
-    public ApiResponse<List<RoutineUpdateRequestDto.RoutineUpdateDTO>> updateRoutine(@AuthUser Member member,
-                                                                                     @Valid @RequestBody RoutineUpdateRequestDto request) {
+    public ApiResponse<List<RoutineResponseDto.RoutineUpdateDto>> updateRoutine(@AuthUser Member member,
+                                                                                     @Valid @RequestBody RoutineRequestDto.RoutineUpdateRequestDto request) {
         return ApiResponse.onSuccess(routineService.updateRoutine(member, request));
     }
 
     @Operation(summary = "루틴 운동 체크 API")
     @PostMapping("/check")
-    public ApiResponse<RoutineCheckDto> updateRoutineCheck(@AuthUser Member member, @RequestBody RoutineCheckDto request){
+    public ApiResponse<RoutineResponseDto.RoutineIdDto> updateRoutineCheck(@AuthUser Member member, @RequestBody RoutineRequestDto.RoutineIdDto request){
         return ApiResponse.onSuccess(routineService.checkRoutine(member, request));
     }
 
     @Operation(summary = "루틴 운동 체크 해제 API")
     @PostMapping("/resetCheck")
-    public ApiResponse<RoutineResetCheckDto> resetCheck(@AuthUser Member member){
+    public ApiResponse<RoutineResponseDto.RoutineResetCheckDto> resetCheck(@AuthUser Member member){
         return ApiResponse.onSuccess(routineService.resetCheck(member));
     }
 
     @Operation(summary = "루틴 랜덤 4개 출력 API")
     @PostMapping("/random")
-    public ApiResponse<List<RoutineRandomDto>> randomRoutine(@AuthUser Member member){
+    public ApiResponse<List<RoutineResponseDto.RoutineRandomDto>> randomRoutine(@AuthUser Member member){
         return ApiResponse.onSuccess(routineService.randomRoutine(member));
     }
 
