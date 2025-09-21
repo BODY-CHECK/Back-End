@@ -6,7 +6,9 @@ import org.example.bodycheck.common.exception.handler.GeneralHandler;
 import org.example.bodycheck.domain.enums.ExerciseType;
 import org.example.bodycheck.domain.exercise.entity.Exercise;
 import org.example.bodycheck.domain.exercise.repository.ExerciseRepository;
-import org.example.bodycheck.domain.routine.dto.*;
+import org.example.bodycheck.domain.routine.converter.RoutineConverter;
+import org.example.bodycheck.domain.routine.dto.RoutineRequestDto;
+import org.example.bodycheck.domain.routine.dto.RoutineResponseDto;
 import org.example.bodycheck.domain.routine.entity.Routine;
 import org.example.bodycheck.domain.routine.repository.RoutineRepository;
 import org.example.bodycheck.domain.member.entity.Member;
@@ -50,7 +52,7 @@ public class RoutineService {
         routineRepository.saveAll(routines);
     }
 
-//    public List<RoutineRequestDto.RoutineDTO> setRoutine(Member member) {
+//    public List<RoutineRequestDto.RoutineDto> setRoutine(Member member) {
 //        List<Routine> routines = new ArrayList<>();
 //        for (Integer weekId = 1; weekId <= 7; weekId++) {
 //            for (Integer routineInx = 1; routineInx <= 3; routineInx++) {
@@ -67,7 +69,7 @@ public class RoutineService {
 //        routineRepository.saveAll(routines);
 //
 //        return routines.stream()
-//                .map(routine -> RoutineRequestDto.RoutineDTO.builder()
+//                .map(routine -> RoutineRequestDto.RoutineDto.builder()
 //                        .weekId(routine.getWeekId())
 //                        .routineIdx(routine.getRoutineIdx())
 //                        .exercise(null)
@@ -76,7 +78,7 @@ public class RoutineService {
 //                .collect(Collectors.toList());
 //    }
 
-    public List<WeekRoutineDto> getWeekRoutine(Integer weekId, Member member) {
+    public List<RoutineResponseDto.WeekRoutineDto> getWeekRoutine(Integer weekId, Member member) {
 
         List<Routine> routines = routineRepository.findByMemberIdAndWeekIdWithExercise(member.getId(), weekId);
 
@@ -85,7 +87,7 @@ public class RoutineService {
         }
 
         return routines.stream()
-                .map(routine -> WeekRoutineDto.builder()
+                .map(routine -> RoutineResponseDto.WeekRoutineDto.builder()
                         .weekId(routine.getWeekId())
                         .routineIdx(routine.getRoutineIdx())
                         .exercise(routine.getExercise() != null ? routine.getExercise().getName() : null)
@@ -95,37 +97,37 @@ public class RoutineService {
 
     }
 
-    public List<RoutineUpdateRequestDto.RoutineUpdateDTO> updateRoutine(Member member, RoutineUpdateRequestDto routineUpdateRequestDTO) {
+    public List<RoutineResponseDto.RoutineUpdateDto> updateRoutine(Member member, RoutineRequestDto.RoutineUpdateRequestDto routineUpdateRequestDto) {
         List<Routine> existingRoutines = routineRepository.findByMemberId(member.getId());
-        List<RoutineUpdateRequestDto.RoutineUpdateDTO> updatedRoutines = new ArrayList<>();
+        List<RoutineResponseDto.RoutineUpdateDto> updatedRoutines = new ArrayList<>();
 
-        for (RoutineUpdateRequestDto.RoutineUpdateDTO updateDTO : routineUpdateRequestDTO.getRoutines()) {
+        for (RoutineRequestDto.RoutineUpdateDto updateDto : routineUpdateRequestDto.getRoutines()) {
             Optional<Routine> existingRoutineOpt = existingRoutines.stream()
-                    .filter(routine -> routine.getWeekId().equals(updateDTO.getWeekId()) &&
-                            routine.getRoutineIdx().equals(updateDTO.getRoutineIdx()))
+                    .filter(routine -> routine.getWeekId().equals(updateDto.getWeekId()) &&
+                            routine.getRoutineIdx().equals(updateDto.getRoutineIdx()))
                     .findFirst();
 
             if (existingRoutineOpt.isPresent()) {
                 Routine existingRoutine = existingRoutineOpt.get();
 
-                if (updateDTO.getIsUpdated() != null && updateDTO.getIsUpdated()) {
-                    if (updateDTO.getExerciseId() != null) {
-                        Exercise updatedExercise = exerciseRepository.findById(Long.valueOf(updateDTO.getExerciseId()))
+                if (updateDto.getIsUpdated() != null && updateDto.getIsUpdated()) {
+                    if (updateDto.getExerciseId() != null) {
+                        Exercise updatedExercise = exerciseRepository.findById(Long.valueOf(updateDto.getExerciseId()))
                                 .orElseThrow(() -> new GeneralHandler(ErrorStatus.EXERCISE_NOT_FOUND));
                         existingRoutine.updateRoutineInfo(updatedExercise, false); // 루틴 정보 업데이트
                     } else {
                         existingRoutine.updateRoutineInfo(null, false);
                     }
                     routineRepository.save(existingRoutine);
-                    updatedRoutines.add(updateDTO);
+                    updatedRoutines.add(RoutineConverter.toResponseDto(updateDto));
                 }
             }
         }
         return updatedRoutines;
     }
 
-    public RoutineCheckDto checkRoutine(Member member, RoutineCheckDto routineCheckDTO) {
-        Routine routine = routineRepository.findByIdAndMember_id(routineCheckDTO.getRoutineId(), member.getId())
+    public RoutineResponseDto.RoutineIdDto checkRoutine(Member member, RoutineRequestDto.RoutineIdDto routineIdDto) {
+        Routine routine = routineRepository.findByIdAndMember_id(routineIdDto.getRoutineId(), member.getId())
                 .orElseThrow(() -> new GeneralHandler(ErrorStatus.ROUTINE_NOT_FOUND));
 
         DayOfWeek currentDayOfWeek = LocalDate.now().getDayOfWeek();
@@ -138,13 +140,13 @@ public class RoutineService {
         routine.updateRoutineCheck(true);
         routineRepository.save(routine);
 
-        return RoutineCheckDto.builder()
+        return RoutineResponseDto.RoutineIdDto.builder()
                 .routineId(routine.getId())
                 .build();
 
     }
 
-    public RoutineResetCheckDto resetCheck(Member member) {
+    public RoutineResponseDto.RoutineResetCheckDto resetCheck(Member member) {
 
         DayOfWeek currentDayOfWeek = LocalDate.now().getDayOfWeek();
         int currentWeekId = currentDayOfWeek.getValue();
@@ -160,12 +162,12 @@ public class RoutineService {
         }
         routineRepository.saveAll(routines);
 
-        return RoutineResetCheckDto.builder()
+        return RoutineResponseDto.RoutineResetCheckDto.builder()
                 .routineCheck(wasAnyRoutineReset)
                 .build();
     }
 
-    public List<RoutineRandomDto> randomRoutine(Member member) {
+    public List<RoutineResponseDto.RoutineRandomDto> randomRoutine(Member member) {
         ExerciseType exerciseType = member.getExerciseType();
 
         // exerciseType에 따라 운동 목록 필터링
@@ -188,7 +190,7 @@ public class RoutineService {
 
         // RoutineRandomDTO로 변환하여 반환
         return randomExercises.stream()
-                .map(exercise -> RoutineRandomDto.builder()
+                .map(exercise -> RoutineResponseDto.RoutineRandomDto.builder()
                         .exerciseId(exercise.getId())
                         .build())
                 .collect(Collectors.toList());
