@@ -2,7 +2,7 @@ package org.example.bodycheck.external.openai.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.bodycheck.common.apiPayload.ApiResponse;
+import org.example.bodycheck.common.apipayload.ApiResponse;
 import org.example.bodycheck.external.openai.service.OpenAIService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

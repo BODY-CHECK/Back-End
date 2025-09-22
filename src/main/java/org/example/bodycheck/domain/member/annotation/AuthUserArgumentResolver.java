@@ -2,7 +2,7 @@ package org.example.bodycheck.domain.member.annotation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
+import org.example.bodycheck.common.apipayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
 import org.example.bodycheck.common.jwt.JwtTokenProvider;
 import org.example.bodycheck.domain.member.entity.Member;

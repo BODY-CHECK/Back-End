@@ -1,7 +1,7 @@
 package org.example.bodycheck.domain.member.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.bodycheck.common.apiPayload.ApiResponse;
+import org.example.bodycheck.common.apipayload.ApiResponse;
 import org.example.bodycheck.domain.member.dto.devicedto.DeviceRequestDto;
 import org.example.bodycheck.domain.member.service.deviceservice.DeviceCommandService;
 import org.springframework.web.bind.annotation.PostMapping;

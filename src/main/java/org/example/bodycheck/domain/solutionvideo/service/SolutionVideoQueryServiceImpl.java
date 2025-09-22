@@ -1,7 +1,7 @@
 package org.example.bodycheck.domain.solutionvideo.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
+import org.example.bodycheck.common.apipayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.GeneralException;
 import org.example.bodycheck.domain.solutionvideo.entity.SolutionVideo;
 import org.example.bodycheck.domain.solutionvideo.repository.SolutionVideoRepository;

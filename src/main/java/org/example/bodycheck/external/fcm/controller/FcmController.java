@@ -1,7 +1,7 @@
 package org.example.bodycheck.external.fcm.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.bodycheck.common.apiPayload.ApiResponse;
+import org.example.bodycheck.common.apipayload.ApiResponse;
 import org.example.bodycheck.external.fcm.dto.FcmRequestDto;
 import org.example.bodycheck.external.fcm.service.FcmService;
 import org.example.bodycheck.domain.member.annotation.AuthUser;

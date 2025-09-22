@@ -1,4 +1,4 @@
-package org.example.bodycheck.common.apiPayload.code;
+package org.example.bodycheck.common.apipayload.code;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @Builder
-public class ReasonDto {
+public class ErrorReasonDto {
 
     private HttpStatus httpStatus;
 

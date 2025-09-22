@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.example.bodycheck.common.apiPayload.ApiResponse;
+import org.example.bodycheck.common.apipayload.ApiResponse;
 import org.example.bodycheck.common.validation.annotation.ExistExercise;
 import org.example.bodycheck.domain.attendance.dto.AttendanceResponseDto;
 import org.example.bodycheck.domain.attendance.service.AttendanceService;

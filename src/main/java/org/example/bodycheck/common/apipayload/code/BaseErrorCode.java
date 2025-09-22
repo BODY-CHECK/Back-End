@@ -1,4 +1,4 @@
-package org.example.bodycheck.common.apiPayload.code;
+package org.example.bodycheck.common.apipayload.code;
 
 public interface BaseErrorCode {
 

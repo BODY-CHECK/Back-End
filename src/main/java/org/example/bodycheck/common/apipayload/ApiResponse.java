@@ -1,12 +1,12 @@
-package org.example.bodycheck.common.apiPayload;
+package org.example.bodycheck.common.apipayload;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.example.bodycheck.common.apiPayload.code.BaseCode;
-import org.example.bodycheck.common.apiPayload.code.status.SuccessStatus;
+import org.example.bodycheck.common.apipayload.code.BaseCode;
+import org.example.bodycheck.common.apipayload.code.status.SuccessStatus;
 
 @Getter
 @AllArgsConstructor

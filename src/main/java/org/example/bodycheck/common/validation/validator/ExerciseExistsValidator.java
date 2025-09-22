@@ -3,7 +3,7 @@ package org.example.bodycheck.common.validation.validator;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
-import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
+import org.example.bodycheck.common.apipayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.validation.annotation.ExistExercise;
 import org.example.bodycheck.domain.exercise.entity.Exercise;
 import org.example.bodycheck.domain.exercise.service.ExerciseQueryService;

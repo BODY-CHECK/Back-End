@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.jwt.JwtTokenDto;
-import org.example.bodycheck.common.apiPayload.ApiResponse;
+import org.example.bodycheck.common.apipayload.ApiResponse;
 import org.example.bodycheck.domain.member.dto.memberdto.MemberRequestDto;
 import org.example.bodycheck.domain.member.dto.memberdto.MemberResponseDto;
 import org.example.bodycheck.external.kakao.pay.service.KakaoPayService;

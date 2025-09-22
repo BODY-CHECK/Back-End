@@ -2,7 +2,7 @@ package org.example.bodycheck.external.kakao.pay.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.example.bodycheck.common.apiPayload.ApiResponse;
+import org.example.bodycheck.common.apipayload.ApiResponse;
 import org.example.bodycheck.external.kakao.pay.dto.KakaoPayDto;
 import org.example.bodycheck.external.kakao.pay.service.KakaoPayService;
 import org.example.bodycheck.domain.member.annotation.AuthUser;

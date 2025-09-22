@@ -1,7 +1,7 @@
 package org.example.bodycheck.domain.solution.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
+import org.example.bodycheck.common.apipayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.GeneralException;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
 import org.example.bodycheck.domain.solution.converter.SolutionConverter;

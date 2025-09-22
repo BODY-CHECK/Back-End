@@ -3,7 +3,7 @@ package org.example.bodycheck.domain.member.service.memberservice;
 import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.common.jwt.JwtTokenDto;
 import org.example.bodycheck.common.jwt.JwtTokenProvider;
-import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
+import org.example.bodycheck.common.apipayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
 import org.example.bodycheck.domain.enums.LoginType;
 import org.example.bodycheck.domain.member.dto.memberdto.MemberRequestDto;

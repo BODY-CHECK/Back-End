@@ -1,6 +1,6 @@
 package org.example.bodycheck.external.kakao.pay.service;
 
-import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
+import org.example.bodycheck.common.apipayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
 import org.example.bodycheck.external.kakao.pay.converter.KakaoPayConverter;
 import org.example.bodycheck.external.kakao.pay.dto.KakaoPayDto;

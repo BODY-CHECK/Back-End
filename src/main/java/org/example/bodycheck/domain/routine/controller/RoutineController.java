@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.bodycheck.common.apiPayload.ApiResponse;
+import org.example.bodycheck.common.apipayload.ApiResponse;
 import org.example.bodycheck.domain.routine.dto.RoutineRequestDto;
 import org.example.bodycheck.domain.routine.dto.RoutineResponseDto;
 import org.example.bodycheck.domain.routine.service.RoutineService;

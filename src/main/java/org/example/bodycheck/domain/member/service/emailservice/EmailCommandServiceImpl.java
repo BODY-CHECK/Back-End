@@ -1,7 +1,7 @@
 package org.example.bodycheck.domain.member.service.emailservice;
 
 import lombok.RequiredArgsConstructor;
-import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
+import org.example.bodycheck.common.apipayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
 import org.example.bodycheck.domain.member.converter.EmailConverter;
 import org.example.bodycheck.domain.member.entity.Email;

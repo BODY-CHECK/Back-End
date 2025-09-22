@@ -3,7 +3,7 @@ package org.example.bodycheck.domain.member.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.bodycheck.common.apiPayload.ApiResponse;
+import org.example.bodycheck.common.apipayload.ApiResponse;
 import org.example.bodycheck.domain.member.service.emailservice.EmailCommandService;
 import org.example.bodycheck.domain.member.dto.emaildto.EmailRequestDto;
 import org.springframework.validation.annotation.Validated;

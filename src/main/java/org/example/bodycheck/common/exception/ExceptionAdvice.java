@@ -1,9 +1,9 @@
 package org.example.bodycheck.common.exception;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.bodycheck.common.apiPayload.ApiResponse;
-import org.example.bodycheck.common.apiPayload.code.ErrorReasonDto;
-import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
+import org.example.bodycheck.common.apipayload.ApiResponse;
+import org.example.bodycheck.common.apipayload.code.ErrorReasonDto;
+import org.example.bodycheck.common.apipayload.code.status.ErrorStatus;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;

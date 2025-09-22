@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.bodycheck.common.apiPayload.ApiResponse;
+import org.example.bodycheck.common.apipayload.ApiResponse;
 import org.example.bodycheck.domain.enums.LoginType;
 import org.example.bodycheck.domain.member.converter.MemberConverter;
 import org.example.bodycheck.domain.member.dto.memberdto.MemberRequestDto;

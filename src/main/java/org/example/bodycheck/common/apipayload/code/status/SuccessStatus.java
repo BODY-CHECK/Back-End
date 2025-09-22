@@ -1,9 +1,9 @@
-package org.example.bodycheck.common.apiPayload.code.status;
+package org.example.bodycheck.common.apipayload.code.status;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.example.bodycheck.common.apiPayload.code.BaseCode;
-import org.example.bodycheck.common.apiPayload.code.ReasonDto;
+import org.example.bodycheck.common.apipayload.code.BaseCode;
+import org.example.bodycheck.common.apipayload.code.ReasonDto;
 import org.springframework.http.HttpStatus;
 
 @Getter

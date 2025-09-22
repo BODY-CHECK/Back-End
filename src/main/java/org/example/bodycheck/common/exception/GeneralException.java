@@ -2,8 +2,8 @@ package org.example.bodycheck.common.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.example.bodycheck.common.apiPayload.code.BaseErrorCode;
-import org.example.bodycheck.common.apiPayload.code.ErrorReasonDto;
+import org.example.bodycheck.common.apipayload.code.BaseErrorCode;
+import org.example.bodycheck.common.apipayload.code.ErrorReasonDto;
 
 @Getter
 @AllArgsConstructor
