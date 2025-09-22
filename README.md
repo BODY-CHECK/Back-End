@@ -100,6 +100,7 @@
 - [FIX] : 에러 수정, 버그 수정
 - [DOCS] : README나 WIKI 등의 문서 수정
 - [CORE] : CI/CD 세팅
+- [CHORE] : 빌드, 환경, 설정 등
 
 #### 커밋 예시
 
@@ -118,6 +119,7 @@
 - fix : 에러 수정, 버그 수정
 - docs : README, 문서
 - core : CI/CD 세팅
+- chore : 빌드, 환경, 설정 등
 
 #### 브랜치 명 예시
 
@@ -156,6 +158,7 @@
 - [FIX] : 에러 수정, 버그 수정
 - [DOCS] : README나 WIKI 등의 문서 수정
 - [CORE] : CI/CD 세팅
+- [CHORE] : 빌드, 환경, 설정 등
 `ex) [FEATURE] user api 구현`
 
 <br>
