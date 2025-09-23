@@ -4,8 +4,8 @@ import lombok.Getter;
 
 public class CriteriaRequestDto {
 
-    @Getter
-    public static class CriteriaDto {
-        Integer score;
-    }
+	@Getter
+	public static class CriteriaDto {
+		Integer score;
+	}
 }

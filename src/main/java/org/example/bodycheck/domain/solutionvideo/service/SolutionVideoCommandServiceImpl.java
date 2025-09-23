@@ -1,6 +1,5 @@
 package org.example.bodycheck.domain.solutionvideo.service;
 
-import lombok.RequiredArgsConstructor;
 import org.example.bodycheck.domain.solution.entity.Solution;
 import org.example.bodycheck.domain.solutionvideo.converter.SolutionVideoConverter;
 import org.example.bodycheck.domain.solutionvideo.entity.SolutionVideo;
@@ -10,24 +9,26 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class SolutionVideoCommandServiceImpl implements SolutionVideoCommandService {
 
-    private final SolutionVideoRepository solutionVideoRepository;
+	private final SolutionVideoRepository solutionVideoRepository;
 
-    private final AmazonS3Service amazonS3Service;
+	private final AmazonS3Service amazonS3Service;
 
-    @Override
-    @Transactional
-    public void uploadFile(Solution solution, MultipartFile file) {
-        if (file != null && !file.isEmpty()) {
-            String url = amazonS3Service.uploadFile(file);
+	@Override
+	@Transactional
+	public void uploadFile(Solution solution, MultipartFile file) {
+		if (file != null && !file.isEmpty()) {
+			String url = amazonS3Service.uploadFile(file);
 
-            SolutionVideo solutionVideo = SolutionVideoConverter.toSolutionVideo(solution, url);
+			SolutionVideo solutionVideo = SolutionVideoConverter.toSolutionVideo(solution, url);
 
-            solutionVideoRepository.save(solutionVideo);
-        }
-    }
+			solutionVideoRepository.save(solutionVideo);
+		}
+	}
 }

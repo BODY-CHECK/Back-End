@@ -15,38 +15,38 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @EnableCaching
 public class RedisConfig {
 
-    @Value("${spring.data.redis.host}")
-    private String host;
+	@Value("${spring.data.redis.host}")
+	private String host;
 
-    @Value("${spring.data.redis.port}")
-    private int port;
+	@Value("${spring.data.redis.port}")
+	private int port;
 
-    @Value("${spring.data.redis.ssl.enabled}")
-    private Boolean ssl;
+	@Value("${spring.data.redis.ssl.enabled}")
+	private Boolean ssl;
 
-    @Bean
-    public RedisConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-        redisStandaloneConfiguration.setHostName(host);
-        redisStandaloneConfiguration.setPort(port);
+	@Bean
+	public RedisConnectionFactory redisConnectionFactory() {
+		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
+		redisStandaloneConfiguration.setHostName(host);
+		redisStandaloneConfiguration.setPort(port);
 
-        LettuceClientConfiguration.LettuceClientConfigurationBuilder clientConfigurationBuilder =
-                LettuceClientConfiguration.builder();
+		LettuceClientConfiguration.LettuceClientConfigurationBuilder clientConfigurationBuilder =
+			LettuceClientConfiguration.builder();
 
-        if (Boolean.TRUE.equals(ssl)) {
-            clientConfigurationBuilder.useSsl();
-        }
+		if (Boolean.TRUE.equals(ssl)) {
+			clientConfigurationBuilder.useSsl();
+		}
 
-        return new LettuceConnectionFactory(redisStandaloneConfiguration, clientConfigurationBuilder.build());
-    }
+		return new LettuceConnectionFactory(redisStandaloneConfiguration, clientConfigurationBuilder.build());
+	}
 
-    @Bean
-    public RedisTemplate<?, ?> redisTemplate() {
-        RedisTemplate<byte[], byte[]> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new StringRedisSerializer());
+	@Bean
+	public RedisTemplate<?, ?> redisTemplate() {
+		RedisTemplate<byte[], byte[]> redisTemplate = new RedisTemplate<>();
+		redisTemplate.setConnectionFactory(redisConnectionFactory());
+		redisTemplate.setKeySerializer(new StringRedisSerializer());
+		redisTemplate.setValueSerializer(new StringRedisSerializer());
 
-        return redisTemplate;
-    }
+		return redisTemplate;
+	}
 }

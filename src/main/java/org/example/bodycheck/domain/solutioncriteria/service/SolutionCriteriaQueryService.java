@@ -1,9 +1,10 @@
 package org.example.bodycheck.domain.solutioncriteria.service;
 
-import org.example.bodycheck.domain.solutioncriteria.entity.SolutionCriteria;
-
 import java.util.List;
 
+import org.example.bodycheck.domain.solutioncriteria.entity.SolutionCriteria;
+
 public interface SolutionCriteriaQueryService {
-    List<SolutionCriteria> getSolutionCriteriaList(Long solutionId);
+
+	List<SolutionCriteria> getSolutionCriteriaList(Long solutionId);
 }

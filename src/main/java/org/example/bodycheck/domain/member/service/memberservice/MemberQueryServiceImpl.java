@@ -1,6 +1,7 @@
 package org.example.bodycheck.domain.member.service.memberservice;
 
-import lombok.RequiredArgsConstructor;
+import java.util.Optional;
+
 import org.example.bodycheck.common.apipayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
 import org.example.bodycheck.domain.enums.LoginType;
@@ -11,52 +12,50 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MemberQueryServiceImpl implements MemberQueryService {
 
-    private final MemberRepository memberRepository;
+	private final MemberRepository memberRepository;
 
-    @Override
-    public Optional<Member> findMember(Long id) {
-        return memberRepository.findById(id);
-    }
+	@Override
+	public Optional<Member> findMember(Long id) {
+		return memberRepository.findById(id);
+	}
 
-    @Override
-    @Transactional(readOnly = true)
-    public Member getMember() {
-        // 토큰이 유효한지 검증
-        /*if (!jwtTokenProvider.validateToken(token)) {
-            throw new TempHandler(ErrorStatus.TOKEN_NOT_EXIST);
-        }
+	@Override
+	@Transactional(readOnly = true)
+	public Member getMember() {
+		// 토큰이 유효한지 검증
+		// if (!jwtTokenProvider.validateToken(token)) {
+		// 	throw new TempHandler(ErrorStatus.TOKEN_NOT_EXIST);
+		// }
 
-         */
+		// 토큰에서 인증 정보를 추출
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		System.out.println(authentication + " authentication");
 
-        // 토큰에서 인증 정보를 추출
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println(authentication + " authentication");
+		if (authentication == null) {
+			throw new GeneralHandler(ErrorStatus.TOKEN_MISSING_AUTHORITY);
+		}
 
-        if (authentication == null) {
-            throw new GeneralHandler(ErrorStatus.TOKEN_MISSING_AUTHORITY);
-        }
+		// 인증 정보에서 사용자 이메일을 가져와 회원 조회
+		String email = authentication.getName();
 
-        // 인증 정보에서 사용자 이메일을 가져와 회원 조회
-        String email = authentication.getName();
+		return memberRepository.findByEmail(email)
+			.orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
+	}
 
-        return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
-    }
+	@Override
+	public boolean isRegisteredWithEmail(Member member) {
+		return member.getPw() != null && !member.getPw().isEmpty();
+	}
 
-    @Override
-    public boolean isRegisteredWithEmail(Member member) {
-        return member.getPw() != null && !member.getPw().isEmpty();
-    }
-
-    @Override
-    public boolean isRegisteredWithSocial(Member member, LoginType loginType) {
-        return member.getLoginType() == loginType;
-    }
+	@Override
+	public boolean isRegisteredWithSocial(Member member, LoginType loginType) {
+		return member.getLoginType() == loginType;
+	}
 }

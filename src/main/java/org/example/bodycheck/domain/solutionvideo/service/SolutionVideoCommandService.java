@@ -5,5 +5,5 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface SolutionVideoCommandService {
 
-    void uploadFile(Solution solution, MultipartFile file);
+	void uploadFile(Solution solution, MultipartFile file);
 }
