@@ -1,10 +1,11 @@
 package org.example.bodycheck.common.jwt;
 
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import lombok.extern.slf4j.Slf4j;
-import org.example.bodycheck.common.apiPayload.code.status.ErrorStatus;
+import java.security.Key;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.stream.Collectors;
+
+import org.example.bodycheck.common.apipayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,114 +15,119 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.stream.Collectors;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
 public class JwtTokenProvider {
 
-    private static final String AUTHORITIES_KEY = "auth";
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 2;  // 2시간
-    public static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24;  // 1일
+	private static final String AUTHORITIES_KEY = "auth";
+	private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 2;  // 2시간
+	public static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24;  // 1일
 
-    private final Key key;
+	private final Key key;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        this.key = Keys.hmacShaKeyFor(keyBytes);
-    }
+	public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
+		byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+		this.key = Keys.hmacShaKeyFor(keyBytes);
+	}
 
+	public JwtTokenDto generateTokenDto(Authentication authentication) {
+		String authorities = authentication.getAuthorities().stream()
+			.map(GrantedAuthority::getAuthority)
+			.collect(Collectors.joining(","));
 
-    public JwtTokenDto generateTokenDTO(Authentication authentication) {
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+		long now = (new Date()).getTime();
 
-        long now = (new Date()).getTime();
+		Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
+		String accessToken = Jwts.builder()
+			.setSubject(authentication.getName())
+			.claim(AUTHORITIES_KEY, authorities)
+			.setExpiration(accessTokenExpiresIn)
+			.signWith(key, SignatureAlgorithm.HS512)
+			.compact();
 
-        Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
-        String accessToken = Jwts.builder()
-                .setSubject(authentication.getName())
-                .claim(AUTHORITIES_KEY, authorities)
-                .setExpiration(accessTokenExpiresIn)
-                .signWith(key, SignatureAlgorithm.HS512)
-                .compact();
+		String refreshToken = Jwts.builder()
+			.setSubject(authentication.getName())
+			.setExpiration(new Date(now + REFRESH_TOKEN_EXPIRE_TIME))
+			.signWith(key, SignatureAlgorithm.HS512)
+			.compact();
 
-        String refreshToken = Jwts.builder()
-                .setSubject(authentication.getName())
-                .setExpiration(new Date(now + REFRESH_TOKEN_EXPIRE_TIME))
-                .signWith(key, SignatureAlgorithm.HS512)
-                .compact();
+		return JwtTokenDto.builder()
+			.grantType("Bearer")
+			.accessToken(accessToken)
+			.refreshToken(refreshToken)
+			.build();
+	}
 
-        return JwtTokenDto.builder()
-                .grantType("Bearer")
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
-    }
+	public Authentication getAuthenticationFromAccessToken(String accessToken) {
+		Claims claims = parseClaims(accessToken);
 
-    public Authentication getAuthenticationFromAccessToken(String accessToken) {
-        Claims claims = parseClaims(accessToken);
+		//System.out.println(claims + " Provider - claims");
 
-        //System.out.println(claims + " Provider - claims");
+		if (claims.get("auth") == null) {
+			throw new GeneralHandler(ErrorStatus.TOKEN_MISSING_AUTHORITY);
+		}
 
-        if (claims.get("auth") == null) {
-            throw new GeneralHandler(ErrorStatus.TOKEN_MISSING_AUTHORITY);
-        }
+		UserDetails principal = new User(claims.getSubject(), "", new ArrayList<>());
 
-        UserDetails principal = new User(claims.getSubject(), "", new ArrayList<>());
+		return new UsernamePasswordAuthenticationToken(principal, "", principal.getAuthorities());
+	}
 
-        return new UsernamePasswordAuthenticationToken(principal, "", principal.getAuthorities());
-    }
+	public long getExpiration(String accessToken) {
+		Claims claims = parseClaims(accessToken);
 
-    public long getExpiration(String accessToken) {
-        Claims claims = parseClaims(accessToken);
+		long expiration = claims.getExpiration().getTime();
+		long now = new Date().getTime();
 
-        long expiration = claims.getExpiration().getTime();
-        long now = new Date().getTime();
+		return expiration - now;
+	}
 
-        return expiration - now;
-    }
+	public Authentication getAuthenticationFromRefreshToken(String refreshToken) {
+		Claims claims = parseClaims(refreshToken);
 
-    public Authentication getAuthenticationFromRefreshToken(String refreshToken) {
-        Claims claims = parseClaims(refreshToken);
+		UserDetails principal = new User(claims.getSubject(), "", new ArrayList<>());
 
-        UserDetails principal = new User(claims.getSubject(), "", new ArrayList<>());
+		return new UsernamePasswordAuthenticationToken(principal, "", principal.getAuthorities());
+	}
 
-        return new UsernamePasswordAuthenticationToken(principal, "", principal.getAuthorities());
-    }
+	public boolean validateToken(String token) {
+		//System.out.println(token + " Provider - validate token");
+		try {
+			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+		} catch (SecurityException | MalformedJwtException e) {
+			log.info("잘못된 JWT 서명입니다.");
+			throw new RuntimeException("잘못된 JWT 서명입니다.");
+		} catch (ExpiredJwtException e) {
+			log.info("만료된 JWT 토큰입니다.");
+			throw new RuntimeException("만료된 JWT 토큰입니다.");
+		} catch (UnsupportedJwtException e) {
+			log.info("지원되지 않는 JWT 토큰입니다.");
+			throw new RuntimeException("지원되지 않는 JWT 토큰입니다.");
+		} catch (IllegalArgumentException e) {
+			log.info("JWT 토큰이 잘못되었습니다.");
+			throw new RuntimeException("JWT 토큰이 잘못되었습니다.");
+		} catch (JwtException e) {
+			log.info("기타 JWT 예외입니다: {}", e.getMessage());
+			throw new RuntimeException("기타 JWT 오류가 발생했습니다.");
+		}
+		return true;
+	}
 
-    public boolean validateToken(String token) {
-        //System.out.println(token + " Provider - validate token");
-        try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-        } catch (SecurityException | MalformedJwtException e) {
-            log.info("잘못된 JWT 서명입니다.");
-            throw new RuntimeException("잘못된 JWT 서명입니다.");
-        } catch (ExpiredJwtException e) {
-            log.info("만료된 JWT 토큰입니다.");
-            throw new RuntimeException("만료된 JWT 토큰입니다.");
-        } catch (UnsupportedJwtException e) {
-            log.info("지원되지 않는 JWT 토큰입니다.");
-            throw new RuntimeException("지원되지 않는 JWT 토큰입니다.");
-        } catch (IllegalArgumentException e) {
-            log.info("JWT 토큰이 잘못되었습니다.");
-            throw new RuntimeException("JWT 토큰이 잘못되었습니다.");
-        } catch (JwtException e) {
-            log.info("기타 JWT 예외입니다: {}", e.getMessage());
-            throw new RuntimeException("기타 JWT 오류가 발생했습니다.");
-        }
-        return true;
-    }
-
-    private Claims parseClaims(String accessToken) {
-        try {
-            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
-        } catch (ExpiredJwtException e) {
-            return e.getClaims();
-        }
-    }
+	private Claims parseClaims(String accessToken) {
+		try {
+			return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
+		} catch (ExpiredJwtException e) {
+			return e.getClaims();
+		}
+	}
 }

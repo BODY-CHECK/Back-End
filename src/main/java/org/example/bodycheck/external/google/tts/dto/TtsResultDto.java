@@ -6,5 +6,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class TtsResultDto {
-    byte[] audioBytes;
+
+	byte[] audioBytes;
 }

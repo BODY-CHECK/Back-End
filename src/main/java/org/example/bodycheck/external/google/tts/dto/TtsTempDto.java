@@ -7,5 +7,5 @@ import lombok.Getter;
 @Builder
 public class TtsTempDto {
 
-    private byte[] audioBytes;
+	private byte[] audioBytes;
 }

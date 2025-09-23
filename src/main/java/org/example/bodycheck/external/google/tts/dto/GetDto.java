@@ -6,7 +6,8 @@ import lombok.Getter;
 @Getter
 @Builder
 public class GetDto {
-    String context;
-    byte[] audioBytes;
-    Long memberId;
+
+	String context;
+	byte[] audioBytes;
+	Long memberId;
 }

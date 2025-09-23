@@ -1,8 +1,5 @@
 package org.example.bodycheck.external.oauth2.google.service;
 
-import io.netty.handler.codec.http.HttpHeaderValues;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.example.bodycheck.external.oauth2.google.dto.GoogleLoginDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,76 +7,82 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import io.netty.handler.codec.http.HttpHeaderValues;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
 public class GoogleLoginService {
 
-    private static final String GAUTH_TOKEN_URL_HOST = "https://oauth2.googleapis.com";
-    private static final String GAUTH_USER_URL_HOST = "https://www.googleapis.com";
-    private final String clientId;
-    private final String clientSecret;
-    private final String redirectUri;
+	private static final String GAUTH_TOKEN_URL_HOST = "https://oauth2.googleapis.com";
+	private static final String GAUTH_USER_URL_HOST = "https://www.googleapis.com";
+	private final String clientId;
+	private final String clientSecret;
+	private final String redirectUri;
 
-    @Autowired
-    public GoogleLoginService(@Value("${spring.google.client_id}") String clientId,
-                              @Value("${spring.google.client_secret}") String clientSecret,
-                              @Value("${spring.google.redirect_uri}") String redirectUri) {
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.redirectUri = redirectUri;
-    }
+	@Autowired
+	public GoogleLoginService(@Value("${spring.google.client_id}") String clientId,
+		@Value("${spring.google.client_secret}") String clientSecret,
+		@Value("${spring.google.redirect_uri}") String redirectUri) {
+		this.clientId = clientId;
+		this.clientSecret = clientSecret;
+		this.redirectUri = redirectUri;
+	}
 
-    public GoogleLoginDto.GoogleUserInfoResponseDto loginWithGoogle(String code) {
-        String accessToken = getAccessTokenFromGoogle(code);
-        return getUserInfo(accessToken);
-    }
+	public GoogleLoginDto.GoogleUserInfoResponseDto loginWithGoogle(String code) {
+		String accessToken = getAccessTokenFromGoogle(code);
+		return getUserInfo(accessToken);
+	}
 
-    private String getAccessTokenFromGoogle(String code) {
-        GoogleLoginDto.GoogleTokenResponseDto googleTokenResponseDto = WebClient.create(GAUTH_TOKEN_URL_HOST).post()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/token")
-                        .queryParam("grant_type", "authorization_code")
-                        .queryParam("client_id", clientId)
-                        .queryParam("client_secret", clientSecret) // 환경변수로 관리
-                        .queryParam("redirect_uri", redirectUri) // 환경변수로 관리
-                        .queryParam("code", code)
-                        .build())
-                .header(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
-                .retrieve()
-                //TODO : Custom Exception
-                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("Invalid Parameter")))
-                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
-                .bodyToMono(GoogleLoginDto.GoogleTokenResponseDto.class)
-                .block();
+	private String getAccessTokenFromGoogle(String code) {
+		GoogleLoginDto.GoogleTokenResponseDto googleTokenResponseDto = WebClient.create(GAUTH_TOKEN_URL_HOST).post()
+			.uri(uriBuilder -> uriBuilder
+				.path("/token")
+				.queryParam("grant_type", "authorization_code")
+				.queryParam("client_id", clientId)
+				.queryParam("client_secret", clientSecret) // 환경변수로 관리
+				.queryParam("redirect_uri", redirectUri) // 환경변수로 관리
+				.queryParam("code", code)
+				.build())
+			.header(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
+			.retrieve()
+			//TODO : Custom Exception
+			.onStatus(HttpStatusCode::is4xxClientError,
+				clientResponse -> Mono.error(new RuntimeException("Invalid Parameter")))
+			.onStatus(HttpStatusCode::is5xxServerError,
+				clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+			.bodyToMono(GoogleLoginDto.GoogleTokenResponseDto.class)
+			.block();
 
+		log.info(" [Google Service] Access Token ------> {}", googleTokenResponseDto.getAccessToken());
+		log.info(" [Google Service] Refresh Token ------> {}", googleTokenResponseDto.getRefreshToken());
+		log.info(" [Google Service] Scope ------> {}", googleTokenResponseDto.getScope());
 
-        log.info(" [Google Service] Access Token ------> {}", googleTokenResponseDto.getAccessToken());
-        log.info(" [Google Service] Refresh Token ------> {}", googleTokenResponseDto.getRefreshToken());
-        log.info(" [Google Service] Scope ------> {}", googleTokenResponseDto.getScope());
+		return googleTokenResponseDto.getAccessToken();
+	}
 
-        return googleTokenResponseDto.getAccessToken();
-    }
+	private GoogleLoginDto.GoogleUserInfoResponseDto getUserInfo(String accessToken) {
+		GoogleLoginDto.GoogleUserInfoResponseDto userInfo = WebClient.create(GAUTH_USER_URL_HOST).get()
+			.uri(uriBuilder -> uriBuilder
+				.scheme("https")
+				.path("/oauth2/v2/userinfo")
+				.build(true))
+			.header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // access token 인가
+			.header(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
+			.retrieve()
+			//TODO : Custom Exception
+			.onStatus(HttpStatusCode::is4xxClientError,
+				clientResponse -> Mono.error(new RuntimeException("Invalid Parameter")))
+			.onStatus(HttpStatusCode::is5xxServerError,
+				clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+			.bodyToMono(GoogleLoginDto.GoogleUserInfoResponseDto.class)
+			.block();
 
-    private GoogleLoginDto.GoogleUserInfoResponseDto getUserInfo(String accessToken) {
-        GoogleLoginDto.GoogleUserInfoResponseDto userInfo = WebClient.create(GAUTH_USER_URL_HOST).get()
-                .uri(uriBuilder -> uriBuilder
-                        .scheme("https")
-                        .path("/oauth2/v2/userinfo")
-                        .build(true))
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // access token 인가
-                .header(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
-                .retrieve()
-                //TODO : Custom Exception
-                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("Invalid Parameter")))
-                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
-                .bodyToMono(GoogleLoginDto.GoogleUserInfoResponseDto.class)
-                .block();
+		log.info("[ Google Service ] User ID ---> {} ", userInfo.getId());
+		log.info("[ Google Service ] Email ---> {} ", userInfo.getEmail());
 
-        log.info("[ Google Service ] User ID ---> {} ", userInfo.getId());
-        log.info("[ Google Service ] Email ---> {} ", userInfo.getEmail());
-
-        return userInfo;
-    }
+		return userInfo;
+	}
 }

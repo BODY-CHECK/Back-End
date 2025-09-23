@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 
 public class CriteriaResponseDto {
 
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class CriteriaDetailDto {
-        Integer criteriaIdx;
-        String criteriaName;
-        Integer score;
-    }
+	@Builder
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class CriteriaDetailDto {
+		Integer criteriaIdx;
+		String criteriaName;
+		Integer score;
+	}
 }
