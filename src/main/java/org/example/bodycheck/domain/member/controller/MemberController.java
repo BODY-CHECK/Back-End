@@ -1,5 +1,7 @@
 package org.example.bodycheck.domain.member.controller;
 
+import java.time.LocalDate;
+
 import org.example.bodycheck.common.apipayload.ApiResponse;
 import org.example.bodycheck.common.jwt.JwtTokenDto;
 import org.example.bodycheck.domain.member.annotation.AuthUser;
@@ -8,6 +10,7 @@ import org.example.bodycheck.domain.member.dto.memberdto.MemberRequestDto;
 import org.example.bodycheck.domain.member.dto.memberdto.MemberResponseDto;
 import org.example.bodycheck.domain.member.entity.Member;
 import org.example.bodycheck.domain.member.service.memberservice.MemberCommandService;
+import org.example.bodycheck.domain.member.service.memberservice.MemberQueryService;
 import org.example.bodycheck.domain.member.service.memberservice.SettingService;
 import org.example.bodycheck.external.kakao.pay.service.KakaoPayService;
 import org.springframework.validation.annotation.Validated;
@@ -30,8 +33,8 @@ import lombok.RequiredArgsConstructor;
 public class MemberController {
 
 	private final MemberCommandService memberCommandService;
+	private final MemberQueryService memberQueryService;
 	private final SettingService settingService;
-	private final KakaoPayService kakaoPayService;
 
 	@PostMapping("/email/sign-up")
 	@Operation(summary = "회원가입 API", description = "이메일로 회원가입을 하는 API 입니다.")
@@ -106,7 +109,7 @@ public class MemberController {
 	@GetMapping("/my-page")  // JWT 토큰을 생성하여 반환
 	@Operation(summary = "마이페이지 조회 API", description = "마이페이지 정보를 조회하는 API 입니다.")
 	public ApiResponse<MemberResponseDto.MyPageResponseDto> myPage(@AuthUser Member member) {
-		boolean isPremium = kakaoPayService.getPremiumState(member.getId());
+		boolean isPremium = memberQueryService.isPremium(member.getPremiumExpiredAt());
 		return ApiResponse.onSuccess(MemberConverter.toMyPageResponseDto(member, isPremium));
 	}
 

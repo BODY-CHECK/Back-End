@@ -63,6 +63,8 @@ public class Member extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private LoginType loginType;
 
+	private LocalDate premiumExpiredAt;
+
 	private LocalDate inactiveDate;
 
 	//    // 이전 로직 - 리프레시 토큰을 DB에 저장 할 경우
@@ -91,6 +93,10 @@ public class Member extends BaseEntity {
 	public void updateProfile(String nickname, ExerciseType exerciseType) {
 		this.nickname = nickname;
 		this.exerciseType = exerciseType;
+	}
+
+	public void updatePremiumExpiredAt(LocalDate premiumExpiredAt) {
+		this.premiumExpiredAt = premiumExpiredAt;
 	}
 
 	public void deactivate(LocalDate inactiveDate) {

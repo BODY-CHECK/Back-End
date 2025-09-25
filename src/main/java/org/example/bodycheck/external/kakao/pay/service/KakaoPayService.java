@@ -11,6 +11,8 @@ import org.example.bodycheck.common.apipayload.code.status.ErrorStatus;
 import org.example.bodycheck.common.exception.handler.GeneralHandler;
 import org.example.bodycheck.domain.member.entity.Member;
 import org.example.bodycheck.domain.member.repository.MemberRepository;
+import org.example.bodycheck.domain.member.service.memberservice.MemberCommandService;
+import org.example.bodycheck.domain.member.service.memberservice.MemberQueryService;
 import org.example.bodycheck.external.kakao.pay.converter.KakaoPayConverter;
 import org.example.bodycheck.external.kakao.pay.dto.KakaoPayDto;
 import org.example.bodycheck.external.kakao.pay.entity.KakaoPay;
@@ -25,8 +27,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
 @EnableScheduling
+@Slf4j
 public class KakaoPayService {
 
 	public static final String BASE_URL = "https://open-api.kakaopay.com/online/v1/payment";
@@ -40,6 +45,8 @@ public class KakaoPayService {
 	private final RestTemplate restTemplate;
 	private final KakaoPayRepository kakaoPayRepository;
 	private final MemberRepository memberRepository;
+	private final MemberCommandService memberCommandService;
+	private final MemberQueryService memberQueryService;
 
 	private final String secretKey;
 	private final String cid;
@@ -51,12 +58,16 @@ public class KakaoPayService {
 	public KakaoPayService(
 		KakaoPayRepository kakaoPayRepository,
 		MemberRepository memberRepository,
+		MemberCommandService memberCommandService,
+		MemberQueryService memberQueryService,
 		@Value("${spring.kakaopay.secret_key}") String secretKey,
 		@Value("${spring.kakaopay.cid}") String cid,
 		@Value("${spring.kakaopay.domain}") String domain) {
 		this.restTemplate = new RestTemplate();
 		this.kakaoPayRepository = kakaoPayRepository;
 		this.memberRepository = memberRepository;
+		this.memberCommandService = memberCommandService;
+		this.memberQueryService = memberQueryService;
 		this.secretKey = secretKey;
 		this.cid = cid;
 		this.domain = domain;
@@ -76,6 +87,8 @@ public class KakaoPayService {
 		KakaoPayDto.KakaoApproveResponse kakaoApproveResponse = approveResponse(memberId, pgToken, tid);
 
 		saveSid(kakaoApproveResponse.getTid(), kakaoApproveResponse.getSid());
+
+		memberCommandService.updatePremiumExpiredAt(memberId, LocalDate.now().plusDays(30));
 	}
 
 	@Transactional
@@ -85,6 +98,8 @@ public class KakaoPayService {
 		KakaoPayDto.KakaoCancelResponse kakaoCancelResponse = cancelResponse(kakaoPay.getTid());
 
 		cancelPay(kakaoCancelResponse.getTid());
+
+		memberCommandService.updatePremiumExpiredAt(memberId, null);
 	}
 
 	@Transactional
@@ -94,6 +109,8 @@ public class KakaoPayService {
 		KakaoPayDto.KakaoApproveResponse kakaoApproveResponse = approveSubscribeResponse(kakaoPay.getSid());
 
 		savePayInfo(memberId, kakaoApproveResponse);
+
+		memberCommandService.updatePremiumExpiredAt(memberId, LocalDate.now().plusDays(30));
 
 		return kakaoApproveResponse;
 	}
@@ -359,46 +376,32 @@ public class KakaoPayService {
 
 	@Scheduled(cron = "0 0 14 * * ?")
 	public void regularPayment() {
+		LocalDate today = LocalDate.now();
 		List<KakaoPay> kakaoPayList = kakaoPayRepository.findAllWithMemberAndSidNotNull();
 
-		kakaoPayList.stream()
-			.forEach(kakaoPay -> {
-				if (kakaoPay.getSid() != null && !kakaoPay.getSid().isEmpty()) {
+		for (KakaoPay kakaoPay : kakaoPayList) {
+			LocalDate premiumExpiredAt = kakaoPay.getMember().getPremiumExpiredAt();
+			String sid = kakaoPay.getSid();
+
+			if (premiumExpiredAt != null && premiumExpiredAt.isEqual(today) && sid != null && !sid.isEmpty()) {
+				try {
 					KakaoPayDto.KakaoSubscribeStatusResponse kakaoSubscribeStatusResponse = subscribeStatusResponse(
-						kakaoPay.getSid());
+						sid);
 
 					// "ACTIVE" 상태인지 확인
 					if (kakaoSubscribeStatusResponse.getStatus().equals("ACTIVE")) {
-						String lastApprovedAtStr = getLastApprovedAt(
-							kakaoSubscribeStatusResponse.getCreatedAt(),
-							kakaoSubscribeStatusResponse.getLastApprovedAt()
-						);
+						KakaoPayDto.KakaoApproveResponse approveResponse = approveSubscribeResponse(sid);
 
-						// last_approved_at을 LocalDate로 변환
-						DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-						LocalDate lastApprovedAt = LocalDate.parse(lastApprovedAtStr, formatter);
+						savePayInfo(kakaoPay.getMember().getId(), approveResponse);
 
-						LocalDate today = LocalDate.now();
-
-						// 결제일과 오늘의 일(day)이 같고, 마지막 결제일이 이번 달이 아닌 경우에만 결제 수행
-						if (today.getDayOfMonth() == lastApprovedAt.getDayOfMonth()
-							&& (today.getYear() != lastApprovedAt.getYear()
-							|| today.getMonthValue() != lastApprovedAt.getMonthValue())) {
-							KakaoPayDto.KakaoApproveResponse approveResponse = approveSubscribeResponse(
-								kakaoPay.getSid());
-
-							savePayInfo(kakaoPay.getMember().getId(), approveResponse);
-						}
-						// if (today.getDayOfMonth() == lastApprovedAt.getDayOfMonth()) {
-						// 	KakaoPayDto.KakaoApproveResponse approveResponse = approveSubscribeResponse(
-						// 		kakaoPay.getSid());
-						//
-						// 	savePayInfo(kakaoPay.getMember().getId(), approveResponse);
-						// }
+						memberCommandService.updatePremiumExpiredAt(kakaoPay.getMember().getId(),
+							today.plusDays(30));
 					}
+				} catch (Exception e) {
+					log.error("정기 결제 처리 실패: memberId={}, sid={}", kakaoPay.getMember().getId(), sid, e);
 				}
-			});
-
+			}
+		}
 		//        System.out.println("정기 결제 작업 완료");
 	}
 }

@@ -228,6 +228,15 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 			.orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
 	}
 
+	@Override
+	@Transactional
+	public void updatePremiumExpiredAt(Long memberId, LocalDate premiumExpiredAt) {
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new GeneralHandler(ErrorStatus.MEMBER_NOT_FOUND));
+		member.updatePremiumExpiredAt(premiumExpiredAt);
+		memberRepository.save(member);
+	}
+
 	private Member saveMember(MemberRequestDto.SignUpDto request) {
 		if (memberRepository.existsByEmail(request.getEmail())) {
 			throw new GeneralHandler(ErrorStatus.EMAIL_ALREADY_EXISTS);
