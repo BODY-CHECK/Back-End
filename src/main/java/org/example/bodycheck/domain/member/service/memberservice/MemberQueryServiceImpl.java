@@ -1,5 +1,6 @@
 package org.example.bodycheck.domain.member.service.memberservice;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.example.bodycheck.common.apipayload.code.status.ErrorStatus;
@@ -57,5 +58,10 @@ public class MemberQueryServiceImpl implements MemberQueryService {
 	@Override
 	public boolean isRegisteredWithSocial(Member member, LoginType loginType) {
 		return member.getLoginType() == loginType;
+	}
+
+	@Override
+	public boolean isPremium(LocalDate premiumExpiredAt) {
+		return premiumExpiredAt != null && !premiumExpiredAt.isBefore(LocalDate.now());
 	}
 }

@@ -1,5 +1,7 @@
 package org.example.bodycheck.domain.member.converter;
 
+import java.time.LocalDate;
+
 import org.example.bodycheck.common.jwt.JwtTokenDto;
 import org.example.bodycheck.domain.member.dto.memberdto.MemberRequestDto;
 import org.example.bodycheck.domain.member.dto.memberdto.MemberResponseDto;

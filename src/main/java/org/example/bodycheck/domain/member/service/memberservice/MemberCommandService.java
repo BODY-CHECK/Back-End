@@ -1,5 +1,7 @@
 package org.example.bodycheck.domain.member.service.memberservice;
 
+import java.time.LocalDate;
+
 import org.example.bodycheck.common.jwt.JwtTokenDto;
 import org.example.bodycheck.domain.enums.LoginType;
 import org.example.bodycheck.domain.member.dto.memberdto.MemberRequestDto;
@@ -25,4 +27,6 @@ public interface MemberCommandService {
 	void changePassword(Long memberId, MemberRequestDto.PasswordDto request);
 
 	Member findById(Long memberId);
+
+	void updatePremiumExpiredAt(Long memberId, LocalDate premiumExpiredAt);
 }
