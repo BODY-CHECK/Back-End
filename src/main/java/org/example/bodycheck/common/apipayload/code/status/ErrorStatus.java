@@ -29,6 +29,9 @@ public enum ErrorStatus implements BaseErrorCode {
 	// 기기 관련
 	DEVICE_NOT_FOUND(HttpStatus.BAD_REQUEST, "DEVICE4001", "디바이스가 존재하지 않습니다."),
 
+	// 버전 관련
+	OS_NOT_FOUND(HttpStatus.BAD_REQUEST, "VERSION4001", "OS가 존재하지 않습니다."),
+
 	// Member Error
 	MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "MEMBER4001", "사용자가 없습니다."),
 	NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4002", "닉네임은 필수 입니다."),
