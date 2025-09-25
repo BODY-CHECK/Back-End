@@ -102,6 +102,18 @@ public class Oauth2Controller {
 		return ApiResponse.onSuccess(socialLoginResponseDto);
 	}
 
+	@PostMapping("/kakao")
+	@Operation(summary = "카카오 로그인 API", description = "카카오 로그인 API입니다.")
+	public ApiResponse<?> kakaoLogin(@RequestBody MemberRequestDto.SocialLoginDto request) {
+		// 회원 처리
+		MemberResponseDto.SocialLoginResponseDto socialLoginResponseDto = memberCommandService.handleSocialLogin(
+			request.getEmail(),
+			LoginType.KAKAO
+		);
+
+		return ApiResponse.onSuccess(socialLoginResponseDto);
+	}
+
 	@PostMapping("/apple")
 	@Operation(summary = "애플 로그인 API", description = "애플 로그인 API입니다.")
 	public ApiResponse<?> appleLogin(@RequestBody MemberRequestDto.AccessTokenDto request) {
