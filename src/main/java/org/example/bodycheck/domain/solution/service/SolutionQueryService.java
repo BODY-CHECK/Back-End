@@ -1,16 +1,16 @@
 package org.example.bodycheck.domain.solution.service;
 
-import org.example.bodycheck.domain.enums.ExerciseType;
-import org.example.bodycheck.domain.solution.entity.Solution;
-import org.springframework.data.domain.Slice;
-
+import java.util.List;
 import java.util.Optional;
+
+import org.example.bodycheck.domain.solution.dto.SolutionResponseDto;
+import org.example.bodycheck.domain.solution.entity.Solution;
 
 public interface SolutionQueryService {
 
-    Optional<Solution> findSolution(Long id);
+	Optional<Solution> findSolution(Long id);
 
-    Slice<Solution> getSolutionList(Long memberId, String exerciseType, Integer period, Integer page);
+	List<Solution> getSolutionList(Long memberId, String exerciseType, Integer period, Integer page);
 
-    String getSolutionContent(Long solutionId, Long memberId);
+	SolutionResponseDto.SolutionDetailDto getSolutionDetail(Long solutionId);
 }

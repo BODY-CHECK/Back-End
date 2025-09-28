@@ -4,6 +4,12 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+.env
+compose.yml
+ec2-compose.yml
+monitoring-compose.yml
+prometheus.yml
+/src/main/resources/firebase-service-account.json
 
 ### STS ###
 .apt_generated

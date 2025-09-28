@@ -6,11 +6,11 @@ import org.example.bodycheck.domain.member.entity.RefreshToken;
 @Deprecated
 public class RefreshTokenConverter {
 
-    public static RefreshToken toRefreshToken(String refreshToken, Member member) {
-        return RefreshToken.builder()
-                .member(member)
-                .refreshToken(refreshToken)
-                .build();
+	public static RefreshToken toRefreshToken(String refreshToken, Member member) {
+		return RefreshToken.builder()
+			.member(member)
+			.refreshToken(refreshToken)
+			.build();
 
-    }
+	}
 }

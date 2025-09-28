@@ -1,0 +1,75 @@
+{
+  "AWSEBDockerrunVersion": 2,
+  "containerDefinitions": [
+    {
+      "name": "redis",
+      "image": "redis:7-alpine",
+      "essential": true,
+      "memory": 128,
+      "portMappings": [
+        { "containerPort": 6379 }
+      ],
+      "healthCheck": {
+        "command": ["CMD", "redis-cli", "ping"],
+        "interval": 5,
+        "timeout": 2,
+        "retries": 5,
+        "startPeriod": 5
+      }
+    },
+    {
+      "name": "springboot",
+      "image": "205930641663.dkr.ecr.ap-northeast-2.amazonaws.com/bodycheck/springboot:latest",
+      "essential": true,
+      "memory": 1024,
+      "portMappings": [
+        { "containerPort": 8080, "hostPort": 8080 }
+      ],
+      "dependsOn": [
+        { "containerName": "redis", "condition": "HEALTHY" }
+      ],
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 0"],
+        "interval": 10,
+        "timeout": 5,
+        "retries": 10,
+        "startPeriod": 120
+      },
+      "links" : ["redis"],
+      "environment": [
+        { "name": "AWS_DB_PASSWORD", "value": "${AWS_DB_PASSWORD}" },
+        { "name": "AWS_DB_URL", "value": "${AWS_DB_URL}" },
+        { "name": "AWS_DB_USERNAME", "value": "${AWS_DB_USERNAME}" },
+        { "name": "AWS_S3_ACCESS_KEY_ID", "value": "${AWS_S3_ACCESS_KEY_ID}" },
+        { "name": "AWS_S3_SECRET_ACCESS_KEY_ID", "value": "${AWS_S3_SECRET_ACCESS_KEY_ID}" },
+        { "name": "GOOGLE_CLIENT_ID", "value": "${GOOGLE_CLIENT_ID}" },
+        { "name": "GOOGLE_CLIENT_SECRET", "value": "${GOOGLE_CLIENT_SECRET}" },
+        { "name": "GOOGLE_REDIRECT_URL", "value": "${GOOGLE_REDIRECT_URL}" },
+        { "name": "GOOGLE_API_KEY", "value": "${GOOGLE_API_KEY}" },
+        { "name": "JWT_SECRET", "value": "${JWT_SECRET}" },
+        { "name": "KAKAO_CLIENT_ID", "value": "${KAKAO_CLIENT_ID}" },
+        { "name": "KAKAO_REDIRECT_URL", "value": "${KAKAO_REDIRECT_URL}" },
+        { "name": "KAKAO_SECRET_KEY", "value": "${KAKAO_SECRET_KEY}" },
+        { "name": "KAKAO_CID", "value": "${KAKAO_CID}" },
+        { "name": "REDIS_HOST", "value": "${REDIS_HOST}" },
+        { "name": "REDIS_PORT", "value": "${REDIS_PORT}" },
+        { "name": "MAIL_EMAIL", "value": "${MAIL_EMAIL}" },
+        { "name": "MAIL_PASSWORD", "value": "${MAIL_PASSWORD}" },
+        { "name": "OPENAI_API_KEY", "value": "${OPENAI_API_KEY}" }
+      ]
+    },
+    {
+      "name": "nginx",
+      "image": "205930641663.dkr.ecr.ap-northeast-2.amazonaws.com/bodycheck/nginx:latest",
+      "essential": true,
+      "memory": 256,
+      "portMappings": [
+        { "containerPort": 80, "hostPort": 80 }
+      ],
+      "dependsOn": [
+        { "containerName": "springboot", "condition": "HEALTHY" }
+      ],
+      "links" : ["springboot"]
+    }
+  ]
+}

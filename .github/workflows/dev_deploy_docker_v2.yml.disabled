@@ -1,0 +1,88 @@
+name: bodycheck docker Dev CI/CD
+
+on:
+  push:
+    branches:
+      - core/132   # (1) core/132 브랜치에 push될 때 실행
+  workflow_dispatch: # (2) 수동 실행도 가능하도록
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # (3).OS환경
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3 # (4).코드 check out
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: 21 # (5).자바 설치
+          distribution: 'adopt'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+        shell: bash # (6).권한 부여
+
+      - name: Build with Gradle
+        run: ./gradlew clean build -x test
+        shell: bash # (7).build시작
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ap-northeast-2
+          aws-access-key-id: ${{ secrets.AWS_ECR_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_ECR_SECRET_ACCESS_KEY }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Springboot Docker image
+        run: docker build -t bodycheck/springboot -f springboot/Dockerfile .
+
+      - name: Tag Springboot Docker image
+        run: docker tag bodycheck/springboot:latest ${{ steps.login-ecr.outputs.registry }}/bodycheck/springboot:latest
+
+      - name: Push Springboot Docker image to ECR
+        run: docker push ${{ steps.login-ecr.outputs.registry }}/bodycheck/springboot:latest
+
+      - name: Build Nginx Docker image
+        run: docker build -t bodycheck/nginx -f proxy/Dockerfile .
+
+      - name: Tag Nginx Docker image
+        run: docker tag bodycheck/nginx:latest ${{ steps.login-ecr.outputs.registry }}/bodycheck/nginx:latest
+
+      - name: Push Nginx Docker image to ECR
+        run: docker push ${{ steps.login-ecr.outputs.registry }}/bodycheck/nginx:latest
+
+      - name: Get current time
+        uses: 1466587594/get-current-time@v2
+        id: current-time
+        with:
+          format: YYYY-MM-DDTHH-mm-ss
+          utcOffset: "+09:00" # (8).build시점의 시간확보
+
+      - name: Show Current Time
+        run: echo "CurrentTime=${{ steps.current-time.outputs.formattedTime }}"
+        shell: bash # (9).확보한 시간 보여주기
+
+      - name: Generate deployment package
+        run: |
+          mkdir -p deploy
+          cp Dockerrun.aws.json deploy/Dockerrun.aws.json
+          cd deploy && zip -r deploy.zip .
+
+      - name: Beanstalk Deploy
+        uses: einaregilsson/beanstalk-deploy@v21
+        with:
+          aws_access_key: ${{ secrets.AWS_ACTION_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_ACTION_SECRET_ACCESS_KEY }}
+          application_name: body-check-v2-dev
+          environment_name: Body-check-v2-dev-env
+          version_label: github-action-${{ steps.current-time.outputs.formattedTime }}
+          region: ap-northeast-2
+          deployment_package: deploy/deploy.zip
+          wait_for_deployment: false
+

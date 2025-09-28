@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: local
+    active: ${profiles.active}
 springdoc:
   swagger-ui:
     tags-sorter: alpha # API 문서 태그 알파벳순 정렬
@@ -37,6 +37,8 @@ spring:
     redis:
       host: ${redis.host}
       port: ${redis.port}
+      ssl:
+        enabled: ${redis.ssl.enabled}
 
   servlet:
     multipart:
@@ -65,6 +67,7 @@ spring:
   kakaopay:
     secret_key: ${kakao.secret.key}
     cid: ${kakao.cid}
+    domain: ${domain}
 
   google:
     client_id: ${google.client.id}
@@ -90,6 +93,16 @@ cloud:
 
 openai:
   key: ${openai.api.key}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, beans, httptrace, info, metrics, prometheus
+
+firebase:
+  service-account:
+    path: src/main/resources/firebase-service-account.json
 
 ---
 spring:
@@ -119,6 +132,8 @@ spring:
     redis:
       host: ${redis.host}
       port: ${redis.port}
+      ssl:
+        enabled: ${redis.ssl.enabled}
 
   servlet:
     multipart:
@@ -147,6 +162,7 @@ spring:
   kakaopay:
     secret_key: ${kakao.secret.key}
     cid: ${kakao.cid}
+    domain: ${domain}
 
   google:
     client_id: ${google.client.id}
@@ -172,3 +188,13 @@ cloud:
 
 openai:
   key: ${openai.api.key}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, beans, httptrace, info, metrics, prometheus
+
+firebase:
+  service-account:
+    path: /app/config/firebase-service-account.json
