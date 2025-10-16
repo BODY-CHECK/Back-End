@@ -77,7 +77,7 @@ jobs:
         run: |
           mkdir -p deploy
           cp -r .ebextensions_release deploy/.ebextensions
-          cp docker-compose.yml deploy/docker-compose.yml
+          cp docker-compose.release.yml deploy/docker-compose.yml
           cd deploy && zip -r deploy.zip .
 
       - name: Beanstalk Deploy
