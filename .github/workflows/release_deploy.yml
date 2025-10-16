@@ -76,7 +76,7 @@ jobs:
       - name: Generate deployment package
         run: |
           mkdir -p deploy
-          cp -r .ebextensions_dev_docker deploy/.ebextensions
+          cp -r .ebextensions_release deploy/.ebextensions
           cp docker-compose.yml deploy/docker-compose.yml
           cd deploy && zip -r deploy.zip .
 
@@ -85,8 +85,8 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_ACTION_ACCESS_KEY_ID_R }}
           aws_secret_key: ${{ secrets.AWS_ACTION_SECRET_ACCESS_KEY_R }}
-          application_name: body-check-dev-v2
-          environment_name: Body-check-dev-v2-env
+          application_name: body-check-api
+          environment_name: Body-check-api-env
           version_label: github-action-${{ steps.current-time.outputs.formattedTime }}
           region: ap-northeast-2
           deployment_package: deploy/deploy.zip
