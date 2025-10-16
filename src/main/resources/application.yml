@@ -198,3 +198,98 @@ management:
 firebase:
   service-account:
     path: /app/config/firebase-service-account.json
+
+---
+spring:
+  config:
+    activate:
+      on-profile: release
+  datasource:
+    url: ${aws.db.url}
+    username: ${aws.db.username}
+    password: ${aws.db.password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      mode: never
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+        hbm2ddl:
+          auto: update # update / create
+        default_batch_fetch_size: 1000
+
+  data:
+    redis:
+      host: ${redis.host}
+      port: ${redis.port}
+      ssl:
+        enabled: ${redis.ssl.enabled}
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 200MB
+      max-request-size: 300MB
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${mail.email}
+    password: ${mail.password}
+    properties:
+      mail:
+        smtp:
+          debug: true
+          connectiontimeout: 1000
+          auth: true
+        starttls:
+          enable: true
+
+  kakao:
+    client_id: ${kakao.client.id}
+    redirect_uri: ${kakao.redirect.url}
+
+  kakaopay:
+    secret_key: ${kakao.secret.key}
+    cid: ${kakao.cid}
+    domain: ${domain}
+
+  google:
+    client_id: ${google.client.id}
+    client_secret: ${google.client.secret}
+    redirect_uri: ${google.redirect.url}
+
+jwt:
+  secret: ${jwt.secret}
+
+cloud:
+  aws:
+    s3:
+      bucket: body-check-bucket
+      path:
+        solution: solution
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+    credentials:
+      accessKey: ${aws.s3.access.key.id}
+      secretKey: ${aws.s3.secret.access.key.id}
+
+openai:
+  key: ${openai.api.key}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, beans, httptrace, info, metrics, prometheus
+
+firebase:
+  service-account:
+    path: /app/config/firebase-service-account.json
