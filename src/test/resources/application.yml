@@ -1,0 +1,106 @@
+spring:
+  profiles:
+    active: test
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:test${random.uuid};MODE=MySQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  sql:
+    init:
+      mode: never
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+        hbm2ddl:
+          auto: create # update / create
+        default_batch_fetch_size: 1000
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      ssl:
+        enabled: false
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 200MB
+      max-request-size: 300MB
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: dummy@gmail.com
+    password: dummy
+    properties:
+      mail:
+        smtp:
+          debug: true
+          connectiontimeout: 1000
+          auth: true
+        starttls:
+          enable: true
+
+  kakao:
+    client_id: dummy
+    redirect_uri: dummy
+
+  kakaopay:
+    secret_key: dummy
+    cid: dummy
+    domain: dummy
+
+  google:
+    client_id: dummy
+    client_secret: dummy
+    redirect_uri: dummy
+
+jwt:
+  secret: dummydummydummydummydummydummydummydummydummydummydummydummy
+
+cloud:
+  aws:
+    s3:
+      bucket: dummy-bucket
+      path:
+        solution: dummy
+    region:
+      static: dummy
+    stack:
+      auto: false
+    credentials:
+      accessKey: dummy
+      secretKey: dummy
+
+openai:
+  key: dummy
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, beans, httptrace, info, metrics, prometheus
+
+firebase:
+  service-account:
+    path: src/main/resources/firebase-service-account.json
+
+google:
+  api:
+    key: dummy
+
+logging:
+  level:
+    org.hibernate.type.descriptor.sql: trace
