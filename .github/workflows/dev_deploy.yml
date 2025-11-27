@@ -28,6 +28,11 @@ jobs:
         run: ./gradlew clean build -x test
         shell: bash # (7).build시작
 
+      - name: Create Firebase Service Account File
+        run: |
+          mkdir -p firebase
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" | base64 -d > firebase/firebase-service-account.json
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
